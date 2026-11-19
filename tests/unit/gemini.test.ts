@@ -1,0 +1,243 @@
+/**
+ * Unit tests for the Gemini service.
+ *
+ * Tests JSON parsing/cleaning, schema validation, fallback behavior,
+ * and the personalizeAdvice function with mocked API calls.
+ */
+
+import type { AqiData, RulesEngineOutput, UserContext } from '@shared/types.js';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+
+import {
+  buildFallbackAdvice,
+  cleanJsonResponse,
+  parseGeminiResponse,
+  personalizeAdvice,
+} from '../../src/server/services/gemini.service.js';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+/* ── Test Helpers ── */
+
+function makeRulesOutput(): RulesEngineOutput {
+  return {
+    riskLevel: 'moderate',
+    riskSummary: 'AQI is moderate.',
+    actions: [
+      {
+        category: 'morning-routine',
+        title: 'Check AQI before opening windows',
+        description: 'Check the AQI before opening windows.',
+        impact: 'Prevents pollutants from entering.',
+        benefit: 'High',
+        icon: '🌅',
+      },
+      {
+        category: 'indoor-air-hack',
+        title: 'Use kitchen exhaust while cooking',
+        description: 'Run the range hood while cooking.',
+        impact: 'Reduces indoor pollutants from cooking.',
+        benefit: 'Moderate',
+        icon: '🏠',
+      },
+    ],
+  };
+}
+
+function makeAqiData(): AqiData {
+  return {
+    aqi: 85,
+    category: 'Moderate',
+    pollutants: [
+      { name: 'pm2_5', displayName: 'PM2.5', value: 30, unit: 'µg/m³' },
+    ],
+    dominantPollutant: 'pm2_5',
+    timestamp: '2026-01-15T10:00:00Z',
+  };
+}
+
+function makeContext(): UserContext {
+  return {
+    childAgeGroup: 'toddler',
+    healthConditions: ['none'],
+    homeType: 'apartment',
+    commuteMode: 'car',
+    activityLevel: 'moderate',
+    heatingSource: 'gas',
+  };
+}
+
+/* ── Test Suites ── */
+
+describe('cleanJsonResponse', () => {
+  it('should return plain JSON unchanged', () => {
+    const json = '{"key": "value"}';
+    expect(cleanJsonResponse(json)).toBe(json);
+  });
+
+  it('should strip ```json code fences', () => {
+    const input = '```json\n{"key": "value"}\n```';
+    expect(cleanJsonResponse(input)).toBe('{"key": "value"}');
+  });
+
+  it('should strip ``` code fences without language', () => {
+    const input = '```\n{"key": "value"}\n```';
+    expect(cleanJsonResponse(input)).toBe('{"key": "value"}');
+  });
+
+  it('should trim whitespace', () => {
+    const input = '  \n  {"key": "value"}  \n  ';
+    expect(cleanJsonResponse(input)).toBe('{"key": "value"}');
+  });
+
+  it('should handle empty string', () => {
+    expect(cleanJsonResponse('')).toBe('');
+  });
+});
+
+describe('parseGeminiResponse', () => {
+  it('should parse valid JSON response', () => {
+    const json = JSON.stringify({
+      riskLevel: 'moderate',
+      riskSummary: 'Air quality is moderate for your family.',
+      actions: [
+        {
+          category: 'morning-routine',
+          title: 'Open windows carefully',
+          description: 'Open windows in the early morning.',
+          impact: 'Better ventilation.',
+          benefit: 'Moderate',
+          icon: '🌅',
+        },
+      ],
+    });
+
+    const result = parseGeminiResponse(json);
+    expect(result.riskLevel).toBe('moderate');
+    expect(result.actions).toHaveLength(1);
+  });
+
+  it('should handle response wrapped in code fences', () => {
+    const json = `\`\`\`json
+{
+  "riskLevel": "low",
+  "riskSummary": "Air is good.",
+  "actions": [{
+    "category": "outdoor-activity",
+    "title": "Enjoy the park",
+    "description": "Great day for outdoor play.",
+    "impact": "Fresh air is beneficial.",
+    "benefit": "High",
+    "icon": "🏃"
+  }]
+}
+\`\`\``;
+
+    const result = parseGeminiResponse(json);
+    expect(result.riskLevel).toBe('low');
+  });
+
+  it('should throw GeminiError for invalid JSON', () => {
+    expect(() => parseGeminiResponse('not json at all')).toThrow('Failed to parse');
+  });
+
+  it('should throw GeminiError for invalid schema', () => {
+    const json = JSON.stringify({
+      riskLevel: 'extreme',
+      riskSummary: 'Bad.',
+      actions: [],
+    });
+
+    expect(() => parseGeminiResponse(json)).toThrow('validation failed');
+  });
+
+  it('should throw GeminiError for empty actions array', () => {
+    const json = JSON.stringify({
+      riskLevel: 'moderate',
+      riskSummary: 'Some summary.',
+      actions: [],
+    });
+
+    expect(() => parseGeminiResponse(json)).toThrow('validation failed');
+  });
+
+  it('should throw GeminiError for missing fields', () => {
+    const json = JSON.stringify({ riskLevel: 'low' });
+    expect(() => parseGeminiResponse(json)).toThrow('validation failed');
+  });
+});
+
+describe('buildFallbackAdvice', () => {
+  it('should convert rules output to PersonalizedAdvice with isBasicMode=true', () => {
+    const rulesOutput = makeRulesOutput();
+    const result = buildFallbackAdvice(rulesOutput);
+
+    expect(result.isBasicMode).toBe(true);
+    expect(result.riskLevel).toBe(rulesOutput.riskLevel);
+    expect(result.riskSummary).toBe(rulesOutput.riskSummary);
+    expect(result.actions).toHaveLength(rulesOutput.actions.length);
+  });
+
+  it('should preserve all action fields', () => {
+    const rulesOutput = makeRulesOutput();
+    const result = buildFallbackAdvice(rulesOutput);
+    const firstAction = result.actions[0];
+    const originalAction = rulesOutput.actions[0];
+
+    expect(firstAction).toBeDefined();
+    expect(originalAction).toBeDefined();
+    if (firstAction && originalAction) {
+      expect(firstAction.category).toBe(originalAction.category);
+      expect(firstAction.title).toBe(originalAction.title);
+      expect(firstAction.description).toBe(originalAction.description);
+      expect(firstAction.impact).toBe(originalAction.impact);
+      expect(firstAction.benefit).toBe(originalAction.benefit);
+      expect(firstAction.icon).toBe(originalAction.icon);
+    }
+  });
+});
+
+describe('personalizeAdvice', () => {
+  it('should fall back to basic mode when API key is invalid', async () => {
+    const result = await personalizeAdvice(
+      makeRulesOutput(),
+      makeAqiData(),
+      makeContext(),
+      'invalid-key',
+      'gemini-2.0-flash',
+    );
+
+    expect(result.isBasicMode).toBe(true);
+    expect(result.riskLevel).toBe('moderate');
+    expect(result.actions.length).toBeGreaterThan(0);
+  });
+
+  it('should fall back to basic mode when model name is invalid', async () => {
+    const result = await personalizeAdvice(
+      makeRulesOutput(),
+      makeAqiData(),
+      makeContext(),
+      'some-key',
+      'nonexistent-model-999',
+    );
+
+    expect(result.isBasicMode).toBe(true);
+    expect(result.riskLevel).toBe('moderate');
+  });
+
+  it('should preserve all rules-engine data in fallback', async () => {
+    const rulesOutput = makeRulesOutput();
+    const result = await personalizeAdvice(
+      rulesOutput,
+      makeAqiData(),
+      makeContext(),
+      'invalid-key',
+      'gemini-2.0-flash',
+    );
+
+    expect(result.riskSummary).toBe(rulesOutput.riskSummary);
+    expect(result.actions).toHaveLength(rulesOutput.actions.length);
+  });
+});
