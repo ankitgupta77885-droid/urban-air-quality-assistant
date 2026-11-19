@@ -23,26 +23,10 @@ export class ValidationError extends AppError {
   }
 }
 
-/** Thrown when an external API call fails. */
-export class ExternalApiError extends AppError {
-  constructor(message: string, statusCode = 502) {
-    super(message, statusCode, 'EXTERNAL_API_ERROR');
-    this.name = 'ExternalApiError';
-  }
-}
-
 /** Thrown when the Gemini API times out or returns invalid data. */
 export class GeminiError extends AppError {
   constructor(message: string) {
     super(message, 502, 'GEMINI_ERROR');
     this.name = 'GeminiError';
-  }
-}
-
-/** Thrown when a requested resource is not found. */
-export class NotFoundError extends AppError {
-  constructor(message: string) {
-    super(message, 404, 'NOT_FOUND');
-    this.name = 'NotFoundError';
   }
 }

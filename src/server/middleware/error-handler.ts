@@ -19,12 +19,7 @@ const logger = createLogger('error-handler');
  * @param res - Express response object.
  * @param _next - Next middleware function.
  */
-export function errorHandler(
-  err: Error,
-  _req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
+export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
   if (err instanceof AppError) {
     res.status(err.statusCode).json({
       success: false,
@@ -34,7 +29,25 @@ export function errorHandler(
     return;
   }
 
-  /* Handle Express built-in errors (e.g., PayloadTooLargeError). */
+  if (handleExpressBuiltIn(err, res)) {
+    return;
+  }
+
+  logger.error('Unhandled error:', err.message);
+  res.status(500).json({
+    success: false,
+    error: 'An unexpected error occurred.',
+    code: 'INTERNAL_ERROR',
+  });
+}
+
+/**
+ * Handles Express built-in errors (e.g., PayloadTooLargeError).
+ * @param err - Error instance.
+ * @param res - Express response.
+ * @returns True if handled.
+ */
+function handleExpressBuiltIn(err: Error, res: Response): boolean {
   if ('status' in err && typeof (err as Record<string, unknown>).status === 'number') {
     const status = (err as Record<string, unknown>).status as number;
     res.status(status).json({
@@ -42,14 +55,7 @@ export function errorHandler(
       error: err.message,
       code: 'REQUEST_ERROR',
     });
-    return;
+    return true;
   }
-
-  logger.error('Unhandled error:', err.message);
-
-  res.status(500).json({
-    success: false,
-    error: 'An unexpected error occurred.',
-    code: 'INTERNAL_ERROR',
-  });
+  return false;
 }

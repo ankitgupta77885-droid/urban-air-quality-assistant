@@ -50,7 +50,14 @@ describe('formatters', () => {
     });
 
     it('should have entries for all 6 tracked pollutants', () => {
-      const expected = ['pm2_5', 'pm10', 'nitrogen_dioxide', 'ozone', 'sulphur_dioxide', 'carbon_monoxide'];
+      const expected = [
+        'pm2_5',
+        'pm10',
+        'nitrogen_dioxide',
+        'ozone',
+        'sulphur_dioxide',
+        'carbon_monoxide',
+      ];
       for (const key of expected) {
         expect(POLLUTANT_DISPLAY_NAMES[key]).toBeDefined();
       }

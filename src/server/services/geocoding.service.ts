@@ -50,15 +50,8 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
     return cached;
   }
 
-  const url = new URL(GEOCODING_API_URL);
-  url.searchParams.set('name', query.trim());
-  url.searchParams.set('count', String(MAX_GEOCODING_RESULTS));
-  url.searchParams.set('language', 'en');
-  url.searchParams.set('format', 'json');
-
   logger.info('Fetching geocoding results for:', query);
-
-  const response = await fetch(url.toString(), {
+  const response = await fetch(buildGeocodingUrl(query), {
     signal: AbortSignal.timeout(8000),
   });
 
@@ -68,9 +61,21 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
 
   const data = (await response.json()) as OpenMeteoGeoResponse;
   const results = mapGeoResults(data.results ?? []);
-
   geocodingCache.set(cacheKey, results);
   return results;
+}
+
+/**
+ * Builds the Open-Meteo Geocoding API URL.
+ * @param query - Search query.
+ */
+function buildGeocodingUrl(query: string): string {
+  const url = new URL(GEOCODING_API_URL);
+  url.searchParams.set('name', query.trim());
+  url.searchParams.set('count', String(MAX_GEOCODING_RESULTS));
+  url.searchParams.set('language', 'en');
+  url.searchParams.set('format', 'json');
+  return url.toString();
 }
 
 /**

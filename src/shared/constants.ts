@@ -90,12 +90,16 @@ export const MAX_SEARCH_QUERY_LENGTH = 100 as const;
 /** Maximum number of geocoding results to return. */
 export const MAX_GEOCODING_RESULTS = 5 as const;
 
-/** Latitude range limits. */
+/** Minimum allowable latitude. */
 export const LATITUDE_MIN = -90 as const;
+
+/** Maximum allowable latitude. */
 export const LATITUDE_MAX = 90 as const;
 
-/** Longitude range limits. */
+/** Minimum allowable longitude. */
 export const LONGITUDE_MIN = -180 as const;
+
+/** Maximum allowable longitude. */
 export const LONGITUDE_MAX = 180 as const;
 
 /** Maximum health conditions a user can select. */

@@ -46,14 +46,7 @@ export const commuteModeSchema = z.enum([
 export const activityLevelSchema = z.enum(['low', 'moderate', 'high']);
 
 /** Valid heating source values. */
-export const heatingSourceSchema = z.enum([
-  'gas',
-  'electric',
-  'wood',
-  'oil',
-  'heat-pump',
-  'none',
-]);
+export const heatingSourceSchema = z.enum(['gas', 'electric', 'wood', 'oil', 'heat-pump', 'none']);
 
 /** Valid advice category values. */
 export const adviceCategorySchema = z.enum([

@@ -43,7 +43,10 @@ function makeContext(overrides: Partial<UserContext> = {}): UserContext {
 describe('generateAdvice', () => {
   describe('risk level computation', () => {
     it('should return low risk for good AQI with healthy school-age child', () => {
-      const result = generateAdvice(makeAqiData({ aqi: 30, category: 'Good' }), makeContext({ childAgeGroup: 'school-age' }));
+      const result = generateAdvice(
+        makeAqiData({ aqi: 30, category: 'Good' }),
+        makeContext({ childAgeGroup: 'school-age' }),
+      );
       expect(result.riskLevel).toBe('low');
     });
 
@@ -72,13 +75,18 @@ describe('generateAdvice', () => {
       const aqiData = makeAqiData({ aqi: 120, category: 'Unhealthy for Sensitive Groups' });
       const infantResult = generateAdvice(aqiData, makeContext({ childAgeGroup: 'infant' }));
       const schoolResult = generateAdvice(aqiData, makeContext({ childAgeGroup: 'school-age' }));
-      expect(riskToNumber(infantResult.riskLevel)).toBeGreaterThan(riskToNumber(schoolResult.riskLevel));
+      expect(riskToNumber(infantResult.riskLevel)).toBeGreaterThan(
+        riskToNumber(schoolResult.riskLevel),
+      );
     });
 
     it('should increase risk for multiple health conditions', () => {
       const aqiData = makeAqiData({ aqi: 100, category: 'Moderate' });
       const healthyResult = generateAdvice(aqiData, makeContext({ healthConditions: ['none'] }));
-      const sickResult = generateAdvice(aqiData, makeContext({ healthConditions: ['asthma', 'allergies'] }));
+      const sickResult = generateAdvice(
+        aqiData,
+        makeContext({ healthConditions: ['asthma', 'allergies'] }),
+      );
       expect(riskToNumber(sickResult.riskLevel)).toBeGreaterThanOrEqual(
         riskToNumber(healthyResult.riskLevel),
       );
@@ -134,10 +142,7 @@ describe('generateAdvice', () => {
     });
 
     it('should generate air purifier action for asthma or respiratory conditions', () => {
-      const result = generateAdvice(
-        makeAqiData(),
-        makeContext({ healthConditions: ['asthma'] }),
-      );
+      const result = generateAdvice(makeAqiData(), makeContext({ healthConditions: ['asthma'] }));
       const purifierAction = result.actions.find((a) => a.title.includes('air purifier'));
       expect(purifierAction).toBeDefined();
     });
@@ -223,9 +228,7 @@ describe('generateAdvice', () => {
     it('should handle high PM2.5 triggering DIY filter advice', () => {
       const result = generateAdvice(
         makeAqiData({
-          pollutants: [
-            { name: 'pm2_5', displayName: 'PM2.5', value: 50, unit: 'µg/m³' },
-          ],
+          pollutants: [{ name: 'pm2_5', displayName: 'PM2.5', value: 50, unit: 'µg/m³' }],
         }),
         makeContext({ homeType: 'house' }),
       );

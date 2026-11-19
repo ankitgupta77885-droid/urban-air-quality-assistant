@@ -9,6 +9,8 @@ import { searchCities } from '../api/client.js';
 import { debounce } from '../utils/debounce.js';
 import { clearChildren, createElement, getElement, setText } from '../utils/dom.js';
 
+import { handleGeolocation } from './geolocation.js';
+
 /** Callback when a location is selected. */
 type LocationCallback = (result: GeocodingResult) => void;
 
@@ -18,17 +20,48 @@ type LocationCallback = (result: GeocodingResult) => void;
  */
 export function initLocationSearch(onSelect: LocationCallback): void {
   const container = getElement('location-search');
+  const { input, results, geoBtn } = createSearchControls();
 
+  container.appendChild(input.label);
+  container.appendChild(input.field);
+  container.appendChild(input.hint);
+  container.appendChild(results);
+  container.appendChild(geoBtn);
+
+  const debouncedSearch = debounce((query: string) => {
+    void handleSearch(query, results, onSelect);
+  }, SEARCH_DEBOUNCE_MS);
+
+  input.field.addEventListener('input', () => {
+    const query = input.field.value.trim();
+    if (query.length < MIN_SEARCH_LENGTH) {
+      clearChildren(results);
+      return;
+    }
+    debouncedSearch(query);
+  });
+
+  geoBtn.addEventListener('click', () => {
+    void handleGeolocation(onSelect, geoBtn);
+  });
+}
+
+/** Creates the search DOM controls. */
+function createSearchControls(): {
+  input: { label: HTMLElement; field: HTMLInputElement; hint: HTMLElement };
+  results: HTMLElement;
+  geoBtn: HTMLButtonElement;
+} {
   const label = createElement('label', 'search-label');
   label.setAttribute('for', 'city-search');
   setText(label, 'Search for your city');
 
-  const input = createElement('input', 'search-input');
-  input.type = 'text';
-  input.id = 'city-search';
-  input.placeholder = 'e.g., Delhi, London, Beijing…';
-  input.setAttribute('autocomplete', 'off');
-  input.setAttribute('aria-describedby', 'search-hint');
+  const field = createElement('input', 'search-input');
+  field.type = 'text';
+  field.id = 'city-search';
+  field.placeholder = 'e.g., Delhi, London, Beijing…';
+  field.setAttribute('autocomplete', 'off');
+  field.setAttribute('aria-describedby', 'search-hint');
 
   const hint = createElement('p', 'search-hint');
   hint.id = 'search-hint';
@@ -43,28 +76,7 @@ export function initLocationSearch(onSelect: LocationCallback): void {
   geoBtn.type = 'button';
   setText(geoBtn, '📍 Use my location');
 
-  container.appendChild(label);
-  container.appendChild(input);
-  container.appendChild(hint);
-  container.appendChild(results);
-  container.appendChild(geoBtn);
-
-  const debouncedSearch = debounce((query: string) => {
-    void handleSearch(query, results, onSelect);
-  }, SEARCH_DEBOUNCE_MS);
-
-  input.addEventListener('input', () => {
-    const query = input.value.trim();
-    if (query.length < MIN_SEARCH_LENGTH) {
-      clearChildren(results);
-      return;
-    }
-    debouncedSearch(query);
-  });
-
-  geoBtn.addEventListener('click', () => {
-    void handleGeolocation(onSelect, geoBtn);
-  });
+  return { input: { label, field, hint }, results, geoBtn };
 }
 
 /**
@@ -91,32 +103,7 @@ async function handleSearch(
     }
 
     for (const city of cities) {
-      const li = createElement('li', 'search-result-item');
-      li.setAttribute('role', 'option');
-      li.setAttribute('tabindex', '0');
-      const displayText = [city.name, city.admin1, city.country]
-        .filter(Boolean)
-        .join(', ');
-      setText(li, displayText);
-
-      const selectHandler = (): void => {
-        onSelect(city);
-        clearChildren(listEl);
-        const input = document.getElementById('city-search') as HTMLInputElement | null;
-        if (input) {
-          input.value = displayText;
-        }
-      };
-
-      li.addEventListener('click', selectHandler);
-      li.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          selectHandler();
-        }
-      });
-
-      listEl.appendChild(li);
+      listEl.appendChild(createCityOption(city, listEl, onSelect));
     }
   } catch (error: unknown) {
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -129,50 +116,34 @@ async function handleSearch(
   }
 }
 
-/**
- * Handles browser geolocation request.
- * @param onSelect - Callback with a synthetic GeocodingResult.
- * @param btn - Geolocation button for feedback.
- */
-async function handleGeolocation(
+/** Creates a selectable city option element. */
+function createCityOption(
+  city: GeocodingResult,
+  listEl: HTMLElement,
   onSelect: LocationCallback,
-  btn: HTMLButtonElement,
-): Promise<void> {
-  if (!('geolocation' in navigator)) {
-    setText(btn, '❌ Geolocation not supported');
-    return;
-  }
+): HTMLElement {
+  const li = createElement('li', 'search-result-item');
+  li.setAttribute('role', 'option');
+  li.setAttribute('tabindex', '0');
+  const displayText = [city.name, city.admin1, city.country].filter(Boolean).join(', ');
+  setText(li, displayText);
 
-  setText(btn, '⏳ Getting location…');
-  btn.disabled = true;
-
-  try {
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        timeout: 10000,
-        maximumAge: 300000,
-      });
-    });
-
-    onSelect({
-      id: 0,
-      name: 'Your Location',
-      country: '',
-      countryCode: '',
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    });
-
+  const select = (): void => {
+    onSelect(city);
+    clearChildren(listEl);
     const input = document.getElementById('city-search') as HTMLInputElement | null;
     if (input) {
-      input.value = `📍 ${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)}`;
+      input.value = displayText;
     }
-  } catch {
-    setText(btn, '❌ Location access denied');
-  } finally {
-    btn.disabled = false;
-    setTimeout(() => {
-      setText(btn, '📍 Use my location');
-    }, 3000);
-  }
+  };
+
+  li.addEventListener('click', select);
+  li.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      select();
+    }
+  });
+
+  return li;
 }

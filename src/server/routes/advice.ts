@@ -7,7 +7,7 @@
 
 import { adviceRequestSchema } from '@shared/schemas.js';
 import type { ApiResponse, PersonalizedAdvice } from '@shared/types.js';
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 
 import { ValidationError } from '../errors/app-errors.js';
 import { fetchAqiData } from '../services/aqi.service.js';
@@ -31,32 +31,7 @@ export function createAdviceRouter(env: AdviceEnv): Router {
   router.post('/', (req, res, next) => {
     void (async (): Promise<void> => {
       try {
-        const parsed = adviceRequestSchema.safeParse(req.body);
-
-        if (!parsed.success) {
-          throw new ValidationError(
-            parsed.error.issues.map((i) => i.message).join('; '),
-          );
-        }
-
-        const { latitude, longitude, context } = parsed.data;
-
-        const aqiData = await fetchAqiData(latitude, longitude);
-        const rulesOutput = generateAdvice(aqiData, context);
-        const personalizedAdvice = await personalizeAdvice(
-          rulesOutput,
-          aqiData,
-          context,
-          env.apiKey,
-          env.modelName,
-        );
-
-        const response: ApiResponse<PersonalizedAdvice> = {
-          success: true,
-          data: personalizedAdvice,
-        };
-
-        res.json(response);
+        await handleAdviceRequest(req, res, env);
       } catch (error) {
         next(error);
       }
@@ -64,4 +39,35 @@ export function createAdviceRouter(env: AdviceEnv): Router {
   });
 
   return router;
+}
+
+/**
+ * Handles advice generation request.
+ * @param req - Express request.
+ * @param res - Express response.
+ * @param env - Environment configuration.
+ */
+async function handleAdviceRequest(req: Request, res: Response, env: AdviceEnv): Promise<void> {
+  const parsed = adviceRequestSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    throw new ValidationError(parsed.error.issues.map((i) => i.message).join('; '));
+  }
+
+  const { latitude, longitude, context } = parsed.data;
+  const aqiData = await fetchAqiData(latitude, longitude);
+  const rulesOutput = generateAdvice(aqiData, context);
+  const personalizedAdvice = await personalizeAdvice(
+    rulesOutput,
+    aqiData,
+    context,
+    env.apiKey,
+    env.modelName,
+  );
+
+  const response: ApiResponse<PersonalizedAdvice> = {
+    success: true,
+    data: personalizedAdvice,
+  };
+  res.json(response);
 }

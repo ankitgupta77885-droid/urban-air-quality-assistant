@@ -50,9 +50,7 @@ function makeAqiData(): AqiData {
   return {
     aqi: 85,
     category: 'Moderate',
-    pollutants: [
-      { name: 'pm2_5', displayName: 'PM2.5', value: 30, unit: 'µg/m³' },
-    ],
+    pollutants: [{ name: 'pm2_5', displayName: 'PM2.5', value: 30, unit: 'µg/m³' }],
     dominantPollutant: 'pm2_5',
     timestamp: '2026-01-15T10:00:00Z',
   };

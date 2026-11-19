@@ -6,12 +6,16 @@
 
 import type { UserContext } from '@shared/types.js';
 
+import { createElement, getElement, setText, showElement } from '../utils/dom.js';
+
 import {
-  createElement,
-  getElement,
-  setText,
-  showElement,
-} from '../utils/dom.js';
+  ACTIVITY_LEVEL_OPTIONS,
+  CHILD_AGE_OPTIONS,
+  COMMUTE_MODE_OPTIONS,
+  HEALTH_CONDITION_OPTIONS,
+  HEATING_SOURCE_OPTIONS,
+  HOME_TYPE_OPTIONS,
+} from './context-form-options.js';
 
 /** Callback when the form is submitted with valid context. */
 type ContextCallback = (context: UserContext) => void;
@@ -22,62 +26,7 @@ type ContextCallback = (context: UserContext) => void;
  */
 export function initContextForm(onSubmit: ContextCallback): void {
   const container = getElement('context-form');
-
-  const heading = createElement('h2');
-  setText(heading, 'Tell us about your household');
-
-  const form = createElement('form', 'context-form');
-  form.setAttribute('novalidate', '');
-
-  form.appendChild(heading);
-  form.appendChild(buildSelect('childAgeGroup', 'Youngest child\'s age group', [
-    ['infant', 'Infant (0–1 year)'],
-    ['toddler', 'Toddler (1–3 years)'],
-    ['preschool', 'Preschooler (3–5 years)'],
-    ['school-age', 'School-age (5–8 years)'],
-  ]));
-
-  form.appendChild(buildCheckboxGroup('healthConditions', 'Health conditions in household', [
-    ['none', 'None'],
-    ['asthma', 'Asthma'],
-    ['allergies', 'Allergies'],
-    ['respiratory', 'Other respiratory condition'],
-    ['cardiovascular', 'Cardiovascular condition'],
-  ]));
-
-  form.appendChild(buildSelect('homeType', 'Type of home', [
-    ['apartment', 'Apartment / Flat'],
-    ['house', 'House'],
-    ['studio', 'Studio'],
-  ]));
-
-  form.appendChild(buildSelect('commuteMode', 'Primary commute mode', [
-    ['car', 'Car'],
-    ['public-transit', 'Public transit'],
-    ['bicycle', 'Bicycle'],
-    ['walking', 'Walking'],
-    ['work-from-home', 'Work from home'],
-  ]));
-
-  form.appendChild(buildSelect('activityLevel', 'Family outdoor activity level', [
-    ['low', 'Low — mostly indoors'],
-    ['moderate', 'Moderate — some outdoor time'],
-    ['high', 'High — very active outdoors'],
-  ]));
-
-  form.appendChild(buildSelect('heatingSource', 'Primary heating source', [
-    ['electric', 'Electric'],
-    ['gas', 'Natural gas'],
-    ['heat-pump', 'Heat pump'],
-    ['wood', 'Wood / Biomass'],
-    ['oil', 'Oil'],
-    ['none', 'None / Not applicable'],
-  ]));
-
-  const submitBtn = createElement('button', 'submit-btn');
-  submitBtn.type = 'submit';
-  setText(submitBtn, 'Get Personalized Advice');
-  form.appendChild(submitBtn);
+  const form = buildForm();
 
   form.addEventListener('submit', (e: Event) => {
     e.preventDefault();
@@ -90,6 +39,41 @@ export function initContextForm(onSubmit: ContextCallback): void {
   container.appendChild(form);
 }
 
+/**
+ * Builds the form element with all fields and submit button.
+ * @returns Fully constructed HTMLFormElement.
+ */
+function buildForm(): HTMLFormElement {
+  const form = createElement('form', 'context-form');
+  form.setAttribute('novalidate', '');
+
+  const heading = createElement('h2');
+  setText(heading, 'Tell us about your household');
+  form.appendChild(heading);
+
+  form.appendChild(buildSelect('childAgeGroup', "Youngest child's age group", CHILD_AGE_OPTIONS));
+  form.appendChild(
+    buildCheckboxGroup(
+      'healthConditions',
+      'Health conditions in household',
+      HEALTH_CONDITION_OPTIONS,
+    ),
+  );
+  form.appendChild(buildSelect('homeType', 'Type of home', HOME_TYPE_OPTIONS));
+  form.appendChild(buildSelect('commuteMode', 'Primary commute mode', COMMUTE_MODE_OPTIONS));
+  form.appendChild(
+    buildSelect('activityLevel', 'Family outdoor activity level', ACTIVITY_LEVEL_OPTIONS),
+  );
+  form.appendChild(buildSelect('heatingSource', 'Primary heating source', HEATING_SOURCE_OPTIONS));
+
+  const submitBtn = createElement('button', 'submit-btn');
+  submitBtn.type = 'submit';
+  setText(submitBtn, 'Get Personalized Advice');
+  form.appendChild(submitBtn);
+
+  return form;
+}
+
 /** Shows the context form section. */
 export function showContextForm(): void {
   showElement(getElement('context-section'));
@@ -100,7 +84,7 @@ export function showContextForm(): void {
  * @param name - Form field name.
  * @param labelText - Visible label text.
  * @param options - Array of [value, display] pairs.
- * @returns Fieldset element containing label + select.
+ * @returns Element containing label + select.
  */
 function buildSelect(
   name: string,
@@ -131,6 +115,33 @@ function buildSelect(
 }
 
 /**
+ * Builds a single checkbox item with its label.
+ * @param name - Group name.
+ * @param value - Checkbox value.
+ * @param display - Visible label text.
+ */
+function createCheckboxItem(name: string, value: string, display: string): HTMLElement {
+  const wrapper = createElement('div', 'checkbox-wrapper');
+
+  const input = createElement('input');
+  input.type = 'checkbox';
+  input.id = `${name}-${value}`;
+  input.name = name;
+  input.value = value;
+  if (value === 'none') {
+    input.checked = true;
+  }
+
+  const label = createElement('label');
+  label.setAttribute('for', `${name}-${value}`);
+  setText(label, display);
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(label);
+  return wrapper;
+}
+
+/**
  * Builds a labeled checkbox group.
  * @param name - Form field name.
  * @param legendText - Legend text for the fieldset.
@@ -148,24 +159,7 @@ function buildCheckboxGroup(
   fieldset.appendChild(legend);
 
   for (const [value, display] of options) {
-    const wrapper = createElement('div', 'checkbox-wrapper');
-
-    const input = createElement('input');
-    input.type = 'checkbox';
-    input.id = `${name}-${value}`;
-    input.name = name;
-    input.value = value;
-    if (value === 'none') {
-      input.checked = true;
-    }
-
-    const label = createElement('label');
-    label.setAttribute('for', `${name}-${value}`);
-    setText(label, display);
-
-    wrapper.appendChild(input);
-    wrapper.appendChild(label);
-    fieldset.appendChild(wrapper);
+    fieldset.appendChild(createCheckboxItem(name, value, display));
   }
 
   return fieldset;
@@ -178,7 +172,6 @@ function buildCheckboxGroup(
  */
 function extractFormData(form: HTMLFormElement): UserContext | null {
   const data = new FormData(form);
-
   const childAgeGroup = data.get('childAgeGroup') as string;
   const healthConditions = data.getAll('healthConditions') as string[];
   const homeType = data.get('homeType') as string;

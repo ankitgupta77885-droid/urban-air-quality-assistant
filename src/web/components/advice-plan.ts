@@ -4,15 +4,9 @@
  * Renders personalized advice grouped by category with accessible markup.
  */
 
-import type { PersonalizedAdvice, PersonalizedAction } from '@shared/types.js';
+import type { PersonalizedAction, PersonalizedAdvice } from '@shared/types.js';
 
-import {
-  clearChildren,
-  createElement,
-  getElement,
-  setText,
-  showElement,
-} from '../utils/dom.js';
+import { clearChildren, createElement, getElement, setText, showElement } from '../utils/dom.js';
 import { getCategoryLabel } from '../utils/formatters.js';
 
 /**
@@ -25,43 +19,55 @@ export function renderAdvicePlan(advice: PersonalizedAdvice): void {
   clearChildren(container);
 
   if (advice.isBasicMode) {
-    const notice = createElement('div', 'basic-mode-notice');
-    notice.setAttribute('role', 'status');
-    setText(
-      notice,
-      '⚡ Showing standard recommendations. AI personalization is temporarily unavailable.',
-    );
-    container.appendChild(notice);
+    container.appendChild(renderBasicNotice());
   }
 
-  const riskCard = createElement('div', 'risk-summary', `risk-${advice.riskLevel}`);
-  const riskTitle = createElement('h2');
-  setText(riskTitle, 'Risk Assessment');
-  const riskText = createElement('p');
-  setText(riskText, advice.riskSummary);
-  riskCard.appendChild(riskTitle);
-  riskCard.appendChild(riskText);
-  container.appendChild(riskCard);
+  container.appendChild(renderRiskCard(advice.riskLevel, advice.riskSummary));
 
   const grouped = groupByCategory(advice.actions);
-
   for (const [category, actions] of grouped) {
-    const section = createElement('div', 'advice-category');
-
-    const catTitle = createElement('h3', 'category-title');
-    const firstAction = actions[0];
-    const icon = firstAction ? firstAction.icon : '';
-    setText(catTitle, `${icon} ${getCategoryLabel(category)}`);
-    section.appendChild(catTitle);
-
-    for (const action of actions) {
-      section.appendChild(renderAction(action));
-    }
-
-    container.appendChild(section);
+    container.appendChild(renderCategorySection(category, actions));
   }
 
   showElement(section);
+}
+
+/** Renders the basic fallback mode notice element. */
+function renderBasicNotice(): HTMLElement {
+  const notice = createElement('div', 'basic-mode-notice');
+  notice.setAttribute('role', 'status');
+  setText(
+    notice,
+    '⚡ Showing standard recommendations. AI personalization is temporarily unavailable.',
+  );
+  return notice;
+}
+
+/** Renders the risk assessment card. */
+function renderRiskCard(riskLevel: string, summary: string): HTMLElement {
+  const card = createElement('div', 'risk-summary', `risk-${riskLevel}`);
+  const title = createElement('h2');
+  setText(title, 'Risk Assessment');
+  const text = createElement('p');
+  setText(text, summary);
+  card.appendChild(title);
+  card.appendChild(text);
+  return card;
+}
+
+/** Renders an advice category section with its actions. */
+function renderCategorySection(category: string, actions: PersonalizedAction[]): HTMLElement {
+  const section = createElement('div', 'advice-category');
+  const catTitle = createElement('h3', 'category-title');
+  const firstAction = actions[0];
+  const icon = firstAction ? firstAction.icon : '';
+  setText(catTitle, `${icon} ${getCategoryLabel(category)}`);
+  section.appendChild(catTitle);
+
+  for (const action of actions) {
+    section.appendChild(renderAction(action));
+  }
+  return section;
 }
 
 /**

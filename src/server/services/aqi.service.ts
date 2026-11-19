@@ -64,14 +64,8 @@ export async function fetchAqiData(latitude: number, longitude: number): Promise
     return cached;
   }
 
-  const url = new URL(AIR_QUALITY_API_URL);
-  url.searchParams.set('latitude', String(latitude));
-  url.searchParams.set('longitude', String(longitude));
-  url.searchParams.set('current', ['us_aqi', ...POLLUTANT_VARS].join(','));
-
   logger.info('Fetching AQI data for:', cacheKey);
-
-  const response = await fetch(url.toString(), {
+  const response = await fetch(buildAqiUrl(latitude, longitude), {
     signal: AbortSignal.timeout(8000),
   });
 
@@ -80,15 +74,26 @@ export async function fetchAqiData(latitude: number, longitude: number): Promise
   }
 
   const data = (await response.json()) as OpenMeteoAqiResponse;
-
   if (!data.current) {
     throw new Error('Air Quality API returned no current data');
   }
 
   const aqiData = mapAqiResponse(data.current);
   aqiCache.set(cacheKey, aqiData);
-
   return aqiData;
+}
+
+/**
+ * Builds the request URL for Open-Meteo Air Quality API.
+ * @param lat - Latitude.
+ * @param lon - Longitude.
+ */
+function buildAqiUrl(lat: number, lon: number): string {
+  const url = new URL(AIR_QUALITY_API_URL);
+  url.searchParams.set('latitude', String(lat));
+  url.searchParams.set('longitude', String(lon));
+  url.searchParams.set('current', ['us_aqi', ...POLLUTANT_VARS].join(','));
+  return url.toString();
 }
 
 /**

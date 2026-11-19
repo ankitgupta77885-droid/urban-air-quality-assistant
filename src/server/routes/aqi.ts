@@ -25,9 +25,7 @@ aqiRouter.get('/', (req, res, next) => {
       const parsed = aqiQuerySchema.safeParse(req.query);
 
       if (!parsed.success) {
-        throw new ValidationError(
-          parsed.error.issues.map((i) => i.message).join('; '),
-        );
+        throw new ValidationError(parsed.error.issues.map((i) => i.message).join('; '));
       }
 
       const aqiData = await fetchAqiData(parsed.data.lat, parsed.data.lon);

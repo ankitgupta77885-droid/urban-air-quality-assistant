@@ -25,9 +25,7 @@ geocodingRouter.get('/search', (req, res, next) => {
       const parsed = geocodingQuerySchema.safeParse(req.query);
 
       if (!parsed.success) {
-        throw new ValidationError(
-          parsed.error.issues.map((i) => i.message).join('; '),
-        );
+        throw new ValidationError(parsed.error.issues.map((i) => i.message).join('; '));
       }
 
       const results = await searchCities(parsed.data.q);
