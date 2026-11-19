@@ -21,7 +21,13 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["air-quality", "genai", "gemini", "urban-pollution", "health"],
+  "keywords": [
+    "air-quality",
+    "genai",
+    "gemini",
+    "urban-pollution",
+    "health"
+  ],
   "license": "MIT",
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
@@ -36,6 +42,7 @@
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^22.9.0",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
