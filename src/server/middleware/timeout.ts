@@ -1,2 +1,33 @@
-/** Request timeout middleware — placeholder for Phase 7. */
-export {};
+/**
+ * Request timeout middleware.
+ *
+ * Aborts requests that exceed the configured timeout threshold.
+ */
+
+import { REQUEST_TIMEOUT_MS } from '@shared/constants.js';
+import type { NextFunction, Request, Response } from 'express';
+
+/**
+ * Middleware that sets a timeout on each request.
+ * Returns 408 if the request takes too long.
+ * @param _req - Express request object.
+ * @param res - Express response object.
+ * @param next - Next middleware function.
+ */
+export function requestTimeout(_req: Request, res: Response, next: NextFunction): void {
+  const timer = setTimeout(() => {
+    if (!res.headersSent) {
+      res.status(408).json({
+        success: false,
+        error: 'Request timed out.',
+        code: 'REQUEST_TIMEOUT',
+      });
+    }
+  }, REQUEST_TIMEOUT_MS);
+
+  res.on('finish', () => {
+    clearTimeout(timer);
+  });
+
+  next();
+}
