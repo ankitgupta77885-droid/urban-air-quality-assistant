@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Urban Air Quality Assistant — personalized air quality advice for young families" />
+    <title>Urban Air Quality Assistant</title>
+    <link rel="stylesheet" href="/src/web/style.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+      <h1>🌬️ Urban Air Quality Assistant</h1>
+      <p class="subtitle">Personalized air quality guidance for young families</p>
+    </header>
+
+    <main id="main-content">
+      <section id="location-section" aria-label="Location search">
+        <div id="location-search"></div>
+      </section>
+
+      <section id="aqi-section" aria-label="Air quality information" hidden>
+        <div id="aqi-display"></div>
+      </section>
+
+      <section id="context-section" aria-label="Your household profile" hidden>
+        <div id="context-form"></div>
+      </section>
+
+      <section id="advice-section" aria-label="Personalized advice" hidden>
+        <div id="advice-plan"></div>
+      </section>
+
+      <div id="error-banner" role="alert" aria-live="assertive"></div>
+      <div id="loading" aria-live="polite"></div>
+    </main>
+
+    <footer role="contentinfo">
+      <div id="disclaimer"></div>
+      <p class="copyright">&copy; 2026 Urban Air Quality Assistant</p>
+    </footer>
+
+    <script type="module" src="/src/web/main.ts"></script>
+  </body>
+</html>
