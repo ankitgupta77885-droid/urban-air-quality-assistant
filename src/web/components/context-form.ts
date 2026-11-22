@@ -1,24 +1,25 @@
 /**
  * Context form component for capturing household lifestyle data.
  *
- * All form controls have visible labels and proper ARIA attributes.
+ * All form controls have visible labels, fieldsets/legends, and proper ARIA attributes.
  */
 
 import type { UserContext } from '@shared/types.js';
 
-import { createElement, getElement, setText, showElement } from '../utils/dom.js';
+import { createElement, getElement, setText } from '../utils/dom.js';
 
 import {
-  ACTIVITY_LEVEL_OPTIONS,
-  CHILD_AGE_OPTIONS,
-  COMMUTE_MODE_OPTIONS,
-  HEALTH_CONDITION_OPTIONS,
-  HEATING_SOURCE_OPTIONS,
-  HOME_TYPE_OPTIONS,
+  CHILD_AGE_OPTIONS, COMMUTE_MODE_OPTIONS,
+  HEALTH_CONDITION_OPTIONS, HOME_TYPE_OPTIONS,
 } from './context-form-options.js';
+import {
+  buildCheckboxGroup, buildSelect, createMoreDetailsSection,
+} from './form-fields.js';
 
-/** Callback when the form is submitted with valid context. */
 type ContextCallback = (context: UserContext) => void;
+
+let submitButtonEl: HTMLButtonElement | null = null;
+let disabledHintEl: HTMLElement | null = null;
 
 /**
  * Initializes the context form component.
@@ -26,10 +27,14 @@ type ContextCallback = (context: UserContext) => void;
  */
 export function initContextForm(onSubmit: ContextCallback): void {
   const container = getElement('context-form');
-  const form = buildForm();
+  container.replaceChildren();
 
+  const form = buildForm();
   form.addEventListener('submit', (e: Event) => {
     e.preventDefault();
+    if (submitButtonEl?.disabled) {
+      return;
+    }
     const context = extractFormData(form);
     if (context) {
       onSubmit(context);
@@ -39,156 +44,98 @@ export function initContextForm(onSubmit: ContextCallback): void {
   container.appendChild(form);
 }
 
-/**
- * Builds the form element with all fields and submit button.
- * @returns Fully constructed HTMLFormElement.
- */
+/** Retained for backwards compatibility in test runners. */
+export function showContextForm(): void {
+  const el = document.getElementById('context-section');
+  if (el) {
+    el.hidden = false;
+  }
+}
+
+/** Updates the submission button state based on location selection. */
+export function setContextFormLocationSelected(selected: boolean, locationName?: string): void {
+  if (!submitButtonEl || !disabledHintEl) {
+    return;
+  }
+  submitButtonEl.disabled = !selected;
+  if (selected) {
+    submitButtonEl.removeAttribute('aria-disabled');
+  } else {
+    submitButtonEl.setAttribute('aria-disabled', 'true');
+  }
+  const hint = selected
+    ? (locationName ? `Location: ${locationName}` : 'Location selected')
+    : 'Select a city or use your location above to generate your plan.';
+  setText(disabledHintEl, hint);
+}
+
+/** Builds the full form element with visible and collapsible fields. */
 function buildForm(): HTMLFormElement {
   const form = createElement('form', 'context-form');
   form.setAttribute('novalidate', '');
 
-  const heading = createElement('h2');
-  setText(heading, 'Tell us about your household');
+  const heading = createElement('h3', 'form-section-title');
+  setText(heading, 'Household Context');
   form.appendChild(heading);
 
   form.appendChild(buildSelect('childAgeGroup', "Youngest child's age group", CHILD_AGE_OPTIONS));
-  form.appendChild(
-    buildCheckboxGroup(
-      'healthConditions',
-      'Health conditions in household',
-      HEALTH_CONDITION_OPTIONS,
-    ),
-  );
+  form.appendChild(buildCheckboxGroup('healthConditions', 'Health conditions in household', HEALTH_CONDITION_OPTIONS));
   form.appendChild(buildSelect('homeType', 'Type of home', HOME_TYPE_OPTIONS));
   form.appendChild(buildSelect('commuteMode', 'Primary commute mode', COMMUTE_MODE_OPTIONS));
-  form.appendChild(
-    buildSelect('activityLevel', 'Family outdoor activity level', ACTIVITY_LEVEL_OPTIONS),
-  );
-  form.appendChild(buildSelect('heatingSource', 'Primary heating source', HEATING_SOURCE_OPTIONS));
 
-  const submitBtn = createElement('button', 'submit-btn');
-  submitBtn.type = 'submit';
-  setText(submitBtn, 'Get Personalized Advice');
-  form.appendChild(submitBtn);
+  const { toggleBtn, content } = createMoreDetailsSection();
+  form.appendChild(toggleBtn);
+  form.appendChild(content);
+  form.appendChild(createSubmitSection());
 
   return form;
 }
 
-/** Shows the context form section. */
-export function showContextForm(): void {
-  showElement(getElement('context-section'));
-}
+/** Creates the submit button and disabled hint explanation. */
+function createSubmitSection(): HTMLElement {
+  const wrapper = createElement('div', 'submit-section');
 
-/**
- * Builds a labeled select dropdown.
- * @param name - Form field name.
- * @param labelText - Visible label text.
- * @param options - Array of [value, display] pairs.
- * @returns Element containing label + select.
- */
-function buildSelect(
-  name: string,
-  labelText: string,
-  options: readonly [string, string][],
-): HTMLElement {
-  const group = createElement('div', 'form-group');
+  submitButtonEl = createElement('button', 'btn', 'btn-primary', 'btn-pill', 'submit-btn');
+  submitButtonEl.type = 'submit';
+  submitButtonEl.id = 'submit-advice-btn';
+  submitButtonEl.disabled = true;
+  submitButtonEl.setAttribute('aria-disabled', 'true');
+  setText(submitButtonEl, 'Generate Personalized Advice');
 
-  const label = createElement('label');
-  label.setAttribute('for', name);
-  setText(label, labelText);
+  disabledHintEl = createElement('p', 'disabled-hint');
+  disabledHintEl.id = 'advice-disabled-hint';
+  disabledHintEl.setAttribute('role', 'status');
+  setText(disabledHintEl, 'Select a city or use your location above to generate your plan.');
 
-  const select = createElement('select');
-  select.id = name;
-  select.name = name;
-  select.required = true;
-
-  for (const [value, display] of options) {
-    const opt = createElement('option');
-    opt.value = value;
-    setText(opt, display);
-    select.appendChild(opt);
-  }
-
-  group.appendChild(label);
-  group.appendChild(select);
-  return group;
-}
-
-/**
- * Builds a single checkbox item with its label.
- * @param name - Group name.
- * @param value - Checkbox value.
- * @param display - Visible label text.
- */
-function createCheckboxItem(name: string, value: string, display: string): HTMLElement {
-  const wrapper = createElement('div', 'checkbox-wrapper');
-
-  const input = createElement('input');
-  input.type = 'checkbox';
-  input.id = `${name}-${value}`;
-  input.name = name;
-  input.value = value;
-  if (value === 'none') {
-    input.checked = true;
-  }
-
-  const label = createElement('label');
-  label.setAttribute('for', `${name}-${value}`);
-  setText(label, display);
-
-  wrapper.appendChild(input);
-  wrapper.appendChild(label);
+  wrapper.appendChild(submitButtonEl);
+  wrapper.appendChild(disabledHintEl);
   return wrapper;
 }
 
-/**
- * Builds a labeled checkbox group.
- * @param name - Form field name.
- * @param legendText - Legend text for the fieldset.
- * @param options - Array of [value, display] pairs.
- * @returns Fieldset element with checkboxes.
- */
-function buildCheckboxGroup(
-  name: string,
-  legendText: string,
-  options: readonly [string, string][],
-): HTMLElement {
-  const fieldset = createElement('fieldset', 'form-group');
-  const legend = createElement('legend');
-  setText(legend, legendText);
-  fieldset.appendChild(legend);
-
-  for (const [value, display] of options) {
-    fieldset.appendChild(createCheckboxItem(name, value, display));
-  }
-
-  return fieldset;
-}
-
-/**
- * Extracts and validates form data into a UserContext object.
- * @param form - The form element.
- * @returns UserContext or null if invalid.
- */
+/** Extracts and validates form data into a UserContext object. */
 function extractFormData(form: HTMLFormElement): UserContext | null {
   const data = new FormData(form);
-  const childAgeGroup = data.get('childAgeGroup') as string;
-  const healthConditions = data.getAll('healthConditions') as string[];
-  const homeType = data.get('homeType') as string;
-  const commuteMode = data.get('commuteMode') as string;
-  const activityLevel = data.get('activityLevel') as string;
-  const heatingSource = data.get('heatingSource') as string;
-
-  if (healthConditions.length === 0) {
-    healthConditions.push('none');
+  const child = data.get('childAgeGroup');
+  const home = data.get('homeType');
+  const commute = data.get('commuteMode');
+  if (typeof child !== 'string' || typeof home !== 'string' || typeof commute !== 'string') {
+    return null;
   }
 
+  const conditions = data.getAll('healthConditions') as string[];
+  if (conditions.length === 0) {
+    conditions.push('none');
+  }
+
+  const act = data.get('activityLevel');
+  const heat = data.get('heatingSource');
+
   return {
-    childAgeGroup: childAgeGroup as UserContext['childAgeGroup'],
-    healthConditions: healthConditions as unknown as UserContext['healthConditions'],
-    homeType: homeType as UserContext['homeType'],
-    commuteMode: commuteMode as UserContext['commuteMode'],
-    activityLevel: activityLevel as UserContext['activityLevel'],
-    heatingSource: heatingSource as UserContext['heatingSource'],
+    childAgeGroup: child as UserContext['childAgeGroup'],
+    healthConditions: conditions as unknown as UserContext['healthConditions'],
+    homeType: home as UserContext['homeType'],
+    commuteMode: commute as UserContext['commuteMode'],
+    activityLevel: (typeof act === 'string' && act ? act : 'moderate') as UserContext['activityLevel'],
+    heatingSource: (typeof heat === 'string' && heat ? heat : 'electric') as UserContext['heatingSource'],
   };
 }

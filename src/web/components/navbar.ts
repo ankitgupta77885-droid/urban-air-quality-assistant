@@ -40,13 +40,13 @@ function createBrandElement(): HTMLElement {
   brand.appendChild(createAirIcon());
 
   const brandText = createElement('div', 'brand-text');
-  const h1 = createElement('h1');
-  setText(h1, 'Urban Air Quality Assistant');
+  const title = createElement('span', 'brand-title');
+  setText(title, 'Urban Air Quality Assistant');
 
   const subtitle = createElement('p', 'subtitle');
   setText(subtitle, 'Personalized air quality guidance for young families');
 
-  brandText.appendChild(h1);
+  brandText.appendChild(title);
   brandText.appendChild(subtitle);
   brand.appendChild(brandText);
 
@@ -72,10 +72,16 @@ function createNavLinksElement(): HTMLElement {
   return nav;
 }
 
-/** Creates the primary CTA button linking to the planner. */
+/** Creates the primary CTA button linking to the planner and focusing search. */
 function createCtaElement(): HTMLElement {
   const a = createElement('a', 'btn', 'btn-primary', 'btn-pill', 'nav-cta');
   a.href = '#planner';
   setText(a, 'Check Your Area');
+  a.addEventListener('click', () => {
+    const searchInput = document.getElementById('city-search') as HTMLInputElement | null;
+    if (searchInput) {
+      searchInput.focus();
+    }
+  });
   return a;
 }

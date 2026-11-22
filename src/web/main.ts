@@ -9,10 +9,15 @@ import type { GeocodingResult, UserContext } from '@shared/types.js';
 import { fetchAqi, fetchAdvice } from './api/client.js';
 import { renderAdvicePlan } from './components/advice-plan.js';
 import { renderAqiDisplay } from './components/aqi-display.js';
-import { initContextForm, showContextForm } from './components/context-form.js';
+import {
+  initContextForm,
+  setContextFormLocationSelected,
+  showContextForm,
+} from './components/context-form.js';
 import { renderDisclaimer } from './components/disclaimer.js';
 import { clearError, showError } from './components/error-banner.js';
 import { updateTrustTimestamp } from './components/footer.js';
+import { renderHero } from './components/hero.js';
 import { hideLoading, showLoading } from './components/loading.js';
 import { initLocationSearch } from './components/location-search.js';
 
@@ -27,6 +32,8 @@ let selectedLon = 0;
 async function onLocationSelected(result: GeocodingResult): Promise<void> {
   selectedLat = result.latitude;
   selectedLon = result.longitude;
+  const locationLabel = [result.name, result.admin1, result.country].filter(Boolean).join(', ');
+  setContextFormLocationSelected(true, locationLabel);
 
   clearError();
   showLoading('Fetching air quality data…');
@@ -71,6 +78,11 @@ async function onContextSubmit(context: UserContext): Promise<void> {
 
 /** Initializes the application. */
 function init(): void {
+  const heroContainer = document.getElementById('hero');
+  if (heroContainer) {
+    renderHero(heroContainer);
+  }
+
   initLocationSearch((result) => {
     void onLocationSelected(result);
   });

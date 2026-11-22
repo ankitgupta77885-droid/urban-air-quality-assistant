@@ -387,16 +387,87 @@ section {
   margin-bottom: var(--space-xl);
 }
 
-/* ── Location Search Card ── */
+/* ── Hero Section ── */
+
+.hero-section {
+  padding: var(--space-xl) 0 var(--space-2xl);
+}
+
+.hero-content {
+  max-width: 800px;
+}
+
+.hero-headline {
+  font-size: var(--font-size-display-hero);
+  line-height: var(--line-height-display-hero);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+  margin-bottom: var(--space-sm);
+}
+
+@media (max-width: 768px) {
+  .hero-headline {
+    font-size: var(--font-size-display-hero-mobile);
+    line-height: var(--line-height-display-hero-mobile);
+  }
+}
+
+.hero-lead {
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-lg);
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-xl);
+  max-width: 680px;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* ── Unified Planner Card ── */
+
+.planner-card {
+  max-width: 840px;
+  margin: 0 auto var(--space-2xl);
+  padding: var(--space-xl);
+}
+
+.planner-card-header {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.planner-heading {
+  font-size: var(--font-size-headline-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+  margin-bottom: var(--space-xs);
+  letter-spacing: -0.015em;
+}
+
+.planner-subtitle {
+  font-size: var(--font-size-body-md);
+  color: var(--color-ink-muted);
+}
+
+.planner-search-zone {
+  margin-bottom: var(--space-lg);
+}
+
+.planner-context-zone {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-lg);
+}
+
+/* ── Location Search Controls ── */
 
 #location-search {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-ambient);
-  padding: var(--space-xl) var(--space-lg);
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .search-label {
@@ -497,30 +568,6 @@ section {
   font-style: italic;
 }
 
-.geo-btn {
-  display: block;
-  margin-top: 0.75rem;
-  padding: 0.65rem 1.25rem;
-  font-size: 0.95rem;
-  background: var(--color-surface);
-  color: var(--color-primary);
-  border: 2px solid var(--color-primary);
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.15s, color 0.15s;
-}
-
-.geo-btn:hover:not(:disabled) {
-  background: var(--color-primary);
-  color: #fff;
-}
-
-.geo-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 /* ── AQI Display ── */
 
 .aqi-card {
@@ -599,79 +646,125 @@ section {
 
 /* ── Context Form ── */
 
-.context-form h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+.form-section-title {
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+  margin-bottom: var(--space-md);
+}
+
+.fieldset-group {
+  border: none;
+  padding: 0;
+  margin: 0 0 var(--space-md);
+}
+
+.form-legend {
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+  margin-bottom: var(--space-xs);
+  padding: 0;
 }
 
 .form-group {
-  margin-bottom: 1rem;
-  border: none;
+  margin-bottom: var(--space-md);
 }
 
 .form-group label {
   display: block;
-  font-weight: 600;
-  margin-bottom: 0.35rem;
-  font-size: 0.95rem;
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+  margin-bottom: var(--space-xs);
 }
 
+.form-select,
 .form-group select {
   width: 100%;
-  padding: 0.65rem 0.75rem;
-  font-size: 1rem;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius);
+  min-height: var(--touch-target-min);
+  padding: 0.625rem 1rem;
+  font-family: inherit;
+  font-size: var(--font-size-body-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   background: var(--color-surface);
-  color: var(--color-text);
-  appearance: auto;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
 }
 
+.form-select:focus,
 .form-group select:focus {
-  border-color: var(--color-focus);
+  border-color: var(--color-ink);
 }
 
-.form-group legend {
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 0.5rem;
+.checkbox-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .checkbox-wrapper {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.35rem;
+  gap: var(--space-sm);
+  min-height: var(--touch-target-min);
 }
 
+.checkbox-input,
 .checkbox-wrapper input[type='checkbox'] {
-  width: 1.1rem;
-  height: 1.1rem;
-  accent-color: var(--color-primary);
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-ink);
+  cursor: pointer;
 }
 
+.checkbox-label,
 .checkbox-wrapper label {
-  font-weight: 400;
+  font-size: var(--font-size-body-md);
+  color: var(--color-ink);
+  cursor: pointer;
   margin-bottom: 0;
 }
 
-.submit-btn {
-  display: block;
-  width: 100%;
-  padding: 0.85rem;
-  font-size: 1.05rem;
-  font-weight: 700;
-  background: var(--color-primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: background 0.15s;
+.more-details-btn {
+  margin-top: var(--space-xs);
+  margin-bottom: var(--space-md);
 }
 
-.submit-btn:hover {
-  background: var(--color-primary-hover);
+.more-details-section {
+  padding: var(--space-md);
+  background: var(--color-surface-dim);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+}
+
+.submit-section {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.submit-btn {
+  min-height: var(--touch-target-min);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--color-border);
+  color: var(--color-ink-muted);
+  border-color: var(--color-border);
+}
+
+.disabled-hint {
+  font-size: var(--font-size-label-sm);
+  color: var(--color-ink-muted);
+  margin-top: var(--space-xs);
 }
 
 /* ── Advice Plan ── */

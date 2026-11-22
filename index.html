@@ -17,7 +17,7 @@
             <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
           </svg>
           <div class="brand-text">
-            <h1>Urban Air Quality Assistant</h1>
+            <span class="brand-title">Urban Air Quality Assistant</span>
             <p class="subtitle">Personalized air quality guidance for young families</p>
           </div>
         </div>
@@ -33,18 +33,22 @@
     </header>
 
     <main id="main-content" class="container">
-      <div id="planner"></div>
-      <section id="location-section" aria-label="Location search">
-        <div id="location-search"></div>
+      <section id="hero-section" class="hero-section" aria-label="Introduction">
+        <div id="hero"></div>
+      </section>
+
+      <section id="planner" class="planner-card card card-gradient card-pad-xl" aria-label="Air quality planner">
+        <div class="planner-card-header">
+          <h2 class="planner-heading">Personalized Smog Defense Planner</h2>
+          <p class="planner-subtitle">Search your area and customize your family's routine</p>
+        </div>
+        <div id="location-search" class="planner-search-zone"></div>
+        <div id="context-form" class="planner-context-zone"></div>
       </section>
 
       <div id="results"></div>
       <section id="aqi-section" aria-label="Air quality information" hidden>
         <div id="aqi-display"></div>
-      </section>
-
-      <section id="context-section" aria-label="Your household profile" hidden>
-        <div id="context-form"></div>
       </section>
 
       <section id="advice-section" aria-label="Personalized advice" hidden>

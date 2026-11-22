@@ -30,7 +30,7 @@ function createTestDocument(): Document {
             <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2" />
           </svg>
           <div class="brand-text">
-            <h1>Urban Air Quality Assistant</h1>
+            <span class="brand-title">Urban Air Quality Assistant</span>
             <p class="subtitle">Personalized air quality guidance for young families</p>
           </div>
         </div>
@@ -46,9 +46,28 @@ function createTestDocument(): Document {
     </header>
 
     <main id="main-content" class="container">
-      <div id="planner"></div>
-      <section id="location-section" aria-label="Location search">
-        <div id="location-search">
+      <section id="hero-section" class="hero-section" aria-label="Introduction">
+        <div id="hero">
+          <div class="hero-content">
+            <h1 class="hero-headline">Breathe easier through winter smog</h1>
+            <p class="hero-lead">
+              Protecting young lungs starts with small, daily adjustments. Get clean-air routines,
+              safer travel tips, and practical choices for home.
+            </p>
+            <div class="hero-actions">
+              <a href="#planner" class="btn btn-primary btn-pill hero-cta">Get today's plan</a>
+              <a href="#how-it-works" class="btn btn-secondary btn-pill hero-secondary">See how it works</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="planner" class="planner-card card card-gradient card-pad-xl" aria-label="Air quality planner">
+        <div class="planner-card-header">
+          <h2 class="planner-heading">Personalized Smog Defense Planner</h2>
+          <p class="planner-subtitle">Search your area and customize your family's routine</p>
+        </div>
+        <div id="location-search" class="planner-search-zone">
           <label for="city-search" class="search-label">Search for your city</label>
           <input type="text" id="city-search" placeholder="e.g., Delhi, London, Beijing…"
                  autocomplete="off" aria-describedby="search-hint" />
@@ -60,6 +79,59 @@ function createTestDocument(): Document {
             </svg>
             Use my location
           </button>
+        </div>
+        <div id="context-form" class="planner-context-zone">
+          <form class="context-form" novalidate>
+            <h3>Household Context</h3>
+            <div class="form-group">
+              <label for="childAgeGroup">Youngest child's age group</label>
+              <select id="childAgeGroup" name="childAgeGroup" required>
+                <option value="toddler">Toddler (1–3 years)</option>
+              </select>
+            </div>
+            <fieldset class="form-group">
+              <legend>Health conditions in household</legend>
+              <div class="checkbox-wrapper">
+                <input type="checkbox" id="hc-none" name="healthConditions" value="none" checked />
+                <label for="hc-none">None</label>
+              </div>
+            </fieldset>
+            <div class="form-group">
+              <label for="homeType">Type of home</label>
+              <select id="homeType" name="homeType" required>
+                <option value="apartment_high">Apartment (high floor)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="commuteMode">Primary commute mode</label>
+              <select id="commuteMode" name="commuteMode" required>
+                <option value="walking">Walking / Stroller</option>
+              </select>
+            </div>
+            <button type="button" id="more-details-toggle" class="btn btn-secondary btn-pill"
+                    aria-expanded="false" aria-controls="more-details-section">More details</button>
+            <div id="more-details-section" hidden>
+              <div class="form-group">
+                <label for="activityLevel">Family outdoor activity level</label>
+                <select id="activityLevel" name="activityLevel">
+                  <option value="moderate">Moderate</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="heatingSource">Primary heating source</label>
+                <select id="heatingSource" name="heatingSource">
+                  <option value="electric">Electric / Heat pump</option>
+                </select>
+              </div>
+            </div>
+            <div class="submit-section">
+              <button type="submit" id="submit-advice-btn" class="btn btn-primary btn-pill submit-btn"
+                      disabled aria-disabled="true">Generate Personalized Advice</button>
+              <p id="advice-disabled-hint" class="disabled-hint" role="status">
+                Select a city or use your location above to generate your plan.
+              </p>
+            </div>
+          </form>
         </div>
       </section>
 
@@ -76,28 +148,6 @@ function createTestDocument(): Document {
               <span class="aqi-category">Moderate</span>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section id="context-section" aria-label="Your household profile">
-        <div id="context-form">
-          <form class="context-form" novalidate>
-            <h2>Tell us about your household</h2>
-            <div class="form-group">
-              <label for="childAgeGroup">Youngest child's age group</label>
-              <select id="childAgeGroup" name="childAgeGroup" required>
-                <option value="toddler">Toddler (1–3 years)</option>
-              </select>
-            </div>
-            <fieldset class="form-group">
-              <legend>Health conditions in household</legend>
-              <div class="checkbox-wrapper">
-                <input type="checkbox" id="hc-none" name="healthConditions" value="none" checked />
-                <label for="hc-none">None</label>
-              </div>
-            </fieldset>
-            <button type="submit" class="submit-btn">Get Personalized Advice</button>
-          </form>
         </div>
       </section>
 
@@ -249,5 +299,12 @@ describe('Accessibility (axe-core)', () => {
     const document = createTestDocument();
     const header = document.querySelector('header[role="banner"]');
     expect(header).not.toBeNull();
+  });
+
+  it('should have exactly one h1 heading on the page in the hero', () => {
+    const document = createTestDocument();
+    const h1s = document.querySelectorAll('h1');
+    expect(h1s.length).toBe(1);
+    expect(h1s[0]?.textContent).toBe('Breathe easier through winter smog');
   });
 });

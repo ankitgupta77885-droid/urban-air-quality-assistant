@@ -1,0 +1,152 @@
+/**
+ * Tests for Step 3: Hero, Unified Planner card, More Details toggle, and disabled submit button.
+ *
+ * @vitest-environment jsdom
+ */
+
+import { describe, expect, it, vi } from 'vitest';
+
+import type { UserContext } from '../../src/shared/types.js';
+import {
+  initContextForm,
+  setContextFormLocationSelected,
+} from '../../src/web/components/context-form.js';
+import { renderHero } from '../../src/web/components/hero.js';
+import { renderNavbar } from '../../src/web/components/navbar.js';
+
+describe('Step 3: Hero Component', () => {
+  it('should render correct headline and supporting copy without mock stats', () => {
+    const container = document.createElement('div');
+    renderHero(container);
+
+    const h1 = container.querySelector('h1.hero-headline');
+    expect(h1).not.toBeNull();
+    expect(h1?.textContent).toBe('Breathe easier through winter smog');
+    expect(h1?.textContent).not.toContain('severe');
+
+    const lead = container.querySelector('.hero-lead');
+    expect(lead?.textContent).toContain('low-emission daily routines');
+
+    // Ensure no mock stats or fake AQI numbers exist in hero
+    expect(container.textContent).not.toContain('AQI');
+    expect(container.textContent).not.toContain('Safe window');
+  });
+
+  it('should render primary and secondary pill action buttons', () => {
+    const container = document.createElement('div');
+    renderHero(container);
+
+    const primaryBtn = container.querySelector('a.hero-btn.btn-primary');
+    expect(primaryBtn?.getAttribute('href')).toBe('#planner');
+    expect(primaryBtn?.textContent).toBe("Get today's plan");
+
+    const secondaryBtn = container.querySelector('a.hero-btn.btn-outline');
+    expect(secondaryBtn?.getAttribute('href')).toBe('#how-it-works');
+    expect(secondaryBtn?.textContent).toBe('See how it works');
+  });
+});
+
+describe('Step 3: Unified Planner and Context Form', () => {
+  it('should initialize with submit button disabled and clear text explanation', () => {
+    document.body.innerHTML = '<div id="context-form"></div>';
+    initContextForm(vi.fn());
+
+    const submitBtn = document.getElementById('submit-advice-btn') as HTMLButtonElement | null;
+    const disabledHint = document.getElementById('advice-disabled-hint');
+
+    expect(submitBtn).not.toBeNull();
+    expect(submitBtn?.disabled).toBe(true);
+    expect(submitBtn?.getAttribute('aria-disabled')).toBe('true');
+    expect(disabledHint?.textContent).toContain('Select a city or use your location');
+  });
+
+  it('should toggle "More details" with aria-expanded and aria-controls', () => {
+    document.body.innerHTML = '<div id="context-form"></div>';
+    initContextForm(vi.fn());
+
+    const toggleBtn = document.getElementById('more-details-toggle') as HTMLButtonElement;
+    const detailsSection = document.getElementById('more-details-section') as HTMLElement;
+
+    expect(toggleBtn).not.toBeNull();
+    expect(detailsSection).not.toBeNull();
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('false');
+    expect(toggleBtn.getAttribute('aria-controls')).toBe('more-details-section');
+    expect(detailsSection.hidden).toBe(true);
+    expect(toggleBtn.textContent).toBe('More details');
+
+    // Click to expand
+    toggleBtn.click();
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('true');
+    expect(detailsSection.hidden).toBe(false);
+    expect(toggleBtn.textContent).toBe('Fewer details');
+
+    // Click to collapse
+    toggleBtn.click();
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('false');
+    expect(detailsSection.hidden).toBe(true);
+    expect(toggleBtn.textContent).toBe('More details');
+  });
+
+  it('should enable submit button when location is selected and update hint text', () => {
+    document.body.innerHTML = '<div id="context-form"></div>';
+    initContextForm(vi.fn());
+
+    const submitBtn = document.getElementById('submit-advice-btn') as HTMLButtonElement;
+    const disabledHint = document.getElementById('advice-disabled-hint') as HTMLElement;
+
+    setContextFormLocationSelected(true, 'London, United Kingdom');
+    expect(submitBtn.disabled).toBe(false);
+    expect(submitBtn.hasAttribute('aria-disabled')).toBe(false);
+    expect(disabledHint.textContent).toBe('Location: London, United Kingdom');
+
+    setContextFormLocationSelected(false);
+    expect(submitBtn.disabled).toBe(true);
+    expect(submitBtn.getAttribute('aria-disabled')).toBe('true');
+    expect(disabledHint.textContent).toContain('Select a city or use your location');
+  });
+
+  it('should not submit form when button is disabled', () => {
+    document.body.innerHTML = '<div id="context-form"></div>';
+    const onSubmit = vi.fn<(context: UserContext) => void>();
+    initContextForm(onSubmit);
+
+    const form = document.querySelector('form.context-form') as HTMLFormElement;
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('should submit valid context data when button is enabled', () => {
+    document.body.innerHTML = '<div id="context-form"></div>';
+    const onSubmit = vi.fn<(context: UserContext) => void>();
+    initContextForm(onSubmit);
+
+    setContextFormLocationSelected(true, 'Delhi');
+
+    const form = document.querySelector('form.context-form') as HTMLFormElement;
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    const submittedContext = onSubmit.mock.calls[0]?.[0];
+    expect(submittedContext?.childAgeGroup).toBe('infant');
+    expect(submittedContext?.homeType).toBe('apartment');
+    expect(submittedContext?.commuteMode).toBe('car');
+  });
+
+  it('should focus the city search input when navbar Check Your Area is clicked', () => {
+    document.body.innerHTML = `
+      <header id="header"></header>
+      <input type="text" id="city-search" />
+    `;
+    const header = document.getElementById('header') as HTMLElement;
+    renderNavbar(header);
+
+    const searchInput = document.getElementById('city-search') as HTMLInputElement;
+    const focusSpy = vi.spyOn(searchInput, 'focus');
+
+    const cta = header.querySelector('a.nav-cta') as HTMLAnchorElement;
+    cta.click();
+
+    expect(focusSpy).toHaveBeenCalledTimes(1);
+  });
+});
