@@ -4,7 +4,9 @@
 
 import type { GeocodingResult } from '@shared/types.js';
 
-import { setText } from '../utils/dom.js';
+import { clearChildren, setText } from '../utils/dom.js';
+
+import { createLocationPinIcon } from './icons.js';
 
 /** Callback when a location is selected. */
 type LocationCallback = (result: GeocodingResult) => void;
@@ -19,22 +21,24 @@ export async function handleGeolocation(
   btn: HTMLButtonElement,
 ): Promise<void> {
   if (!('geolocation' in navigator)) {
-    setText(btn, '❌ Geolocation not supported');
+    setText(btn, 'Geolocation not supported');
     return;
   }
 
-  setText(btn, '⏳ Getting location…');
+  setText(btn, 'Getting location…');
   btn.disabled = true;
 
   try {
     const position = await requestCurrentPosition();
     applyGeolocationResult(position, onSelect);
   } catch {
-    setText(btn, '❌ Location access denied');
+    setText(btn, 'Location access denied');
   } finally {
     btn.disabled = false;
     setTimeout(() => {
-      setText(btn, '📍 Use my location');
+      clearChildren(btn);
+      btn.appendChild(createLocationPinIcon());
+      btn.appendChild(document.createTextNode(' Use my location'));
     }, 3000);
   }
 }
@@ -62,6 +66,6 @@ function applyGeolocationResult(position: GeolocationPosition, onSelect: Locatio
 
   const input = document.getElementById('city-search') as HTMLInputElement | null;
   if (input) {
-    input.value = `📍 ${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)}`;
+    input.value = `${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)}`;
   }
 }

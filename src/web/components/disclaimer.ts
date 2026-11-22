@@ -4,6 +4,8 @@
 
 import { createElement, getElement, setText } from '../utils/dom.js';
 
+import { createMedicalIcon } from './icons.js';
+
 /** Renders the medical disclaimer in the footer. */
 export function renderDisclaimer(): void {
   const container = getElement('disclaimer');
@@ -14,7 +16,7 @@ export function renderDisclaimer(): void {
 
   const icon = createElement('span', 'disclaimer-icon');
   icon.setAttribute('aria-hidden', 'true');
-  setText(icon, '⚕️');
+  icon.appendChild(createMedicalIcon());
 
   const text = createElement('p', 'disclaimer-text');
   setText(

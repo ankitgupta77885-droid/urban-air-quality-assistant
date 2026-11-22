@@ -23,12 +23,19 @@ function createTestDocument(): Document {
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <header role="banner">
-      <h1>🌬️ Urban Air Quality Assistant</h1>
-      <p class="subtitle">Personalized air quality guidance for young families</p>
+    <header role="banner" class="app-header">
+      <div class="container">
+        <div class="brand">
+          <svg class="icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2" />
+          </svg>
+          <h1>Urban Air Quality Assistant</h1>
+          <p class="subtitle">Personalized air quality guidance for young families</p>
+        </div>
+      </div>
     </header>
 
-    <main id="main-content">
+    <main id="main-content" class="container">
       <section id="location-section" aria-label="Location search">
         <div id="location-search">
           <label for="city-search" class="search-label">Search for your city</label>
@@ -37,7 +44,10 @@ function createTestDocument(): Document {
           <p id="search-hint" class="search-hint">Type at least 2 characters to search</p>
           <ul id="search-results" role="listbox" aria-label="City search results"></ul>
           <button type="button" class="geo-btn">
-            📍 Use my location
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7z" />
+            </svg>
+            Use my location
           </button>
         </div>
       </section>
@@ -46,7 +56,11 @@ function createTestDocument(): Document {
         <div id="aqi-display">
           <div class="aqi-card aqi-moderate" aria-label="Air Quality Index: 85, Moderate">
             <div class="aqi-header">
-              <span class="aqi-icon" aria-hidden="true">🟡</span>
+              <span class="aqi-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              </span>
               <span class="aqi-value">85</span>
               <span class="aqi-category">Moderate</span>
             </div>
@@ -83,7 +97,12 @@ function createTestDocument(): Document {
             <p>Air quality is moderate. Take basic precautions for your toddler.</p>
           </div>
           <div class="advice-category">
-            <h3 class="category-title">🌅 Morning Routine</h3>
+            <h3 class="category-title">
+              <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path d="M12 2v4" />
+              </svg>
+              Morning Routine
+            </h3>
             <div class="action-card">
               <h4 class="action-title">Check AQI before opening windows</h4>
               <p class="action-desc">Check the current AQI before opening any windows.</p>
@@ -100,17 +119,23 @@ function createTestDocument(): Document {
       <div id="loading" aria-live="polite"></div>
     </main>
 
-    <footer role="contentinfo">
-      <div id="disclaimer">
-        <div class="disclaimer-notice" role="note" aria-label="Medical disclaimer">
-          <span class="disclaimer-icon" aria-hidden="true">⚕️</span>
-          <p class="disclaimer-text">
-            This tool provides general air quality guidance only and is NOT a substitute
-            for professional medical advice.
-          </p>
+    <footer role="contentinfo" class="app-footer">
+      <div class="container">
+        <div id="disclaimer">
+          <div class="disclaimer-notice" role="note" aria-label="Medical disclaimer">
+            <span class="disclaimer-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </span>
+            <p class="disclaimer-text">
+              This tool provides general air quality guidance only and is NOT a substitute
+              for professional medical advice.
+            </p>
+          </div>
         </div>
+        <p class="copyright">© 2026 Urban Air Quality Assistant</p>
       </div>
-      <p class="copyright">© 2026 Urban Air Quality Assistant</p>
     </footer>
   </body>
 </html>`;

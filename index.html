@@ -10,12 +10,21 @@
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <header role="banner">
-      <h1>🌬️ Urban Air Quality Assistant</h1>
-      <p class="subtitle">Personalized air quality guidance for young families</p>
+    <header role="banner" class="app-header">
+      <div class="container header-container">
+        <div class="brand">
+          <svg class="icon icon-brand" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+          </svg>
+          <div class="brand-text">
+            <h1>Urban Air Quality Assistant</h1>
+            <p class="subtitle">Personalized air quality guidance for young families</p>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <main id="main-content">
+    <main id="main-content" class="container">
       <section id="location-section" aria-label="Location search">
         <div id="location-search"></div>
       </section>
@@ -36,9 +45,11 @@
       <div id="loading" aria-live="polite"></div>
     </main>
 
-    <footer role="contentinfo">
-      <div id="disclaimer"></div>
-      <p class="copyright">&copy; 2026 Urban Air Quality Assistant</p>
+    <footer role="contentinfo" class="app-footer">
+      <div class="container footer-container">
+        <div id="disclaimer"></div>
+        <p class="copyright">&copy; 2026 Urban Air Quality Assistant</p>
+      </div>
     </footer>
 
     <script type="module" src="/src/web/main.ts"></script>

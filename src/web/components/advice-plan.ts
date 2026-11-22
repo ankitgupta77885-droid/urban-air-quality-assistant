@@ -9,6 +9,8 @@ import type { PersonalizedAction, PersonalizedAdvice } from '@shared/types.js';
 import { clearChildren, createElement, getElement, setText, showElement } from '../utils/dom.js';
 import { getCategoryLabel } from '../utils/formatters.js';
 
+import { createCategoryIcon } from './icons.js';
+
 /**
  * Renders the personalized advice plan.
  * @param advice - Personalized advice data.
@@ -59,9 +61,8 @@ function renderRiskCard(riskLevel: string, summary: string): HTMLElement {
 function renderCategorySection(category: string, actions: PersonalizedAction[]): HTMLElement {
   const section = createElement('div', 'advice-category');
   const catTitle = createElement('h3', 'category-title');
-  const firstAction = actions[0];
-  const icon = firstAction ? firstAction.icon : '';
-  setText(catTitle, `${icon} ${getCategoryLabel(category)}`);
+  catTitle.appendChild(createCategoryIcon(category));
+  catTitle.appendChild(document.createTextNode(` ${getCategoryLabel(category)}`));
   section.appendChild(catTitle);
 
   for (const action of actions) {

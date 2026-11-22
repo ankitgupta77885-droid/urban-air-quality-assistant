@@ -10,6 +10,7 @@ import { debounce } from '../utils/debounce.js';
 import { clearChildren, createElement, getElement, setText } from '../utils/dom.js';
 
 import { handleGeolocation } from './geolocation.js';
+import { createLocationPinIcon } from './icons.js';
 
 /** Callback when a location is selected. */
 type LocationCallback = (result: GeocodingResult) => void;
@@ -74,7 +75,8 @@ function createSearchControls(): {
 
   const geoBtn = createElement('button', 'geo-btn');
   geoBtn.type = 'button';
-  setText(geoBtn, '📍 Use my location');
+  geoBtn.appendChild(createLocationPinIcon());
+  geoBtn.appendChild(document.createTextNode(' Use my location'));
 
   return { input: { label, field, hint }, results, geoBtn };
 }
