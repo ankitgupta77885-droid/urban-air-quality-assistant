@@ -165,4 +165,4 @@ function buildFallbackAdvice(rulesOutput: RulesEngineOutput): PersonalizedAdvice
 }
 
 // Re-export for testing
-export { buildFallbackAdvice, cleanJsonResponse, parseGeminiResponse };
+export { buildFallbackAdvice, buildPrompt, cleanJsonResponse, parseGeminiResponse };

@@ -26,6 +26,12 @@ export type EnvConfig = z.infer<typeof envSchema>;
  * @returns Validated environment configuration object.
  */
 export function loadEnvConfig(): EnvConfig {
+  try {
+    process.loadEnvFile();
+  } catch {
+    // Gracefully ignore missing or inaccessible .env file
+  }
+
   const result = envSchema.safeParse(process.env);
 
   if (!result.success) {

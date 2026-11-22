@@ -6,10 +6,35 @@
 
 import { BODY_SIZE_LIMIT, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from '@shared/constants.js';
 import compression from 'compression';
-import cors from 'cors';
+import cors, { type CorsOptions } from 'cors';
 import express, { type Express } from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+
+/** Default allowed origins for CORS. */
+const DEFAULT_ALLOWED_ORIGINS: readonly string[] = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+] as const;
+
+/**
+ * Checks whether an origin is allowed by the CORS policy.
+ * @param origin - Request origin header value or undefined.
+ * @returns True if origin is allowed, false otherwise.
+ */
+export function isAllowedOrigin(origin: string | undefined): boolean {
+  if (!origin) {
+    return true;
+  }
+
+  const customOrigins = process.env['ALLOWED_ORIGINS']
+    ? process.env['ALLOWED_ORIGINS'].split(',').map((o) => o.trim())
+    : [];
+  const allowlist = [...DEFAULT_ALLOWED_ORIGINS, ...customOrigins];
+  return allowlist.includes(origin);
+}
 
 /**
  * Applies all security middleware to the Express app.
@@ -34,7 +59,7 @@ function applyHelmet(app: Express): void {
         directives: {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'"],
           imgSrc: ["'self'", 'data:'],
           connectSrc: ["'self'"],
           fontSrc: ["'self'"],
@@ -50,18 +75,23 @@ function applyHelmet(app: Express): void {
 }
 
 /**
- * Configures restrictive CORS.
+ * Configures restrictive CORS with an explicit origin allowlist.
  * @param app - Express application instance.
  */
 function applyCors(app: Express): void {
-  app.use(
-    cors({
-      origin: process.env['NODE_ENV'] === 'production' ? false : true,
-      methods: ['GET', 'POST'],
-      allowedHeaders: ['Content-Type'],
-      maxAge: 600,
-    }),
-  );
+  const options: CorsOptions = {
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    maxAge: 600,
+  };
+  app.use(cors(options));
 }
 
 /**
