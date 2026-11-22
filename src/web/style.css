@@ -859,7 +859,7 @@ section {
   margin-bottom: 0;
 }
 
-.form-group label,
+.form-group > label,
 .form-label {
   display: block;
   font-size: var(--font-size-title-md);
@@ -899,6 +899,8 @@ section {
 .chip-wrapper {
   position: relative;
   display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .chip-input {
@@ -914,7 +916,7 @@ section {
 }
 
 .chip-label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -930,6 +932,10 @@ section {
   user-select: none;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   margin-bottom: 0;
+  text-align: center;
+}
+
+.chip-text {
   text-align: center;
 }
 
