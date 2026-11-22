@@ -8,7 +8,7 @@ import { APP_NAME } from '@shared/constants.js';
 
 import { createElement, setText } from '../utils/dom.js';
 
-import { createAirIcon } from './icons.js';
+import { createLogo } from './logo.js';
 
 interface NavLinkItem {
   readonly label: string;
@@ -36,10 +36,12 @@ export function renderNavbar(container: HTMLElement): void {
   container.appendChild(navWrapper);
 }
 
-/** Creates the brand logo and title heading. */
+/** Creates the brand link with logo and product title. */
 function createBrandElement(): HTMLElement {
-  const brand = createElement('div', 'brand');
-  brand.appendChild(createAirIcon());
+  const brand = createElement('a', 'brand');
+  brand.setAttribute('href', '#top');
+  brand.setAttribute('aria-label', APP_NAME);
+  brand.appendChild(createLogo());
 
   const title = createElement('span', 'brand-title');
   setText(title, APP_NAME);

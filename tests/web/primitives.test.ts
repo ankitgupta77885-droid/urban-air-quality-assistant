@@ -10,6 +10,7 @@ import { createButton } from '../../src/web/components/button.js';
 import { createCard } from '../../src/web/components/card.js';
 import { renderFooter, updateTrustTimestamp } from '../../src/web/components/footer.js';
 import { createAirIcon, createCheckIcon } from '../../src/web/components/icons.js';
+import { createLogo } from '../../src/web/components/logo.js';
 import { renderNavbar } from '../../src/web/components/navbar.js';
 import { createPill } from '../../src/web/components/pill.js';
 
@@ -103,6 +104,23 @@ describe('Shared Primitive: Card', () => {
   });
 });
 
+describe('Brand Primitive: Logo', () => {
+  it('should render inline SVG logo mark with accessible properties and 32x32 size', () => {
+    const logo = createLogo();
+    expect(logo.tagName.toLowerCase()).toBe('svg');
+    expect(logo.getAttribute('viewBox')).toBe('0 0 64 64');
+    expect(logo.getAttribute('width')).toBe('32');
+    expect(logo.getAttribute('height')).toBe('32');
+    expect(logo.getAttribute('aria-hidden')).toBe('true');
+    expect(logo.getAttribute('focusable')).toBe('false');
+    expect(logo.classList.contains('brand-logo')).toBe(true);
+
+    const circle = logo.querySelector('circle');
+    expect(circle).not.toBeNull();
+    expect(circle?.getAttribute('fill')).toBe('currentColor');
+  });
+});
+
 describe('Layout Shell: Navbar and Footer', () => {
   it('should render navbar with valid in-page anchor links', () => {
     const header = document.createElement('header');
@@ -113,6 +131,14 @@ describe('Layout Shell: Navbar and Footer', () => {
 
     const subtitle = header.querySelector('.subtitle');
     expect(subtitle).toBeNull();
+
+    const brand = header.querySelector('a.brand');
+    expect(brand).not.toBeNull();
+    expect(brand?.getAttribute('href')).toBe('#top');
+    expect(brand?.getAttribute('aria-label')).toBe('BreatheWell');
+
+    const logo = brand?.querySelector('.brand-logo');
+    expect(logo).not.toBeNull();
 
     const title = header.querySelector('.brand-title');
     expect(title?.textContent).toBe('BreatheWell');

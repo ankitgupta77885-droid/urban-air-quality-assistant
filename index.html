@@ -5,19 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="BreatheWell — personalized air quality advice for young families" />
     <title>BreatheWell</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#111111">
     <link rel="stylesheet" href="/src/web/style.css" />
   </head>
-  <body>
+  <body id="top">
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <header role="banner" class="app-header" id="app-header">
       <div class="container nav-container">
-        <div class="brand">
-          <svg class="icon icon-brand" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+        <a href="#top" class="brand" aria-label="BreatheWell">
+          <svg class="brand-logo" viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false">
+            <circle cx="32" cy="32" r="32" fill="currentColor"/>
+            <path d="M19 43C14 27 27 14 49 15c1 21-10 32-30 28z" fill="#F9F9F7"/>
+            <path d="M19 43l-6 6" fill="none" stroke="#F9F9F7" stroke-width="4" stroke-linecap="round"/>
+            <path d="M22 40c6-3 9-8 13-12s8-6 11-10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M30 51h14M36 45h10" fill="none" stroke="#7FD1B0" stroke-width="4" stroke-linecap="round"/>
           </svg>
           <span class="brand-title">BreatheWell</span>
-        </div>
+        </a>
         <nav aria-label="Main navigation" class="nav-links">
           <ul class="nav-list">
             <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>

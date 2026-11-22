@@ -12,9 +12,10 @@
   --color-border-hover: #747878;
   --color-accent-soft: #e2e8e5;
 
-  /* ── Typography Inks ── */
+  /* ── Typography Inks & Brand ── */
   --color-ink: #111111;
   --color-ink-muted: #4d635c;
+  --color-brand: #111111;
 
   /* ── Status Tokens (Paired with Text & SVG Icon) ── */
   --color-status-good-bg: rgba(5, 150, 105, 0.1);
