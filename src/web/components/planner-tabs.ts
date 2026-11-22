@@ -42,15 +42,11 @@ export function initPlannerTabs(container: HTMLElement, onTabChange?: TabChangeC
   tablist.setAttribute('role', 'tablist');
   tablist.setAttribute('aria-label', 'Advice categories');
 
-  for (let i = 0; i < PLANNER_TABS.length; i++) {
-    const tabData = PLANNER_TABS[i];
-    if (!tabData) {
-      continue;
-    }
+  PLANNER_TABS.forEach((tabData, i) => {
     const tab = createTabButton(tabData, i === 0);
     tabsList.push(tab);
     tablist.appendChild(tab);
-  }
+  });
 
   tablist.addEventListener('keydown', handleTabKeydown);
 
@@ -59,8 +55,7 @@ export function initPlannerTabs(container: HTMLElement, onTabChange?: TabChangeC
   hintEl.setAttribute('role', 'status');
   setText(hintEl, 'Generate a plan to see these');
 
-  wrapper.appendChild(tablist);
-  wrapper.appendChild(hintEl);
+  wrapper.append(tablist, hintEl);
   container.appendChild(wrapper);
 }
 
@@ -92,25 +87,24 @@ function createTabButton(tabData: TabItem, isSelected: boolean): HTMLButtonEleme
   setText(tab, tabData.label);
 
   tab.addEventListener('click', () => {
-    if (!isEnabled) {
-      return;
-    }
-    selectTab(tabData.id);
+    if (isEnabled) { selectTab(tabData.id); }
   });
 
   return tab;
 }
 
-/** Selects a specific tab by ID and updates ARIA states. */
+/** Selects a specific tab by ID and updates ARIA states and panel visibility. */
 export function selectTab(tabId: string): void {
   currentTabId = tabId;
   for (const tab of tabsList) {
     const isTarget = tab.id === `tab-${tabId}`;
     tab.setAttribute('aria-selected', isTarget ? 'true' : 'false');
     tab.tabIndex = isTarget ? 0 : -1;
-    if (isTarget) {
-      tab.focus();
-    }
+    if (isTarget) { tab.focus(); }
+  }
+  for (const item of PLANNER_TABS) {
+    const panel = document.getElementById(`panel-${item.id}`);
+    if (panel) { panel.hidden = item.id !== tabId; }
   }
   if (onTabChangeCb && isEnabled) {
     onTabChangeCb(tabId);
@@ -119,27 +113,23 @@ export function selectTab(tabId: string): void {
 
 /** Handles arrow key roaming between tabs. */
 function handleTabKeydown(e: KeyboardEvent): void {
-  if (tabsList.length === 0) {
-    return;
-  }
-  const currentIndex = tabsList.findIndex((t) => t.id === `tab-${currentTabId}`);
-  let newIndex = -1;
+  if (tabsList.length === 0) { return; }
+  const curIdx = tabsList.findIndex((t) => t.id === `tab-${currentTabId}`);
+  let newIdx = -1;
 
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-    newIndex = (currentIndex + 1) % tabsList.length;
+    newIdx = (curIdx + 1) % tabsList.length;
   } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-    newIndex = (currentIndex - 1 + tabsList.length) % tabsList.length;
+    newIdx = (curIdx - 1 + tabsList.length) % tabsList.length;
   } else if (e.key === 'Home') {
-    newIndex = 0;
+    newIdx = 0;
   } else if (e.key === 'End') {
-    newIndex = tabsList.length - 1;
+    newIdx = tabsList.length - 1;
   }
 
-  if (newIndex !== -1 && tabsList[newIndex]) {
+  if (newIdx !== -1 && tabsList[newIdx]) {
     e.preventDefault();
-    const nextTab = PLANNER_TABS[newIndex];
-    if (nextTab) {
-      selectTab(nextTab.id);
-    }
+    const nextTab = PLANNER_TABS[newIdx];
+    if (nextTab) { selectTab(nextTab.id); }
   }
 }

@@ -1,20 +1,22 @@
 /**
  * Advice plan component.
  *
- * Renders personalized advice grouped by category with accessible markup.
+ * Renders personalized advice grouped into accessible tabpanels,
+ * with risk summary, medical guidance note, and recommendation cards.
  */
 
 import type { PersonalizedAction, PersonalizedAdvice } from '@shared/types.js';
 
 import { clearChildren, createElement, getElement, setText, showElement } from '../utils/dom.js';
-import { getCategoryLabel } from '../utils/formatters.js';
 
-import { createCategoryIcon } from './icons.js';
+import { createAqiStatusIcon } from './icons.js';
+import { createMedicalGuidanceNote } from './medical-guidance.js';
+import { selectTab } from './planner-tabs.js';
+import { createRecommendationCard } from './recommendation-card.js';
 
-/**
- * Renders the personalized advice plan.
- * @param advice - Personalized advice data.
- */
+const DAILY_CATEGORIES = new Set(['morning-routine', 'commute', 'outdoor-activity', 'evening-routine']);
+
+/** Renders the personalized advice plan into accessible tabpanels. */
 export function renderAdvicePlan(advice: PersonalizedAdvice): void {
   const container = getElement('advice-plan');
   const section = getElement('advice-section');
@@ -25,102 +27,102 @@ export function renderAdvicePlan(advice: PersonalizedAdvice): void {
   }
 
   container.appendChild(renderRiskCard(advice.riskLevel, advice.riskSummary));
+  container.appendChild(createMedicalGuidanceNote());
 
-  const grouped = groupByCategory(advice.actions);
-  for (const [category, actions] of grouped) {
-    container.appendChild(renderCategorySection(category, actions));
-  }
+  const panels = createTabPanels();
+  populatePanels(panels, advice.actions);
 
+  container.append(panels.daily, panels.indoor, panels.clean);
   showElement(section);
+  selectTab('daily-routines');
 }
 
-/** Renders the basic fallback mode notice element. */
+/** Renders the basic fallback mode notice element without emojis. */
 function renderBasicNotice(): HTMLElement {
   const notice = createElement('div', 'basic-mode-notice');
   notice.setAttribute('role', 'status');
-  setText(
-    notice,
-    '⚡ Showing standard recommendations. AI personalization is temporarily unavailable.',
-  );
+
+  const alertIcon = createAqiStatusIcon('alert');
+  alertIcon.classList.add('notice-icon');
+
+  const text = createElement('span', 'notice-text');
+  setText(text, 'Showing standard recommendations. AI personalization is temporarily unavailable.');
+
+  notice.append(alertIcon, text);
   return notice;
 }
 
-/** Renders the risk assessment card. */
+/** Renders the risk assessment summary card. */
 function renderRiskCard(riskLevel: string, summary: string): HTMLElement {
-  const card = createElement('div', 'risk-summary', `risk-${riskLevel}`);
-  const title = createElement('h2');
+  const card = createElement('div', 'risk-summary', `risk-${riskLevel}`, 'card', 'card-surface');
+  const header = createElement('div', 'risk-header');
+
+  const title = createElement('h3', 'risk-title');
   setText(title, 'Risk Assessment');
-  const text = createElement('p');
+
+  const riskBadge = createElement('span', 'risk-badge', `badge-risk-${riskLevel}`);
+  setText(riskBadge, `${riskLevel.toUpperCase().replace('-', ' ')} RISK`);
+
+  header.append(title, riskBadge);
+
+  const text = createElement('p', 'risk-text');
   setText(text, summary);
-  card.appendChild(title);
-  card.appendChild(text);
+
+  card.append(header, text);
   return card;
 }
 
-/** Renders an advice category section with its actions. */
-function renderCategorySection(category: string, actions: PersonalizedAction[]): HTMLElement {
-  const section = createElement('div', 'advice-category');
-  const catTitle = createElement('h3', 'category-title');
-  catTitle.appendChild(createCategoryIcon(category));
-  catTitle.appendChild(document.createTextNode(` ${getCategoryLabel(category)}`));
-  section.appendChild(catTitle);
-
-  for (const action of actions) {
-    section.appendChild(renderAction(action));
-  }
-  return section;
+interface TabPanelElements {
+  daily: HTMLElement;
+  indoor: HTMLElement;
+  clean: HTMLElement;
 }
 
-/**
- * Renders a single action card.
- * @param action - Personalized action to render.
- * @returns Action card element.
- */
-function renderAction(action: PersonalizedAction): HTMLElement {
-  const card = createElement('div', 'action-card');
+/** Creates the three accessible tabpanel DOM elements. */
+function createTabPanels(): TabPanelElements {
+  const daily = createElement('div', 'advice-panel');
+  daily.id = 'panel-daily-routines';
+  daily.setAttribute('role', 'tabpanel');
+  daily.setAttribute('aria-labelledby', 'tab-daily-routines');
+  daily.tabIndex = 0;
 
-  const title = createElement('h4', 'action-title');
-  setText(title, action.title);
+  const indoor = createElement('div', 'advice-panel');
+  indoor.id = 'panel-indoor-air';
+  indoor.setAttribute('role', 'tabpanel');
+  indoor.setAttribute('aria-labelledby', 'tab-indoor-air');
+  indoor.tabIndex = 0;
+  indoor.hidden = true;
 
-  const desc = createElement('p', 'action-desc');
-  setText(desc, action.description);
+  const clean = createElement('div', 'advice-panel');
+  clean.id = 'panel-clean-alternatives';
+  clean.setAttribute('role', 'tabpanel');
+  clean.setAttribute('aria-labelledby', 'tab-clean-alternatives');
+  clean.tabIndex = 0;
+  clean.hidden = true;
 
-  const impact = createElement('div', 'action-impact');
-  const impactLabel = createElement('strong');
-  setText(impactLabel, 'Why this helps: ');
-  const impactText = document.createTextNode(action.impact);
-  impact.appendChild(impactLabel);
-  impact.appendChild(impactText);
-
-  const badge = createElement('span', 'benefit-badge', `benefit-${action.benefit.toLowerCase()}`);
-  setText(badge, `${action.benefit} benefit`);
-
-  card.appendChild(title);
-  card.appendChild(desc);
-  card.appendChild(impact);
-  card.appendChild(badge);
-
-  return card;
+  return { daily, indoor, clean };
 }
 
-/**
- * Groups actions by their category, preserving order.
- * @param actions - Array of personalized actions.
- * @returns Map of category to actions.
- */
-function groupByCategory(
-  actions: readonly PersonalizedAction[],
-): Map<string, PersonalizedAction[]> {
-  const map = new Map<string, PersonalizedAction[]>();
+/** Populates tabpanels with action cards based on category. */
+function populatePanels(panels: TabPanelElements, actions: readonly PersonalizedAction[]): void {
+  const dailyActions = actions.filter((a) => DAILY_CATEGORIES.has(a.category));
+  const indoorActions = actions.filter((a) => a.category === 'indoor-air-hack');
+  const cleanActions = actions.filter((a) => a.category === 'sustainable-alternative');
 
-  for (const action of actions) {
-    const existing = map.get(action.category);
-    if (existing) {
-      existing.push(action);
-    } else {
-      map.set(action.category, [action]);
-    }
+  renderPanelActions(panels.daily, dailyActions, 'No daily routine recommendations today.');
+  renderPanelActions(panels.indoor, indoorActions, 'No indoor air actions required today.');
+  renderPanelActions(panels.clean, cleanActions, 'No clean alternative actions required today.');
+}
+
+/** Renders actions into a specific panel or an empty message if none. */
+function renderPanelActions(panel: HTMLElement, actions: PersonalizedAction[], emptyMsg: string): void {
+  if (actions.length === 0) {
+    const p = createElement('p', 'panel-empty-hint');
+    setText(p, emptyMsg);
+    panel.appendChild(p);
+    return;
   }
-
-  return map;
+  for (const action of actions) {
+    panel.appendChild(createRecommendationCard(action));
+  }
 }
