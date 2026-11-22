@@ -3,7 +3,7 @@
  */
 
 import { ADVICE_CATEGORY_ICONS } from '@shared/constants.js';
-import type { RecommendedAction, RiskLevel, UserContext } from '@shared/types.js';
+import type { ActionIconKey, RecommendedAction, RiskLevel, UserContext } from '@shared/types.js';
 
 import { hasHealthCondition, isElevatedRisk } from './rules-engine-helpers.js';
 
@@ -17,7 +17,7 @@ export function buildMorningActions(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['morning-routine'] ?? '🌅';
+  const icon = ADVICE_CATEGORY_ICONS['morning-routine'] ?? 'sun';
   const actions: RecommendedAction[] = [getVentilationAction(isElevatedRisk(riskLevel), icon)];
 
   if (context.childAgeGroup === 'infant' || context.childAgeGroup === 'toddler') {
@@ -32,7 +32,7 @@ export function buildMorningActions(
  * @param isHighRisk - Whether risk is elevated.
  * @param icon - Category icon.
  */
-function getVentilationAction(isHighRisk: boolean, icon: string): RecommendedAction {
+function getVentilationAction(isHighRisk: boolean, icon: ActionIconKey): RecommendedAction {
   return {
     category: 'morning-routine',
     title: isHighRisk ? 'Check AQI before opening windows' : 'Open windows for ventilation',
@@ -51,7 +51,7 @@ function getVentilationAction(isHighRisk: boolean, icon: string): RecommendedAct
  * Creates floor damp-mopping action for crawling children.
  * @param icon - Category icon.
  */
-function getMoppingAction(icon: string): RecommendedAction {
+function getMoppingAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'morning-routine',
     title: 'Wet-mop floors before your child is active',
@@ -74,7 +74,7 @@ export function buildEveningActions(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['evening-routine'] ?? '🌙';
+  const icon = ADVICE_CATEGORY_ICONS['evening-routine'] ?? 'moon';
   const actions: RecommendedAction[] = [];
 
   if (hasHealthCondition(context, 'asthma') || hasHealthCondition(context, 'respiratory')) {
@@ -86,7 +86,7 @@ export function buildEveningActions(
 }
 
 /** Creates evening air purifier action. */
-function getEveningPurifierAction(icon: string): RecommendedAction {
+function getEveningPurifierAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'evening-routine',
     title: 'Run the air purifier in the bedroom',
@@ -100,7 +100,7 @@ function getEveningPurifierAction(icon: string): RecommendedAction {
 }
 
 /** Creates evening clothing change / shower action. */
-function getEveningClothingAction(elevated: boolean, icon: string): RecommendedAction {
+function getEveningClothingAction(elevated: boolean, icon: ActionIconKey): RecommendedAction {
   return {
     category: 'evening-routine',
     title: elevated ? 'Shower and change after being outside' : 'Change outdoor clothes',

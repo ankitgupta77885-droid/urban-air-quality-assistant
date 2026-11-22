@@ -114,6 +114,19 @@ export type AdviceCategory =
   | 'indoor-air-hack'
   | 'sustainable-alternative';
 
+/** Allowed icon key for actions (maps to inline SVG icons). */
+export type ActionIconKey =
+  | 'sun'
+  | 'moon'
+  | 'home'
+  | 'car'
+  | 'walk'
+  | 'leaf'
+  | 'wind'
+  | 'shield'
+  | 'sparkle'
+  | 'alert';
+
 /** A single structured action from the rules engine. */
 export interface RecommendedAction {
   /** Which advice category this belongs to. */
@@ -127,7 +140,7 @@ export interface RecommendedAction {
   /** Qualitative/estimated benefit label (e.g., "High", "Moderate"). */
   readonly benefit: string;
   /** Icon identifier for the category. */
-  readonly icon: string;
+  readonly icon: ActionIconKey;
 }
 
 /** Output of the deterministic rules engine. */
@@ -153,7 +166,7 @@ export interface PersonalizedAction {
   /** Qualitative/estimated benefit label. */
   readonly benefit: string;
   /** Icon identifier for the category. */
-  readonly icon: string;
+  readonly icon: ActionIconKey;
 }
 
 /** Full personalized advice response. */

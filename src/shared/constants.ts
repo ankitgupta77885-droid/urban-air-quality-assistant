@@ -5,7 +5,7 @@
  * live here as named exports.
  */
 
-import type { AqiCategory } from './types.js';
+import type { ActionIconKey, AqiCategory } from './types.js';
 
 /* ── AQI Breakpoints (US EPA standard) ── */
 
@@ -72,14 +72,14 @@ export const ADVICE_CATEGORY_LABELS: Readonly<Record<string, string>> = {
   'sustainable-alternative': 'Sustainable Alternative',
 } as const;
 
-/** Icons for advice categories. */
-export const ADVICE_CATEGORY_ICONS: Readonly<Record<string, string>> = {
-  'morning-routine': '🌅',
-  commute: '🚗',
-  'outdoor-activity': '🏃',
-  'evening-routine': '🌙',
-  'indoor-air-hack': '🏠',
-  'sustainable-alternative': '♻️',
+/** Allowed icon keys for advice categories. */
+export const ADVICE_CATEGORY_ICONS: Readonly<Record<string, ActionIconKey>> = {
+  'morning-routine': 'sun',
+  commute: 'car',
+  'outdoor-activity': 'walk',
+  'evening-routine': 'moon',
+  'indoor-air-hack': 'home',
+  'sustainable-alternative': 'leaf',
 } as const;
 
 /* ── Input Validation Limits ── */

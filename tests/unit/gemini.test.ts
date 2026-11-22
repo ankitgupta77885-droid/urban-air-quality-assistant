@@ -33,7 +33,7 @@ function makeRulesOutput(): RulesEngineOutput {
         description: 'Check the AQI before opening windows.',
         impact: 'Prevents pollutants from entering.',
         benefit: 'High',
-        icon: '🌅',
+        icon: 'sun',
       },
       {
         category: 'indoor-air-hack',
@@ -41,7 +41,7 @@ function makeRulesOutput(): RulesEngineOutput {
         description: 'Run the range hood while cooking.',
         impact: 'Reduces indoor pollutants from cooking.',
         benefit: 'Moderate',
-        icon: '🏠',
+        icon: 'home',
       },
     ],
   };
@@ -108,7 +108,7 @@ describe('parseGeminiResponse', () => {
           description: 'Open windows in the early morning.',
           impact: 'Better ventilation.',
           benefit: 'Moderate',
-          icon: '🌅',
+          icon: 'sun',
         },
       ],
     });
@@ -129,7 +129,7 @@ describe('parseGeminiResponse', () => {
     "description": "Great day for outdoor play.",
     "impact": "Fresh air is beneficial.",
     "benefit": "High",
-    "icon": "🏃"
+    "icon": "walk"
   }]
 }
 \`\`\``;
@@ -147,6 +147,25 @@ describe('parseGeminiResponse', () => {
       riskLevel: 'extreme',
       riskSummary: 'Bad.',
       actions: [],
+    });
+
+    expect(() => parseGeminiResponse(json)).toThrow('validation failed');
+  });
+
+  it('should throw GeminiError for emoji or non-enum icon', () => {
+    const json = JSON.stringify({
+      riskLevel: 'moderate',
+      riskSummary: 'Some summary.',
+      actions: [
+        {
+          category: 'morning-routine',
+          title: 'Open windows',
+          description: 'Open windows in early morning.',
+          impact: 'Fresh air.',
+          benefit: 'Moderate',
+          icon: '🌅',
+        },
+      ],
     });
 
     expect(() => parseGeminiResponse(json)).toThrow('validation failed');

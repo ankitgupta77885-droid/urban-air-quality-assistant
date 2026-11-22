@@ -116,6 +116,23 @@ export const adviceRequestSchema = z.object({
 
 /* ── Gemini Response Schema ── */
 
+/** Allowed icon keys for personalized actions. */
+export const ACTION_ICON_KEYS = [
+  'sun',
+  'moon',
+  'home',
+  'car',
+  'walk',
+  'leaf',
+  'wind',
+  'shield',
+  'sparkle',
+  'alert',
+] as const;
+
+/** Schema for action icon keys. */
+export const actionIconKeySchema = z.enum(ACTION_ICON_KEYS);
+
 /** Schema for a single personalized action from Gemini. */
 export const personalizedActionSchema = z.object({
   category: adviceCategorySchema,
@@ -123,7 +140,7 @@ export const personalizedActionSchema = z.object({
   description: z.string().min(1).max(1000),
   impact: z.string().min(1).max(500),
   benefit: z.string().min(1).max(100),
-  icon: z.string().min(1).max(10),
+  icon: actionIconKeySchema,
 });
 
 /** Schema for the full Gemini personalized advice response. */
@@ -140,6 +157,9 @@ export type UserContextInput = z.infer<typeof userContextSchema>;
 
 /** Inferred type for advice request input. */
 export type AdviceRequestInput = z.infer<typeof adviceRequestSchema>;
+
+/** Inferred type for action icon key. */
+export type ActionIconKey = z.infer<typeof actionIconKeySchema>;
 
 /** Inferred type for Gemini response. */
 export type GeminiResponseInput = z.infer<typeof geminiResponseSchema>;

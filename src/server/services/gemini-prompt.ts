@@ -54,7 +54,7 @@ function getPromptInstructions(): string {
     '- Do NOT provide medical advice or diagnoses.',
     '- Keep all qualitative benefit labels exactly as provided (Low, Moderate, High).',
     '- Use the same category values exactly as provided.',
-    '- Use the same icon values exactly as provided.',
+    '- Use the same icon values exactly as provided (one of: sun, moon, home, car, walk, leaf, wind, shield, sparkle, alert). Never use emojis.',
     '- Respond ONLY with valid JSON matching the schema below.',
   ].join('\n');
 }
@@ -72,7 +72,7 @@ function formatOutputSchema(riskLevel: string): string {
     '      "description": "personalized description",',
     '      "impact": "personalized impact explanation",',
     '      "benefit": "Low or Moderate or High",',
-    '      "icon": "emoji icon"',
+    '      "icon": "one of: sun, moon, home, car, walk, leaf, wind, shield, sparkle, alert"',
     '    }',
     '  ]',
     '}',

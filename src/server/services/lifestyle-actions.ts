@@ -3,7 +3,13 @@
  */
 
 import { ADVICE_CATEGORY_ICONS } from '@shared/constants.js';
-import type { AqiData, RecommendedAction, RiskLevel, UserContext } from '@shared/types.js';
+import type {
+  ActionIconKey,
+  AqiData,
+  RecommendedAction,
+  RiskLevel,
+  UserContext,
+} from '@shared/types.js';
 
 import { isElevatedRisk } from './rules-engine-helpers.js';
 
@@ -19,7 +25,7 @@ export function buildIndoorHacks(
   aqiData: AqiData,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['indoor-air-hack'] ?? '🏠';
+  const icon = ADVICE_CATEGORY_ICONS['indoor-air-hack'] ?? 'home';
   const actions: RecommendedAction[] = [];
 
   if (context.homeType === 'apartment' || context.homeType === 'studio') {
@@ -40,7 +46,7 @@ export function buildIndoorHacks(
 }
 
 /** Creates apartment gap-sealing action. */
-function getApartmentSealAction(icon: string): RecommendedAction {
+function getApartmentSealAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'indoor-air-hack',
     title: 'Seal gaps around windows and doors',
@@ -54,7 +60,7 @@ function getApartmentSealAction(icon: string): RecommendedAction {
 }
 
 /** Creates DIY box-fan air cleaner action. */
-function getDiyFilterAction(icon: string): RecommendedAction {
+function getDiyFilterAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'indoor-air-hack',
     title: 'Create a DIY air filter',
@@ -68,7 +74,10 @@ function getDiyFilterAction(icon: string): RecommendedAction {
 }
 
 /** Creates heating ventilation action. */
-function getHeatingVentilationAction(source: 'gas' | 'wood', icon: string): RecommendedAction {
+function getHeatingVentilationAction(
+  source: 'gas' | 'wood',
+  icon: ActionIconKey,
+): RecommendedAction {
   return {
     category: 'indoor-air-hack',
     title: `Ventilate when using your ${source} heating`,
@@ -83,7 +92,7 @@ function getHeatingVentilationAction(source: 'gas' | 'wood', icon: string): Reco
 }
 
 /** Creates cooking exhaust fan action. */
-function getCookingExhaustAction(icon: string): RecommendedAction {
+function getCookingExhaustAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'indoor-air-hack',
     title: 'Use kitchen exhaust while cooking',
@@ -106,7 +115,7 @@ export function buildSustainableAlternatives(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['sustainable-alternative'] ?? '♻️';
+  const icon = ADVICE_CATEGORY_ICONS['sustainable-alternative'] ?? 'leaf';
   const actions: RecommendedAction[] = [];
 
   if (context.commuteMode === 'car') {
@@ -122,7 +131,7 @@ export function buildSustainableAlternatives(
 }
 
 /** Creates carpool/transit replacement action. */
-function getCarAlternativeAction(icon: string): RecommendedAction {
+function getCarAlternativeAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'sustainable-alternative',
     title: 'Try carpooling or public transit once a week',
@@ -136,7 +145,10 @@ function getCarAlternativeAction(icon: string): RecommendedAction {
 }
 
 /** Creates clean heating switch action. */
-function getHeatingAlternativeAction(source: 'wood' | 'oil', icon: string): RecommendedAction {
+function getHeatingAlternativeAction(
+  source: 'wood' | 'oil',
+  icon: ActionIconKey,
+): RecommendedAction {
   return {
     category: 'sustainable-alternative',
     title: 'Consider switching to cleaner heating',
@@ -148,7 +160,7 @@ function getHeatingAlternativeAction(source: 'wood' | 'oil', icon: string): Reco
 }
 
 /** Creates houseplant/herb growing action. */
-function getHouseplantAction(elevated: boolean, icon: string): RecommendedAction {
+function getHouseplantAction(elevated: boolean, icon: ActionIconKey): RecommendedAction {
   return {
     category: 'sustainable-alternative',
     title: elevated ? 'Add air-purifying houseplants' : 'Grow indoor herbs with your child',

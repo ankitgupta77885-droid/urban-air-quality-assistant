@@ -203,7 +203,7 @@ describe('geminiResponseSchema', () => {
         description: 'Open windows early in the morning.',
         impact: 'Improves ventilation.',
         benefit: 'Moderate',
-        icon: '🌅',
+        icon: 'sun',
       },
     ],
   };
@@ -249,6 +249,14 @@ describe('geminiResponseSchema', () => {
     const result = geminiResponseSchema.safeParse({
       ...validResponse,
       actions: [{ ...validResponse.actions[0], category: 'lunch-break' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject action with emoji or non-enum icon', () => {
+    const result = geminiResponseSchema.safeParse({
+      ...validResponse,
+      actions: [{ ...validResponse.actions[0], icon: '🌅' }],
     });
     expect(result.success).toBe(false);
   });

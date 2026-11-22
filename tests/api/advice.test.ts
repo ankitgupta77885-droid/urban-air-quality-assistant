@@ -57,7 +57,7 @@ const mockAdviceResponse = {
       description: 'Check AQI before opening windows.',
       impact: 'Prevents pollutants from entering.',
       benefit: 'High',
-      icon: '🌅',
+      icon: 'sun',
     },
   ],
   isBasicMode: false,

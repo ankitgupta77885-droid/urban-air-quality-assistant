@@ -3,7 +3,7 @@
  */
 
 import { ADVICE_CATEGORY_ICONS } from '@shared/constants.js';
-import type { RecommendedAction, RiskLevel, UserContext } from '@shared/types.js';
+import type { ActionIconKey, RecommendedAction, RiskLevel, UserContext } from '@shared/types.js';
 
 import { isElevatedRisk } from './rules-engine-helpers.js';
 
@@ -17,7 +17,7 @@ export function buildCommuteActions(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['commute'] ?? '🚗';
+  const icon = ADVICE_CATEGORY_ICONS['commute'] ?? 'car';
   const actions: RecommendedAction[] = [];
   const elevated = isElevatedRisk(riskLevel);
 
@@ -37,7 +37,7 @@ export function buildCommuteActions(
  * @param elevated - Whether risk is elevated.
  * @param icon - Category icon.
  */
-function getActiveCommuteAction(elevated: boolean, icon: string): RecommendedAction {
+function getActiveCommuteAction(elevated: boolean, icon: ActionIconKey): RecommendedAction {
   return {
     category: 'commute',
     title: elevated ? 'Switch to enclosed transport today' : 'Time your commute wisely',
@@ -56,7 +56,7 @@ function getActiveCommuteAction(elevated: boolean, icon: string): RecommendedAct
  * Creates action for car commuting.
  * @param icon - Category icon.
  */
-function getCarCommuteAction(icon: string): RecommendedAction {
+function getCarCommuteAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'commute',
     title: 'Use recirculation mode in your car',
@@ -74,7 +74,7 @@ function getCarCommuteAction(icon: string): RecommendedAction {
  * @param elevated - Whether risk is elevated.
  * @param icon - Category icon.
  */
-function getTransitCommuteAction(elevated: boolean, icon: string): RecommendedAction {
+function getTransitCommuteAction(elevated: boolean, icon: ActionIconKey): RecommendedAction {
   return {
     category: 'commute',
     title: elevated ? 'Wear a mask at transit stops' : 'Stand back from the platform edge',
@@ -98,7 +98,7 @@ export function buildOutdoorActions(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['outdoor-activity'] ?? '🏃';
+  const icon = ADVICE_CATEGORY_ICONS['outdoor-activity'] ?? 'walk';
 
   if (riskLevel === 'critical' || riskLevel === 'very-high') {
     return [getCriticalOutdoorAction(icon)];
@@ -112,7 +112,7 @@ export function buildOutdoorActions(
 }
 
 /** Creates outdoor cancellation action for critical/very-high risk. */
-function getCriticalOutdoorAction(icon: string): RecommendedAction {
+function getCriticalOutdoorAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'outdoor-activity',
     title: 'Avoid all outdoor activities',
@@ -126,7 +126,7 @@ function getCriticalOutdoorAction(icon: string): RecommendedAction {
 }
 
 /** Creates shortened outdoor play action for high risk. */
-function getHighRiskOutdoorAction(icon: string): RecommendedAction {
+function getHighRiskOutdoorAction(icon: ActionIconKey): RecommendedAction {
   return {
     category: 'outdoor-activity',
     title: 'Shorten outdoor playtime',
@@ -140,7 +140,7 @@ function getHighRiskOutdoorAction(icon: string): RecommendedAction {
 }
 
 /** Creates outdoor awareness action for low/moderate risk. */
-function getStandardOutdoorAction(activityLevel: string, icon: string): RecommendedAction {
+function getStandardOutdoorAction(activityLevel: string, icon: ActionIconKey): RecommendedAction {
   const tip =
     activityLevel === 'high'
       ? 'Schedule intense activities like running or cycling for early morning when pollution is lowest.'
