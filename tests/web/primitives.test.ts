@@ -115,7 +115,7 @@ describe('Layout Shell: Navbar and Footer', () => {
     expect(subtitle).toBeNull();
 
     const title = header.querySelector('.brand-title');
-    expect(title?.textContent).toBe('Urban Air Quality Assistant');
+    expect(title?.textContent).toBe('BreatheWell');
 
     const links = header.querySelectorAll('a.nav-link');
     expect(links.length).toBe(3);

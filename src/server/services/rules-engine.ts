@@ -1,5 +1,5 @@
 /**
- * Deterministic rules engine for the Urban Air Quality Assistant.
+ * Deterministic rules engine for BreatheWell.
  *
  * Converts AQI data + user context into a risk level and structured
  * list of recommended actions. Pure function with no I/O.

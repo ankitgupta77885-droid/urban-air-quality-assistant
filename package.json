@@ -1,7 +1,7 @@
 {
-  "name": "urban-air-quality-assistant",
+  "name": "breathewell",
   "version": "1.0.0",
-  "description": "GenAI-powered web assistant helping young families navigate urban air pollution with personalized, actionable advice.",
+  "description": "BreatheWell — GenAI-powered web assistant helping young families navigate urban air pollution with personalized, actionable advice.",
   "type": "module",
   "engines": {
     "node": ">=20.0.0"

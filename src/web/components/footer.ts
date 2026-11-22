@@ -4,6 +4,8 @@
  * Houses the medical guidance note, data trust strip, and copyright notice.
  */
 
+import { APP_NAME } from '@shared/constants.js';
+
 import { createElement, setText } from '../utils/dom.js';
 
 import { renderDisclaimer } from './disclaimer.js';
@@ -28,7 +30,7 @@ export function renderFooter(container: HTMLElement): void {
   footerWrapper.appendChild(trustStrip);
 
   const copyright = createElement('p', 'copyright');
-  setText(copyright, '© 2026 Urban Air Quality Assistant');
+  setText(copyright, `© 2026 ${APP_NAME}`);
   footerWrapper.appendChild(copyright);
 
   container.appendChild(footerWrapper);

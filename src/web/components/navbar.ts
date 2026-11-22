@@ -4,6 +4,8 @@
  * Provides brand identity, in-page navigation anchors, and a primary CTA.
  */
 
+import { APP_NAME } from '@shared/constants.js';
+
 import { createElement, setText } from '../utils/dom.js';
 
 import { createAirIcon } from './icons.js';
@@ -40,7 +42,7 @@ function createBrandElement(): HTMLElement {
   brand.appendChild(createAirIcon());
 
   const title = createElement('span', 'brand-title');
-  setText(title, 'Urban Air Quality Assistant');
+  setText(title, APP_NAME);
   brand.appendChild(title);
 
   return brand;

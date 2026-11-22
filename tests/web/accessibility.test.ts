@@ -18,7 +18,7 @@ function createTestDocument(): Document {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Urban Air Quality Assistant</title>
+    <title>BreatheWell</title>
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -29,7 +29,7 @@ function createTestDocument(): Document {
           <svg class="icon icon-brand" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
             <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2" />
           </svg>
-          <span class="brand-title">Urban Air Quality Assistant</span>
+          <span class="brand-title">BreatheWell</span>
         </div>
         <nav aria-label="Main navigation" class="nav-links">
           <ul class="nav-list">
@@ -240,7 +240,7 @@ function createTestDocument(): Document {
         <div class="trust-strip" role="note" aria-label="Data provenance">
           <span class="trust-text">Data from Open-Meteo</span>
         </div>
-        <p class="copyright">© 2026 Urban Air Quality Assistant</p>
+        <p class="copyright">© 2026 BreatheWell</p>
       </div>
     </footer>
   </body>

@@ -1,5 +1,5 @@
 /**
- * Shared type definitions for the Urban Air Quality Assistant.
+ * Shared type definitions for BreatheWell.
  *
  * All domain types used across server and client live here to ensure
  * a single source of truth.

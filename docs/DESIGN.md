@@ -1,4 +1,4 @@
-# Urban Air Quality Assistant — Design System Specification
+# BreatheWell — Design System Specification
 
 > **Design System Name:** Atmosphere Editorial  
 > **Stitch Project ID:** `6381249753157934674`  
@@ -139,7 +139,7 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 
 ### 7.1 Slim Top Navigation
 - Height: `64px`.
-- Left: Inline SVG air icon (`aria-hidden="true"`) + `"Urban Air Quality Assistant"` in `Inter SemiBold 16px`.
+- Left: Inline SVG air icon (`aria-hidden="true"`) + `"BreatheWell"` in `Inter SemiBold 16px`.
 - Center: 3 quiet in-page anchor links (`"How It Works"` -> `#how-it-works`, `"Air Quality"` -> `#planner`, `"Recommendations"` -> `#results`), text color `#4D635C`, hover `#111111`. No dead links.
 - Right: Primary black pill button (`"Check Your Area"` linking/scrolling to `#planner`), height `44px`, padding `0 20px`.
 

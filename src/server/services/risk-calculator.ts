@@ -1,5 +1,5 @@
 /**
- * Risk calculator for the Urban Air Quality Assistant.
+ * Risk calculator for BreatheWell.
  *
  * Computes a composite risk level from the AQI value and user context
  * factors (child age, health conditions, activity level).

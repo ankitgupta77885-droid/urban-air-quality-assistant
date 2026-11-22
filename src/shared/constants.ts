@@ -1,11 +1,14 @@
 /**
- * Shared constants for the Urban Air Quality Assistant.
+ * Shared constants for BreatheWell.
  *
  * All magic numbers, breakpoints, labels, and configuration constants
  * live here as named exports.
  */
 
 import type { ActionIconKey, AqiCategory } from './types.js';
+
+/** Application display name. */
+export const APP_NAME = 'BreatheWell';
 
 /* ── AQI Breakpoints (US EPA standard) ── */
 

@@ -1,4 +1,4 @@
-# 🌬️ Urban Air Quality Assistant
+# 🌬️ BreatheWell
 
 > **GenAI-powered web assistant** helping young families navigate severe urban air pollution with personalized, actionable advice.
 
@@ -15,7 +15,7 @@ Children breathe faster per pound of body weight, have developing lungs, and spe
 
 Winter smog and urban air pollution pose severe health risks, yet standard AQI reports only provide raw numbers and broad classifications. Busy parents are left asking: *"What specific steps should our family take today?"*
 
-The Urban Air Quality Assistant provides targeted, practical guidance:
+BreatheWell provides targeted, practical guidance:
 
 1. **Live Environmental Data** — Fetches real-time AQI and pollutant concentrations (PM2.5, PM10, NO₂, O₃, SO₂, CO) for the selected locality using the Open-Meteo Air Quality API (no API key required).
 2. **Deterministic Rules Engine** — Converts AQI readings and household lifestyle context (youngest child's age group, household health conditions, home type, commute mode, activity level, and heating source) into a weighted risk level and structured recommendations across daily routines, indoor hacks, and sustainable choices.
