@@ -82,16 +82,18 @@ function createTestDocument(): Document {
         </div>
         <div id="location-search" class="planner-search-zone">
           <label for="city-search" class="search-label">Search for your city</label>
-          <input type="text" id="city-search" placeholder="e.g., Delhi, London, Beijing…"
-                 autocomplete="off" aria-describedby="search-hint" />
+          <div class="search-input-row">
+            <input type="text" id="city-search" class="search-input" placeholder="e.g., Delhi, London, Beijing…"
+                   autocomplete="off" aria-describedby="search-hint" />
+            <button type="button" class="geo-btn">
+              <svg class="icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7z" />
+              </svg>
+              Use my location
+            </button>
+          </div>
           <p id="search-hint" class="search-hint">Type at least 2 characters to search</p>
           <ul id="search-results" role="listbox" aria-label="City search results"></ul>
-          <button type="button" class="geo-btn">
-            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-              <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7z" />
-            </svg>
-            Use my location
-          </button>
         </div>
         <div id="context-form" class="planner-context-zone">
           <form class="context-form" novalidate>
@@ -100,13 +102,14 @@ function createTestDocument(): Document {
               <div class="form-group">
                 <label for="childAgeGroup">Youngest child's age group</label>
                 <select id="childAgeGroup" name="childAgeGroup" required>
+                  <option value="" disabled selected>Select age group</option>
                   <option value="infant">Infant (0–1 year)</option>
                 </select>
               </div>
               <fieldset class="form-group fieldset-group">
                 <legend class="form-legend">Health conditions in household</legend>
                 <div class="chip-wrapper">
-                  <input type="checkbox" id="healthConditions-none" name="healthConditions" value="none" class="chip-input" checked />
+                  <input type="checkbox" id="healthConditions-none" name="healthConditions" value="none" class="chip-input" />
                   <label for="healthConditions-none" class="chip-label">
                     <svg class="icon icon-check chip-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
                       <path d="M20 6L9 17l-5-5" />
@@ -118,7 +121,7 @@ function createTestDocument(): Document {
               <fieldset class="form-group fieldset-group">
                 <legend class="form-legend">Type of home</legend>
                 <div class="chip-wrapper">
-                  <input type="radio" id="homeType-apartment" name="homeType" value="apartment" class="chip-input" checked />
+                  <input type="radio" id="homeType-apartment" name="homeType" value="apartment" class="chip-input" />
                   <label for="homeType-apartment" class="chip-label">
                     <svg class="icon icon-check chip-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
                       <path d="M20 6L9 17l-5-5" />
@@ -130,7 +133,7 @@ function createTestDocument(): Document {
               <fieldset class="form-group fieldset-group">
                 <legend class="form-legend">Primary commute mode</legend>
                 <div class="chip-wrapper">
-                  <input type="radio" id="commuteMode-car" name="commuteMode" value="car" class="chip-input" checked />
+                  <input type="radio" id="commuteMode-car" name="commuteMode" value="car" class="chip-input" />
                   <label for="commuteMode-car" class="chip-label">
                     <svg class="icon icon-check chip-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
                       <path d="M20 6L9 17l-5-5" />

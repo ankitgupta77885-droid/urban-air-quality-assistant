@@ -12,29 +12,21 @@ import { clearChildren, createElement, getElement, setText } from '../utils/dom.
 import { handleGeolocation } from './geolocation.js';
 import { createLocationPinIcon } from './icons.js';
 
-/** Callback when a location is selected. */
 type LocationCallback = (result: GeocodingResult) => void;
 
-/**
- * Initializes the location search component.
- * @param onSelect - Callback fired when the user selects a location.
- */
+/** Initializes the location search component. */
 export function initLocationSearch(onSelect: LocationCallback): void {
   const container = getElement('location-search');
-  const { input, results, geoBtn } = createSearchControls();
+  const { label, inputRow, field, hint, results, geoBtn } = createSearchControls();
 
-  container.appendChild(input.label);
-  container.appendChild(input.field);
-  container.appendChild(input.hint);
-  container.appendChild(results);
-  container.appendChild(geoBtn);
+  container.append(label, inputRow, hint, results);
 
   const debouncedSearch = debounce((query: string) => {
     void handleSearch(query, results, onSelect);
   }, SEARCH_DEBOUNCE_MS);
 
-  input.field.addEventListener('input', () => {
-    const query = input.field.value.trim();
+  field.addEventListener('input', () => {
+    const query = field.value.trim();
     if (query.length < MIN_SEARCH_LENGTH) {
       clearChildren(results);
       return;
@@ -47,9 +39,12 @@ export function initLocationSearch(onSelect: LocationCallback): void {
   });
 }
 
-/** Creates the search DOM controls. */
+/** Creates the search DOM controls including responsive input row. */
 function createSearchControls(): {
-  input: { label: HTMLElement; field: HTMLInputElement; hint: HTMLElement };
+  label: HTMLElement;
+  inputRow: HTMLElement;
+  field: HTMLInputElement;
+  hint: HTMLElement;
   results: HTMLElement;
   geoBtn: HTMLButtonElement;
 } {
@@ -57,12 +52,21 @@ function createSearchControls(): {
   label.setAttribute('for', 'city-search');
   setText(label, 'Search for your city');
 
+  const inputRow = createElement('div', 'search-input-row');
+
   const field = createElement('input', 'search-input');
   field.type = 'text';
   field.id = 'city-search';
   field.placeholder = 'e.g., Delhi, London, Beijing…';
   field.setAttribute('autocomplete', 'off');
   field.setAttribute('aria-describedby', 'search-hint');
+
+  const geoBtn = createElement('button', 'geo-btn');
+  geoBtn.type = 'button';
+  geoBtn.appendChild(createLocationPinIcon());
+  geoBtn.appendChild(document.createTextNode(' Use my location'));
+
+  inputRow.append(field, geoBtn);
 
   const hint = createElement('p', 'search-hint');
   hint.id = 'search-hint';
@@ -73,29 +77,14 @@ function createSearchControls(): {
   results.setAttribute('role', 'listbox');
   results.setAttribute('aria-label', 'City search results');
 
-  const geoBtn = createElement('button', 'geo-btn');
-  geoBtn.type = 'button';
-  geoBtn.appendChild(createLocationPinIcon());
-  geoBtn.appendChild(document.createTextNode(' Use my location'));
-
-  return { input: { label, field, hint }, results, geoBtn };
+  return { label, inputRow, field, hint, results, geoBtn };
 }
 
-/**
- * Handles the city search and renders results.
- * @param query - Search query string.
- * @param listEl - UL element to render results into.
- * @param onSelect - Selection callback.
- */
-async function handleSearch(
-  query: string,
-  listEl: HTMLElement,
-  onSelect: LocationCallback,
-): Promise<void> {
+/** Handles city search and renders result options. */
+async function handleSearch(query: string, listEl: HTMLElement, onSelect: LocationCallback): Promise<void> {
   try {
     const cities = await searchCities(query);
     clearChildren(listEl);
-
     if (cities.length === 0) {
       const li = createElement('li', 'search-no-results');
       li.setAttribute('role', 'option');
@@ -103,14 +92,11 @@ async function handleSearch(
       listEl.appendChild(li);
       return;
     }
-
     for (const city of cities) {
       listEl.appendChild(createCityOption(city, listEl, onSelect));
     }
   } catch (error: unknown) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      return;
-    }
+    if (error instanceof DOMException && error.name === 'AbortError') { return; }
     clearChildren(listEl);
     const li = createElement('li', 'search-error');
     setText(li, 'Search failed. Please try again.');
@@ -119,11 +105,7 @@ async function handleSearch(
 }
 
 /** Creates a selectable city option element. */
-function createCityOption(
-  city: GeocodingResult,
-  listEl: HTMLElement,
-  onSelect: LocationCallback,
-): HTMLElement {
+function createCityOption(city: GeocodingResult, listEl: HTMLElement, onSelect: LocationCallback): HTMLElement {
   const li = createElement('li', 'search-result-item');
   li.setAttribute('role', 'option');
   li.setAttribute('tabindex', '0');
@@ -134,9 +116,7 @@ function createCityOption(
     onSelect(city);
     clearChildren(listEl);
     const input = document.getElementById('city-search') as HTMLInputElement | null;
-    if (input) {
-      input.value = displayText;
-    }
+    if (input) { input.value = displayText; }
   };
 
   li.addEventListener('click', select);

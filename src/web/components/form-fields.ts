@@ -8,15 +8,13 @@ import { ACTIVITY_LEVEL_OPTIONS, HEATING_SOURCE_OPTIONS } from './context-form-o
 import { createCheckIcon } from './icons.js';
 
 /**
- * Builds a labeled select dropdown element.
- * @param name - Form field name and ID.
- * @param labelText - Accessible label text.
- * @param options - Array of [value, display] pairs.
+ * Builds a labeled select dropdown element with an optional placeholder.
  */
 export function buildSelect(
   name: string,
   labelText: string,
   options: readonly [string, string][],
+  placeholder?: string,
 ): HTMLElement {
   const group = createElement('div', 'form-group');
 
@@ -28,6 +26,15 @@ export function buildSelect(
   select.id = name;
   select.name = name;
   select.required = true;
+
+  if (placeholder) {
+    const defaultOpt = createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.disabled = true;
+    defaultOpt.selected = true;
+    setText(defaultOpt, placeholder);
+    select.appendChild(defaultOpt);
+  }
 
   for (const [value, display] of options) {
     const opt = createElement('option');
@@ -49,7 +56,7 @@ export function createChipItem(
   name: string,
   value: string,
   display: string,
-  checked: boolean,
+  checked = false,
 ): HTMLElement {
   const wrapper = createElement('div', 'chip-wrapper');
 
@@ -84,7 +91,7 @@ export function buildCheckboxChipGroup(
   name: string,
   legendText: string,
   options: readonly [string, string][],
-  defaultSelected = 'none',
+  defaultSelected?: string,
 ): HTMLElement {
   const fieldset = createElement('fieldset', 'form-group', 'fieldset-group');
   const legend = createElement('legend', 'form-legend');
@@ -93,7 +100,7 @@ export function buildCheckboxChipGroup(
 
   const container = createElement('div', 'chip-grid');
   for (const [value, display] of options) {
-    const isChecked = value === defaultSelected;
+    const isChecked = Boolean(defaultSelected && value === defaultSelected);
     container.appendChild(createChipItem('checkbox', name, value, display, isChecked));
   }
   fieldset.appendChild(container);
@@ -107,7 +114,7 @@ export function buildRadioChipGroup(
   name: string,
   legendText: string,
   options: readonly [string, string][],
-  defaultSelected: string,
+  defaultSelected?: string,
 ): HTMLElement {
   const fieldset = createElement('fieldset', 'form-group', 'fieldset-group');
   const legend = createElement('legend', 'form-legend');
@@ -116,7 +123,7 @@ export function buildRadioChipGroup(
 
   const container = createElement('div', 'chip-grid');
   for (const [value, display] of options) {
-    const isChecked = value === defaultSelected;
+    const isChecked = Boolean(defaultSelected && value === defaultSelected);
     container.appendChild(createChipItem('radio', name, value, display, isChecked));
   }
   fieldset.appendChild(container);

@@ -620,8 +620,35 @@ section {
   color: var(--color-ink);
 }
 
+.search-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+@media (min-width: 700px) {
+  .search-input-row {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .search-input-row .search-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .search-input-row .geo-btn {
+    margin-top: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
 .search-input {
   width: 100%;
+  min-height: var(--touch-target-min);
   padding: 0.875rem 1.25rem;
   font-size: var(--font-size-title-md);
   font-family: inherit;
@@ -651,7 +678,7 @@ section {
   background: var(--color-surface);
   color: var(--color-ink);
   cursor: pointer;
-  margin-top: var(--space-md);
+  margin-top: 0;
   min-height: var(--touch-target-min);
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
@@ -865,13 +892,13 @@ section {
 
 .chip-grid {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: var(--space-xs);
 }
 
 .chip-wrapper {
   position: relative;
-  display: block;
+  display: inline-flex;
 }
 
 .chip-input {
@@ -889,11 +916,12 @@ section {
 .chip-label {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  justify-content: center;
+  gap: 8px;
   min-height: 44px;
   padding: 0 var(--space-md);
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-ink);
   font-size: var(--font-size-body-sm);
@@ -902,6 +930,7 @@ section {
   user-select: none;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   margin-bottom: 0;
+  text-align: center;
 }
 
 .chip-label:hover {
@@ -915,7 +944,13 @@ section {
   outline-offset: 2px;
 }
 
-/* Non-colour selected indicator: check icon + fill */
+/* Disabled state */
+.chip-input:disabled + .chip-label {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Non-colour selected indicator: check icon + fill + 2px border */
 .chip-check {
   display: none;
   width: 14px;
@@ -949,6 +984,10 @@ section {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-md);
+}
+
+.more-details-section[hidden] {
+  display: none !important;
 }
 
 @media (min-width: 600px) {

@@ -87,18 +87,58 @@ describe('Step 3: Unified Planner and Context Form', () => {
     expect(toggleBtn.textContent).toBe('More details');
   });
 
-  it('should enable submit button when location is selected and update hint text', () => {
+  it('should not preselect household answers and start child age group on placeholder', () => {
+    document.body.innerHTML = '<div id="context-form"></div>';
+    initContextForm(vi.fn());
+
+    const ageSelect = document.getElementById('childAgeGroup') as HTMLSelectElement;
+    expect(ageSelect.value).toBe('');
+
+    const placeholder = ageSelect.querySelector('option[value=""]') as HTMLOptionElement;
+    expect(placeholder).not.toBeNull();
+    expect(placeholder.disabled).toBe(true);
+    expect(placeholder.textContent).toBe('Select age group');
+
+    const checkedInputs = document.querySelectorAll<HTMLInputElement>('.context-form-grid input:checked');
+    expect(checkedInputs.length).toBe(0);
+  });
+
+  it('should enable submit button only when BOTH location and child age group are chosen', () => {
     document.body.innerHTML = '<div id="context-form"></div>';
     initContextForm(vi.fn());
 
     const submitBtn = document.getElementById('submit-advice-btn') as HTMLButtonElement;
     const disabledHint = document.getElementById('advice-disabled-hint') as HTMLElement;
+    const ageSelect = document.getElementById('childAgeGroup') as HTMLSelectElement;
 
+    // 1. Initial state: neither chosen
+    expect(submitBtn.disabled).toBe(true);
+    expect(submitBtn.getAttribute('aria-disabled')).toBe('true');
+    expect(disabledHint.textContent).toContain('Select a city or use your location');
+
+    // 2. Location selected, but no age group chosen
     setContextFormLocationSelected(true, 'London, United Kingdom');
+    expect(submitBtn.disabled).toBe(true);
+    expect(submitBtn.getAttribute('aria-disabled')).toBe('true');
+    expect(disabledHint.textContent).toBe('Select a child age group to generate your plan.');
+
+    // 3. Child age group chosen as well -> enabled!
+    ageSelect.value = 'infant';
+    ageSelect.dispatchEvent(new Event('change'));
     expect(submitBtn.disabled).toBe(false);
     expect(submitBtn.hasAttribute('aria-disabled')).toBe(false);
     expect(disabledHint.textContent).toBe('Location: London, United Kingdom');
 
+    // 4. Age group reset to empty -> disabled again
+    ageSelect.value = '';
+    ageSelect.dispatchEvent(new Event('change'));
+    expect(submitBtn.disabled).toBe(true);
+    expect(submitBtn.getAttribute('aria-disabled')).toBe('true');
+    expect(disabledHint.textContent).toBe('Select a child age group to generate your plan.');
+
+    // 5. Age group restored, location deselected -> disabled again
+    ageSelect.value = 'infant';
+    ageSelect.dispatchEvent(new Event('change'));
     setContextFormLocationSelected(false);
     expect(submitBtn.disabled).toBe(true);
     expect(submitBtn.getAttribute('aria-disabled')).toBe('true');
@@ -116,12 +156,25 @@ describe('Step 3: Unified Planner and Context Form', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('should submit valid context data when button is enabled', () => {
+  it('should submit valid context data when button is enabled and valid inputs provided', () => {
     document.body.innerHTML = '<div id="context-form"></div>';
     const onSubmit = vi.fn<(context: UserContext) => void>();
     initContextForm(onSubmit);
 
     setContextFormLocationSelected(true, 'Delhi');
+
+    const ageSelect = document.getElementById('childAgeGroup') as HTMLSelectElement;
+    ageSelect.value = 'infant';
+    ageSelect.dispatchEvent(new Event('change'));
+
+    const noneChip = document.getElementById('healthConditions-none') as HTMLInputElement;
+    noneChip.checked = true;
+
+    const aptRadio = document.getElementById('homeType-apartment') as HTMLInputElement;
+    aptRadio.checked = true;
+
+    const carRadio = document.getElementById('commuteMode-car') as HTMLInputElement;
+    carRadio.checked = true;
 
     const form = document.querySelector('form.context-form') as HTMLFormElement;
     form.dispatchEvent(new Event('submit', { cancelable: true }));
@@ -129,6 +182,7 @@ describe('Step 3: Unified Planner and Context Form', () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
     const submittedContext = onSubmit.mock.calls[0]?.[0];
     expect(submittedContext?.childAgeGroup).toBe('infant');
+    expect(submittedContext?.healthConditions).toEqual(['none']);
     expect(submittedContext?.homeType).toBe('apartment');
     expect(submittedContext?.commuteMode).toBe('car');
   });
@@ -158,10 +212,10 @@ describe('Step 3: Unified Planner and Context Form', () => {
     const asthmaChip = document.getElementById('healthConditions-asthma') as HTMLInputElement;
     const allergiesChip = document.getElementById('healthConditions-allergies') as HTMLInputElement;
 
-    expect(noneChip.checked).toBe(true);
+    expect(noneChip.checked).toBe(false);
     expect(asthmaChip.checked).toBe(false);
 
-    // Checking asthma should uncheck none
+    // Checking asthma should keep none unchecked
     asthmaChip.click();
     expect(asthmaChip.checked).toBe(true);
     expect(noneChip.checked).toBe(false);
