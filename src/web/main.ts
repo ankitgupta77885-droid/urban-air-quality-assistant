@@ -12,6 +12,7 @@ import { renderAqiDisplay } from './components/aqi-display.js';
 import { initContextForm, showContextForm } from './components/context-form.js';
 import { renderDisclaimer } from './components/disclaimer.js';
 import { clearError, showError } from './components/error-banner.js';
+import { updateTrustTimestamp } from './components/footer.js';
 import { hideLoading, showLoading } from './components/loading.js';
 import { initLocationSearch } from './components/location-search.js';
 
@@ -34,6 +35,7 @@ async function onLocationSelected(result: GeocodingResult): Promise<void> {
     const aqiData = await fetchAqi(result.latitude, result.longitude);
     hideLoading();
     renderAqiDisplay(aqiData);
+    updateTrustTimestamp(aqiData.timestamp);
     showContextForm();
   } catch (error: unknown) {
     hideLoading();

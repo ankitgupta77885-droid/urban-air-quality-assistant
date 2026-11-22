@@ -140,8 +140,8 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 ### 7.1 Slim Top Navigation
 - Height: `64px`.
 - Left: Inline SVG air icon (`aria-hidden="true"`) + `"Urban Air Quality Assistant"` in `Inter SemiBold 16px`.
-- Center: 3 quiet text links (`"How It Works"`, `"AQI Monitor"`, `"Family Health"`), text color `#4D635C`, hover `#111111`.
-- Right: Primary black pill button (`"Check Your Area"`), height `44px`, padding `0 20px`.
+- Center: 3 quiet in-page anchor links (`"How It Works"` -> `#how-it-works`, `"Air Quality"` -> `#planner`, `"Recommendations"` -> `#results`), text color `#4D635C`, hover `#111111`. No dead links.
+- Right: Primary black pill button (`"Check Your Area"` linking/scrolling to `#planner`), height `44px`, padding `0 20px`.
 
 ### 7.2 Hero Section & Rounded Planner Card
 - **Headline (Left):** *"Breathe easier through severe winter smog."* (`display-hero`).
@@ -178,7 +178,7 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
   > **General guidance, not medical advice.** Consult your pediatrician or qualified healthcare provider for clinical management of respiratory conditions.
 
 ### 7.6 "How It Works" Section
-- Centered header: *"Science-backed smog defense for your home"* + short subtitle.
+- Centered header: *"Simple steps to cut smog exposure at home"* + short subtitle.
 - Three rounded feature cards:
   1. **Check Air:** Hyperlocal telemetry for 6 pollutants and weather inversion trends from Open-Meteo.
   2. **Personalize:** Rules engine adapting advice to child age, respiratory health, and housing.
@@ -188,10 +188,10 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 States render **strictly under real runtime conditions**:
 - **Loading State:** Replaces results during active network requests with an accessible loading spinner and `aria-live="polite"` text (`"Fetching air quality data..."`).
 - **Error State:** Renders only upon API failure or network error with an inline SVG alert icon (`aria-hidden="true"`), high-contrast message, and a `"Retry"` button.
-- **Empty State:** Renders before a search has been performed or when zero results match.
+- **Empty State:** Renders *"Search for your city to see today's air quality."* Shown strictly before the first search.
 
 ### 7.8 Trust Strip
-- Subtle bottom bar: `"Data provided by Open-Meteo API • Open Environmental Intelligence • Updated every 15 minutes"`.
+- Subtle bottom bar: *"Data from Open-Meteo"* accompanied by the real fetch timestamp from the API response (e.g. *"Data from Open-Meteo • Fetched at [Time]"*). No invented source names and no "every 15 minutes". All display text and values come exclusively from real data; zero sample numbers.
 
 ---
 

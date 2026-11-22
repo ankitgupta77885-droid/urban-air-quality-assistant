@@ -24,18 +24,29 @@ function createTestDocument(): Document {
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <header role="banner" class="app-header">
-      <div class="container">
+      <div class="container nav-container">
         <div class="brand">
-          <svg class="icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <svg class="icon icon-brand" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
             <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2" />
           </svg>
-          <h1>Urban Air Quality Assistant</h1>
-          <p class="subtitle">Personalized air quality guidance for young families</p>
+          <div class="brand-text">
+            <h1>Urban Air Quality Assistant</h1>
+            <p class="subtitle">Personalized air quality guidance for young families</p>
+          </div>
         </div>
+        <nav aria-label="Main navigation" class="nav-links">
+          <ul class="nav-list">
+            <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>
+            <li class="nav-item"><a href="#planner" class="nav-link">Air Quality</a></li>
+            <li class="nav-item"><a href="#results" class="nav-link">Recommendations</a></li>
+          </ul>
+        </nav>
+        <a href="#planner" class="btn btn-primary btn-pill nav-cta">Check Your Area</a>
       </div>
     </header>
 
     <main id="main-content" class="container">
+      <div id="planner"></div>
       <section id="location-section" aria-label="Location search">
         <div id="location-search">
           <label for="city-search" class="search-label">Search for your city</label>
@@ -115,12 +126,15 @@ function createTestDocument(): Document {
         </div>
       </section>
 
+      <div id="results"></div>
+      <section id="how-it-works" aria-label="How it works"></section>
+
       <div id="error-banner" role="alert" aria-live="assertive"></div>
       <div id="loading" aria-live="polite"></div>
     </main>
 
     <footer role="contentinfo" class="app-footer">
-      <div class="container">
+      <div class="container footer-container">
         <div id="disclaimer">
           <div class="disclaimer-notice" role="note" aria-label="Medical disclaimer">
             <span class="disclaimer-icon" aria-hidden="true">
@@ -133,6 +147,9 @@ function createTestDocument(): Document {
               for professional medical advice.
             </p>
           </div>
+        </div>
+        <div class="trust-strip" role="note" aria-label="Data provenance">
+          <span class="trust-text">Data from Open-Meteo</span>
         </div>
         <p class="copyright">© 2026 Urban Air Quality Assistant</p>
       </div>

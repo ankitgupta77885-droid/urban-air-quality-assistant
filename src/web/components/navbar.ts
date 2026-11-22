@@ -1,0 +1,81 @@
+/**
+ * Slim Top Navigation component.
+ *
+ * Provides brand identity, in-page navigation anchors, and a primary CTA.
+ */
+
+import { createElement, setText } from '../utils/dom.js';
+
+import { createAirIcon } from './icons.js';
+
+interface NavLinkItem {
+  readonly label: string;
+  readonly href: string;
+}
+
+const NAV_LINKS: readonly NavLinkItem[] = [
+  { label: 'How It Works', href: '#how-it-works' },
+  { label: 'Air Quality', href: '#planner' },
+  { label: 'Recommendations', href: '#results' },
+] as const;
+
+/**
+ * Renders the top navigation shell into the header container.
+ * @param container - Target container element.
+ */
+export function renderNavbar(container: HTMLElement): void {
+  container.replaceChildren();
+
+  const navWrapper = createElement('div', 'container', 'nav-container');
+  navWrapper.appendChild(createBrandElement());
+  navWrapper.appendChild(createNavLinksElement());
+  navWrapper.appendChild(createCtaElement());
+
+  container.appendChild(navWrapper);
+}
+
+/** Creates the brand logo and title heading. */
+function createBrandElement(): HTMLElement {
+  const brand = createElement('div', 'brand');
+  brand.appendChild(createAirIcon());
+
+  const brandText = createElement('div', 'brand-text');
+  const h1 = createElement('h1');
+  setText(h1, 'Urban Air Quality Assistant');
+
+  const subtitle = createElement('p', 'subtitle');
+  setText(subtitle, 'Personalized air quality guidance for young families');
+
+  brandText.appendChild(h1);
+  brandText.appendChild(subtitle);
+  brand.appendChild(brandText);
+
+  return brand;
+}
+
+/** Creates the in-page navigation link list. */
+function createNavLinksElement(): HTMLElement {
+  const nav = createElement('nav', 'nav-links');
+  nav.setAttribute('aria-label', 'Main navigation');
+
+  const list = createElement('ul', 'nav-list');
+  for (const item of NAV_LINKS) {
+    const li = createElement('li', 'nav-item');
+    const a = createElement('a', 'nav-link');
+    a.href = item.href;
+    setText(a, item.label);
+    li.appendChild(a);
+    list.appendChild(li);
+  }
+
+  nav.appendChild(list);
+  return nav;
+}
+
+/** Creates the primary CTA button linking to the planner. */
+function createCtaElement(): HTMLElement {
+  const a = createElement('a', 'btn', 'btn-primary', 'btn-pill', 'nav-cta');
+  a.href = '#planner';
+  setText(a, 'Check Your Area');
+  return a;
+}

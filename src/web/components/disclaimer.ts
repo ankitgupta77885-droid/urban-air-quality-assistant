@@ -6,9 +6,9 @@ import { createElement, getElement, setText } from '../utils/dom.js';
 
 import { createMedicalIcon } from './icons.js';
 
-/** Renders the medical disclaimer in the footer. */
-export function renderDisclaimer(): void {
-  const container = getElement('disclaimer');
+/** Renders the medical disclaimer in the footer or target container. */
+export function renderDisclaimer(target?: HTMLElement): void {
+  const container = target ?? getElement('disclaimer');
 
   const notice = createElement('div', 'disclaimer-notice');
   notice.setAttribute('role', 'note');
