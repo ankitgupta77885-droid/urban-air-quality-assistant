@@ -16,10 +16,7 @@
           <svg class="icon icon-brand" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
           </svg>
-          <div class="brand-text">
-            <span class="brand-title">Urban Air Quality Assistant</span>
-            <p class="subtitle">Personalized air quality guidance for young families</p>
-          </div>
+          <span class="brand-title">Urban Air Quality Assistant</span>
         </div>
         <nav aria-label="Main navigation" class="nav-links">
           <ul class="nav-list">
@@ -39,10 +36,16 @@
 
       <section id="planner" class="planner-card card card-gradient card-pad-xl" aria-label="Air quality planner">
         <div class="planner-card-header">
-          <h2 class="planner-heading">Personalized Smog Defense Planner</h2>
-          <p class="planner-subtitle">Search your area and customize your family's routine</p>
+          <div class="planner-header-title">
+            <h2 class="planner-heading">Personalized Smog Defense Planner</h2>
+            <p class="planner-subtitle">Search your area and customize your family's routine</p>
+          </div>
+          <div id="planner-tabs-container"></div>
         </div>
-        <div id="location-search" class="planner-search-zone"></div>
+        <div class="planner-top-row">
+          <div id="location-search" class="planner-search-zone"></div>
+          <div id="location-pill-container" class="planner-location-zone"></div>
+        </div>
         <div id="context-form" class="planner-context-zone"></div>
       </section>
 
@@ -52,7 +55,11 @@
       </section>
 
       <section id="advice-section" aria-label="Personalized advice" hidden>
-        <div id="advice-plan"></div>
+        <div id="advice-plan">
+          <div id="panel-daily-routines" role="tabpanel" aria-labelledby="tab-daily-routines" tabindex="0"></div>
+          <div id="panel-indoor-air" role="tabpanel" aria-labelledby="tab-indoor-air" tabindex="0" hidden></div>
+          <div id="panel-clean-alternatives" role="tabpanel" aria-labelledby="tab-clean-alternatives" tabindex="0" hidden></div>
+        </div>
       </section>
 
       <section id="how-it-works" aria-label="How it works"></section>

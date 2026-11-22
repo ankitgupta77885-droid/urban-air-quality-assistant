@@ -65,6 +65,11 @@ export function createLocationPinIcon(): SVGSVGElement {
   );
 }
 
+/** Creates a checkmark indicator SVG icon. */
+export function createCheckIcon(): SVGSVGElement {
+  return createSvgIcon('0 0 24 24', 'M20 6L9 17l-5-5', 'icon icon-check');
+}
+
 /** Creates a medical shield guidance SVG icon. */
 export function createMedicalIcon(): SVGSVGElement {
   return createSvgIcon(
@@ -104,11 +109,7 @@ const DEFAULT_ICON_PATH: string[] = [
 ];
 
 const ACTION_ICON_PATHS: Record<string, string | string[]> = {
-  sun: [
-    'M12 2v4', 'M12 18v4', 'M4.93 4.93l2.83 2.83',
-    'M16.24 16.24l2.83 2.83', 'M2 12h4', 'M18 12h4',
-    'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-  ],
+  sun: ['M12 2v4', 'M12 18v4', 'M4.93 4.93l2.83 2.83', 'M16.24 16.24l2.83 2.83', 'M2 12h4', 'M18 12h4', 'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
   moon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z',
   home: ['M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z', 'M9 22V12h6v10'],
   car: ['M4 16l4.586-4.586a2 2 0 0 1 2.828 0L16 16m-2-2l1.586-1.586a2 2 0 0 1 2.828 0L20 14', 'M3 21h18'],

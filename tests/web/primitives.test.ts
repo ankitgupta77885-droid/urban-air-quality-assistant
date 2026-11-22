@@ -9,7 +9,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createButton } from '../../src/web/components/button.js';
 import { createCard } from '../../src/web/components/card.js';
 import { renderFooter, updateTrustTimestamp } from '../../src/web/components/footer.js';
-import { createAirIcon } from '../../src/web/components/icons.js';
+import { createAirIcon, createCheckIcon } from '../../src/web/components/icons.js';
 import { renderNavbar } from '../../src/web/components/navbar.js';
 import { createPill } from '../../src/web/components/pill.js';
 
@@ -38,6 +38,10 @@ describe('Shared Primitive: Button', () => {
     });
     expect(btn.getAttribute('aria-label')).toBe('Accessible label');
     expect(btn.querySelector('svg')).not.toBeNull();
+
+    const check = createCheckIcon();
+    expect(check.getAttribute('aria-hidden')).toBe('true');
+    expect(check.classList.contains('icon-check')).toBe(true);
   });
 
   it('should invoke click handler', () => {
@@ -106,6 +110,12 @@ describe('Layout Shell: Navbar and Footer', () => {
 
     const nav = header.querySelector('nav[aria-label="Main navigation"]');
     expect(nav).not.toBeNull();
+
+    const subtitle = header.querySelector('.subtitle');
+    expect(subtitle).toBeNull();
+
+    const title = header.querySelector('.brand-title');
+    expect(title?.textContent).toBe('Urban Air Quality Assistant');
 
     const links = header.querySelectorAll('a.nav-link');
     expect(links.length).toBe(3);

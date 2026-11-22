@@ -149,4 +149,82 @@ describe('Step 3: Unified Planner and Context Form', () => {
 
     expect(focusSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('should enforce exclusive "None" behavior on health condition chips', () => {
+    document.body.innerHTML = '<div id="context-form"></div>';
+    initContextForm(vi.fn());
+
+    const noneChip = document.getElementById('healthConditions-none') as HTMLInputElement;
+    const asthmaChip = document.getElementById('healthConditions-asthma') as HTMLInputElement;
+    const allergiesChip = document.getElementById('healthConditions-allergies') as HTMLInputElement;
+
+    expect(noneChip.checked).toBe(true);
+    expect(asthmaChip.checked).toBe(false);
+
+    // Checking asthma should uncheck none
+    asthmaChip.click();
+    expect(asthmaChip.checked).toBe(true);
+    expect(noneChip.checked).toBe(false);
+
+    // Checking allergies keeps asthma checked and none unchecked
+    allergiesChip.click();
+    expect(allergiesChip.checked).toBe(true);
+    expect(asthmaChip.checked).toBe(true);
+    expect(noneChip.checked).toBe(false);
+
+    // Checking none should uncheck all other ailments
+    noneChip.click();
+    expect(noneChip.checked).toBe(true);
+    expect(asthmaChip.checked).toBe(false);
+    expect(allergiesChip.checked).toBe(false);
+  });
+});
+
+describe('Layout Fidelity: Planner Tabs & Location Pill', () => {
+  it('should initialize planner tabs with accessible WAI-ARIA roles, roving tabindex, and hint', async () => {
+    const { initPlannerTabs, setPlannerTabsEnabled } = await import('../../src/web/components/planner-tabs.js');
+    const container = document.createElement('div');
+    initPlannerTabs(container);
+
+    const tablist = container.querySelector('[role="tablist"]');
+    expect(tablist).not.toBeNull();
+
+    const tabs = container.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    expect(tabs.length).toBe(3);
+    expect(tabs[0]?.getAttribute('aria-selected')).toBe('true');
+    expect(tabs[0]?.tabIndex).toBe(0);
+    expect(tabs[0]?.getAttribute('aria-disabled')).toBe('true');
+    expect(tabs[1]?.getAttribute('aria-selected')).toBe('false');
+    expect(tabs[1]?.tabIndex).toBe(-1);
+
+    const hint = container.querySelector('#tabs-disabled-hint');
+    expect(hint?.textContent).toBe('Generate a plan to see these');
+
+    // Enable tabs
+    setPlannerTabsEnabled(true);
+    expect(tabs[0]?.hasAttribute('aria-disabled')).toBe(false);
+    expect(hint?.hasAttribute('hidden')).toBe(true);
+  });
+
+  it('should render location and real AQI pill only when requested', async () => {
+    const { renderLocationPill, clearLocationPill } = await import('../../src/web/components/location-pill.js');
+    const container = document.createElement('div');
+
+    renderLocationPill(container, {
+      locationName: 'Delhi, India',
+      aqi: 182,
+      category: 'Unhealthy',
+    });
+
+    const pill = container.querySelector('.location-aqi-pill');
+    expect(pill).not.toBeNull();
+    expect(pill?.getAttribute('role')).toBe('status');
+    expect(pill?.textContent).toContain('Delhi, India');
+    expect(pill?.textContent).toContain('AQI 182');
+    expect(pill?.textContent).toContain('Unhealthy');
+    expect(pill?.querySelector('svg.icon-pin')).not.toBeNull();
+
+    clearLocationPill(container);
+    expect(container.children.length).toBe(0);
+  });
 });

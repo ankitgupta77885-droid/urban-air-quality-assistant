@@ -1,17 +1,17 @@
 /**
- * Form field helper components with accessible labels and fieldsets.
+ * Form field helper components with accessible labels, fieldsets, and chips.
  */
 
 import { createElement, setText } from '../utils/dom.js';
 
 import { ACTIVITY_LEVEL_OPTIONS, HEATING_SOURCE_OPTIONS } from './context-form-options.js';
+import { createCheckIcon } from './icons.js';
 
 /**
  * Builds a labeled select dropdown element.
  * @param name - Form field name and ID.
  * @param labelText - Accessible label text.
  * @param options - Array of [value, display] pairs.
- * @returns Form group element containing label and select.
  */
 export function buildSelect(
   name: string,
@@ -20,7 +20,7 @@ export function buildSelect(
 ): HTMLElement {
   const group = createElement('div', 'form-group');
 
-  const label = createElement('label');
+  const label = createElement('label', 'form-label');
   label.setAttribute('for', name);
   setText(label, labelText);
 
@@ -42,26 +42,35 @@ export function buildSelect(
 }
 
 /**
- * Builds a single checkbox item with 44px minimum hit area.
- * @param name - Checkbox group name.
- * @param value - Checkbox value.
- * @param display - Visible label text.
+ * Builds a single pill-style chip input item with 44px hit area.
  */
-export function createCheckboxItem(name: string, value: string, display: string): HTMLElement {
-  const wrapper = createElement('div', 'checkbox-wrapper');
+export function createChipItem(
+  type: 'checkbox' | 'radio',
+  name: string,
+  value: string,
+  display: string,
+  checked: boolean,
+): HTMLElement {
+  const wrapper = createElement('div', 'chip-wrapper');
 
-  const input = createElement('input', 'checkbox-input');
-  input.type = 'checkbox';
+  const input = createElement('input', 'chip-input');
+  input.type = type;
   input.id = `${name}-${value}`;
   input.name = name;
   input.value = value;
-  if (value === 'none') {
-    input.checked = true;
-  }
+  input.checked = checked;
 
-  const label = createElement('label', 'checkbox-label');
+  const label = createElement('label', 'chip-label');
   label.setAttribute('for', `${name}-${value}`);
-  setText(label, display);
+
+  const checkIcon = createCheckIcon();
+  checkIcon.classList.add('chip-check');
+
+  const textSpan = createElement('span', 'chip-text');
+  setText(textSpan, display);
+
+  label.appendChild(checkIcon);
+  label.appendChild(textSpan);
 
   wrapper.appendChild(input);
   wrapper.appendChild(label);
@@ -69,28 +78,48 @@ export function createCheckboxItem(name: string, value: string, display: string)
 }
 
 /**
- * Builds an accessible checkbox group wrapped in a fieldset and legend.
- * @param name - Form field name.
- * @param legendText - Accessible legend text.
- * @param options - Array of [value, display] pairs.
- * @returns Fieldset element containing labeled checkboxes.
+ * Builds an accessible pill-style checkbox group with fieldset/legend.
  */
-export function buildCheckboxGroup(
+export function buildCheckboxChipGroup(
   name: string,
   legendText: string,
   options: readonly [string, string][],
+  defaultSelected = 'none',
 ): HTMLElement {
   const fieldset = createElement('fieldset', 'form-group', 'fieldset-group');
   const legend = createElement('legend', 'form-legend');
   setText(legend, legendText);
   fieldset.appendChild(legend);
 
-  const optionsContainer = createElement('div', 'checkbox-options');
+  const container = createElement('div', 'chip-grid');
   for (const [value, display] of options) {
-    optionsContainer.appendChild(createCheckboxItem(name, value, display));
+    const isChecked = value === defaultSelected;
+    container.appendChild(createChipItem('checkbox', name, value, display, isChecked));
   }
-  fieldset.appendChild(optionsContainer);
+  fieldset.appendChild(container);
+  return fieldset;
+}
 
+/**
+ * Builds an accessible pill-style radio group with fieldset/legend.
+ */
+export function buildRadioChipGroup(
+  name: string,
+  legendText: string,
+  options: readonly [string, string][],
+  defaultSelected: string,
+): HTMLElement {
+  const fieldset = createElement('fieldset', 'form-group', 'fieldset-group');
+  const legend = createElement('legend', 'form-legend');
+  setText(legend, legendText);
+  fieldset.appendChild(legend);
+
+  const container = createElement('div', 'chip-grid');
+  for (const [value, display] of options) {
+    const isChecked = value === defaultSelected;
+    container.appendChild(createChipItem('radio', name, value, display, isChecked));
+  }
+  fieldset.appendChild(container);
   return fieldset;
 }
 

@@ -29,10 +29,7 @@ function createTestDocument(): Document {
           <svg class="icon icon-brand" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
             <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2" />
           </svg>
-          <div class="brand-text">
-            <span class="brand-title">Urban Air Quality Assistant</span>
-            <p class="subtitle">Personalized air quality guidance for young families</p>
-          </div>
+          <span class="brand-title">Urban Air Quality Assistant</span>
         </div>
         <nav aria-label="Main navigation" class="nav-links">
           <ul class="nav-list">
@@ -64,8 +61,24 @@ function createTestDocument(): Document {
 
       <section id="planner" class="planner-card card card-gradient card-pad-xl" aria-label="Air quality planner">
         <div class="planner-card-header">
-          <h2 class="planner-heading">Personalized Smog Defense Planner</h2>
-          <p class="planner-subtitle">Search your area and customize your family's routine</p>
+          <div class="planner-header-title">
+            <h2 class="planner-heading">Personalized Smog Defense Planner</h2>
+            <p class="planner-subtitle">Search your area and customize your family's routine</p>
+          </div>
+          <div class="planner-tabs-wrapper">
+            <div role="tablist" aria-label="Advice categories" class="planner-tablist">
+              <button type="button" role="tab" id="tab-daily-routines" aria-selected="true" aria-controls="panel-daily-routines" tabindex="0" class="planner-tab" aria-disabled="true">
+                Daily routines
+              </button>
+              <button type="button" role="tab" id="tab-indoor-air" aria-selected="false" aria-controls="panel-indoor-air" tabindex="-1" class="planner-tab" aria-disabled="true">
+                Indoor air
+              </button>
+              <button type="button" role="tab" id="tab-clean-alternatives" aria-selected="false" aria-controls="panel-clean-alternatives" tabindex="-1" class="planner-tab" aria-disabled="true">
+                Clean alternatives
+              </button>
+            </div>
+            <span class="tabs-disabled-hint" id="tabs-disabled-hint" role="status">Generate a plan to see these</span>
+          </div>
         </div>
         <div id="location-search" class="planner-search-zone">
           <label for="city-search" class="search-label">Search for your city</label>
@@ -83,30 +96,49 @@ function createTestDocument(): Document {
         <div id="context-form" class="planner-context-zone">
           <form class="context-form" novalidate>
             <h3>Household Context</h3>
-            <div class="form-group">
-              <label for="childAgeGroup">Youngest child's age group</label>
-              <select id="childAgeGroup" name="childAgeGroup" required>
-                <option value="toddler">Toddler (1–3 years)</option>
-              </select>
-            </div>
-            <fieldset class="form-group">
-              <legend>Health conditions in household</legend>
-              <div class="checkbox-wrapper">
-                <input type="checkbox" id="hc-none" name="healthConditions" value="none" checked />
-                <label for="hc-none">None</label>
+            <div class="context-form-grid">
+              <div class="form-group">
+                <label for="childAgeGroup">Youngest child's age group</label>
+                <select id="childAgeGroup" name="childAgeGroup" required>
+                  <option value="infant">Infant (0–1 year)</option>
+                </select>
               </div>
-            </fieldset>
-            <div class="form-group">
-              <label for="homeType">Type of home</label>
-              <select id="homeType" name="homeType" required>
-                <option value="apartment_high">Apartment (high floor)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="commuteMode">Primary commute mode</label>
-              <select id="commuteMode" name="commuteMode" required>
-                <option value="walking">Walking / Stroller</option>
-              </select>
+              <fieldset class="form-group fieldset-group">
+                <legend class="form-legend">Health conditions in household</legend>
+                <div class="chip-wrapper">
+                  <input type="checkbox" id="healthConditions-none" name="healthConditions" value="none" class="chip-input" checked />
+                  <label for="healthConditions-none" class="chip-label">
+                    <svg class="icon icon-check chip-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    None
+                  </label>
+                </div>
+              </fieldset>
+              <fieldset class="form-group fieldset-group">
+                <legend class="form-legend">Type of home</legend>
+                <div class="chip-wrapper">
+                  <input type="radio" id="homeType-apartment" name="homeType" value="apartment" class="chip-input" checked />
+                  <label for="homeType-apartment" class="chip-label">
+                    <svg class="icon icon-check chip-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    Apartment / Flat
+                  </label>
+                </div>
+              </fieldset>
+              <fieldset class="form-group fieldset-group">
+                <legend class="form-legend">Primary commute mode</legend>
+                <div class="chip-wrapper">
+                  <input type="radio" id="commuteMode-car" name="commuteMode" value="car" class="chip-input" checked />
+                  <label for="commuteMode-car" class="chip-label">
+                    <svg class="icon icon-check chip-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    Car
+                  </label>
+                </div>
+              </fieldset>
             </div>
             <button type="button" id="more-details-toggle" class="btn btn-secondary btn-pill"
                     aria-expanded="false" aria-controls="more-details-section">More details</button>
@@ -153,26 +185,30 @@ function createTestDocument(): Document {
 
       <section id="advice-section" aria-label="Personalized advice">
         <div id="advice-plan">
-          <div class="risk-summary risk-moderate">
-            <h2>Risk Assessment</h2>
-            <p>Air quality is moderate. Take basic precautions for your toddler.</p>
-          </div>
-          <div class="advice-category">
-            <h3 class="category-title">
-              <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                <path d="M12 2v4" />
-              </svg>
-              Morning Routine
-            </h3>
-            <div class="action-card">
-              <h4 class="action-title">Check AQI before opening windows</h4>
-              <p class="action-desc">Check the current AQI before opening any windows.</p>
-              <div class="action-impact">
-                <strong>Why this helps: </strong>Prevents outdoor pollutants from entering.
+          <div id="panel-daily-routines" role="tabpanel" aria-labelledby="tab-daily-routines" tabindex="0">
+            <div class="risk-summary risk-moderate">
+              <h2>Risk Assessment</h2>
+              <p>Air quality is moderate. Take basic precautions for your toddler.</p>
+            </div>
+            <div class="advice-category">
+              <h3 class="category-title">
+                <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path d="M12 2v4" />
+                </svg>
+                Morning Routine
+              </h3>
+              <div class="action-card">
+                <h4 class="action-title">Check AQI before opening windows</h4>
+                <p class="action-desc">Check the current AQI before opening any windows.</p>
+                <div class="action-impact">
+                  <strong>Why this helps: </strong>Prevents outdoor pollutants from entering.
+                </div>
+                <span class="benefit-badge benefit-high">High benefit</span>
               </div>
-              <span class="benefit-badge benefit-high">High benefit</span>
             </div>
           </div>
+          <div id="panel-indoor-air" role="tabpanel" aria-labelledby="tab-indoor-air" tabindex="0" hidden></div>
+          <div id="panel-clean-alternatives" role="tabpanel" aria-labelledby="tab-clean-alternatives" tabindex="0" hidden></div>
         </div>
       </section>
 

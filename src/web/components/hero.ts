@@ -15,10 +15,12 @@ export function renderHero(container: HTMLElement): void {
   container.replaceChildren();
 
   const heroWrapper = createElement('div', 'hero-content');
-  const textCol = createElement('div', 'hero-text-col');
+  const headlineCol = createElement('div', 'hero-headline-col');
+  const copyCol = createElement('div', 'hero-copy-col');
 
   const h1 = createElement('h1', 'hero-headline');
   setText(h1, 'Breathe easier through winter smog');
+  headlineCol.appendChild(h1);
 
   const lead = createElement('p', 'hero-lead');
   setText(
@@ -27,14 +29,11 @@ export function renderHero(container: HTMLElement): void {
       'tailored to your family. Understand the real impact of every household choice ' +
       'without the panic.',
   );
+  copyCol.appendChild(lead);
+  copyCol.appendChild(createHeroActions());
 
-  const actions = createHeroActions();
-
-  textCol.appendChild(h1);
-  textCol.appendChild(lead);
-  textCol.appendChild(actions);
-  heroWrapper.appendChild(textCol);
-
+  heroWrapper.appendChild(headlineCol);
+  heroWrapper.appendChild(copyCol);
   container.appendChild(heroWrapper);
 }
 

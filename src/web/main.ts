@@ -19,7 +19,9 @@ import { clearError, showError } from './components/error-banner.js';
 import { updateTrustTimestamp } from './components/footer.js';
 import { renderHero } from './components/hero.js';
 import { hideLoading, showLoading } from './components/loading.js';
+import { renderLocationPill } from './components/location-pill.js';
 import { initLocationSearch } from './components/location-search.js';
+import { initPlannerTabs, setPlannerTabsEnabled } from './components/planner-tabs.js';
 
 /** Currently selected location coordinates. */
 let selectedLat = 0;
@@ -44,6 +46,15 @@ async function onLocationSelected(result: GeocodingResult): Promise<void> {
     renderAqiDisplay(aqiData);
     updateTrustTimestamp(aqiData.timestamp);
     showContextForm();
+
+    const pillContainer = document.getElementById('location-pill-container');
+    if (pillContainer) {
+      renderLocationPill(pillContainer, {
+        locationName: locationLabel,
+        aqi: aqiData.aqi,
+        category: aqiData.category,
+      });
+    }
   } catch (error: unknown) {
     hideLoading();
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -66,6 +77,7 @@ async function onContextSubmit(context: UserContext): Promise<void> {
     const advice = await fetchAdvice(selectedLat, selectedLon, context);
     hideLoading();
     renderAdvicePlan(advice);
+    setPlannerTabsEnabled(true);
   } catch (error: unknown) {
     hideLoading();
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -81,6 +93,11 @@ function init(): void {
   const heroContainer = document.getElementById('hero');
   if (heroContainer) {
     renderHero(heroContainer);
+  }
+
+  const tabsContainer = document.getElementById('planner-tabs-container');
+  if (tabsContainer) {
+    initPlannerTabs(tabsContainer);
   }
 
   initLocationSearch((result) => {

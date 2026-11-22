@@ -39,16 +39,9 @@ function createBrandElement(): HTMLElement {
   const brand = createElement('div', 'brand');
   brand.appendChild(createAirIcon());
 
-  const brandText = createElement('div', 'brand-text');
   const title = createElement('span', 'brand-title');
   setText(title, 'Urban Air Quality Assistant');
-
-  const subtitle = createElement('p', 'subtitle');
-  setText(subtitle, 'Personalized air quality guidance for young families');
-
-  brandText.appendChild(title);
-  brandText.appendChild(subtitle);
-  brand.appendChild(brandText);
+  brand.appendChild(title);
 
   return brand;
 }
