@@ -67,6 +67,20 @@ select,
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  .loading-spinner {
+    animation: none !important;
+    border-top-color: var(--color-ink) !important;
+    opacity: 0.8;
+  }
+
+  .btn,
+  .chip-label,
+  .action-card,
+  .how-it-works-card,
+  .planner-tab {
+    transition: none !important;
+  }
 }
 
 /* ── Skip Link ── */
@@ -95,11 +109,11 @@ select,
   outline-offset: 2px;
 }
 
-/* ── Responsive Centered Container (max-width 1200px) ── */
+/* ── Responsive Centered Container (max-width 1280px) ── */
 
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--space-md);
@@ -108,15 +122,15 @@ select,
 
 @media (min-width: 768px) {
   .container {
-    padding-left: var(--space-lg);
-    padding-right: var(--space-lg);
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
 
 @media (min-width: 1024px) {
   .container {
-    padding-left: var(--space-xl);
-    padding-right: var(--space-xl);
+    padding-left: 3rem;
+    padding-right: 3rem;
   }
 }
 
@@ -493,10 +507,13 @@ section {
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-border);
   gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .planner-tab {
-  min-height: 38px;
+  min-height: var(--touch-target-min);
   padding: 0 var(--space-md);
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
@@ -510,6 +527,8 @@ section {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .planner-tab:hover:not([aria-disabled='true']) {
@@ -1651,11 +1670,64 @@ section {
   margin-top: var(--space-xs);
 }
 
-/* ── Responsive (320px+) ── */
+/* ── Responsive Refinements (360px – 767px) ── */
+
+@media (max-width: 768px) {
+  .planner-card,
+  .aqi-card,
+  .action-card,
+  .risk-summary,
+  .how-it-works-card,
+  .empty-state,
+  .card-pad-xl {
+    padding: var(--space-lg);
+  }
+
+  .hero-headline {
+    font-size: var(--font-size-display-hero-mobile);
+    line-height: var(--line-height-display-hero-mobile);
+  }
+}
 
 @media (max-width: 480px) {
-  header h1 {
-    font-size: 1.25rem;
+  .planner-card,
+  .aqi-card,
+  .action-card,
+  .risk-summary,
+  .how-it-works-card,
+  .empty-state,
+  .card-pad-xl {
+    padding: var(--space-md);
+  }
+
+  .nav-container {
+    gap: var(--space-xs);
+  }
+
+  .brand-title {
+    font-size: var(--font-size-body-sm);
+  }
+
+  .nav-cta {
+    padding: 0 var(--space-sm);
+    font-size: var(--font-size-label-sm);
+    white-space: nowrap;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-actions .hero-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .aqi-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
   }
 
   .aqi-value {
@@ -1664,5 +1736,15 @@ section {
 
   .pollutants-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs);
+  }
+
+  .pollutant-item {
+    padding: var(--space-sm);
+  }
+
+  .pollutant-badge {
+    padding: 2px 6px;
+    font-size: var(--font-size-label-sm);
   }
 }
