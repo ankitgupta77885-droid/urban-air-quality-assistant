@@ -4,12 +4,36 @@
 
 import type { ApiResponse } from '@shared/types.js';
 import request from 'supertest';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createApp } from '../../src/server/app.js';
 
+const mockSearchCities = vi.fn();
+
+vi.mock('../../src/server/services/geocoding.service.js', () => ({
+  searchCities: (...args: unknown[]) => mockSearchCities(...args) as unknown,
+}));
+
 describe('Security Middleware - CORS allowlist', () => {
   const app = createApp({ geminiApiKey: 'test-key', geminiModel: 'test-model' });
+
+  beforeEach(() => {
+    mockSearchCities.mockReset();
+    mockSearchCities.mockResolvedValue([
+      {
+        id: 1,
+        name: 'London',
+        country: 'United Kingdom',
+        countryCode: 'GB',
+        latitude: 51.5074,
+        longitude: -0.1278,
+      },
+    ]);
+  });
+
+  afterEach(() => {
+    mockSearchCities.mockReset();
+  });
 
   it('should allow requests from allowed origins (localhost:5173)', async () => {
     const res = await request(app)
