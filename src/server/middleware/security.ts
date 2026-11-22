@@ -103,7 +103,7 @@ function applyRateLimit(app: Express): void {
     '/api',
     rateLimit({
       windowMs: RATE_LIMIT_WINDOW_MS,
-      max: RATE_LIMIT_MAX,
+      limit: RATE_LIMIT_MAX,
       standardHeaders: true,
       legacyHeaders: false,
       message: { success: false, error: 'Too many requests, please try again later.' },

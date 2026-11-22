@@ -46,11 +46,11 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
   const cached = geocodingCache.get(cacheKey);
 
   if (cached) {
-    logger.debug('Cache hit for geocoding query:', cacheKey);
+    logger.debug('Cache hit for geocoding query');
     return cached;
   }
 
-  logger.info('Fetching geocoding results for:', query);
+  logger.info('Fetching geocoding results');
   const response = await fetch(buildGeocodingUrl(query), {
     signal: AbortSignal.timeout(8000),
   });
