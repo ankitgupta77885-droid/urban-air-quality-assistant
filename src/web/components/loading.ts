@@ -1,15 +1,20 @@
 /**
- * Loading indicator component.
+ * Accessible loading indicator component.
+ *
+ * Renders an animated loading spinner paired with polite aria-live status text.
  */
 
-import { createElement, getElement, clearChildren, setText } from '../utils/dom.js';
+import { clearChildren, createElement, setText } from '../utils/dom.js';
 
 /**
- * Shows the loading indicator with a message.
- * @param message - Loading message to display.
+ * Shows the loading indicator with an accessible message.
+ * @param message - User-facing loading status message.
  */
 export function showLoading(message: string): void {
-  const container = getElement('loading');
+  const container = document.getElementById('loading');
+  if (!container) {
+    return;
+  }
   clearChildren(container);
 
   const wrapper = createElement('div', 'loading-wrapper');
@@ -21,12 +26,14 @@ export function showLoading(message: string): void {
   const text = createElement('p', 'loading-text');
   setText(text, message);
 
-  wrapper.appendChild(spinner);
-  wrapper.appendChild(text);
+  wrapper.append(spinner, text);
   container.appendChild(wrapper);
 }
 
 /** Hides the loading indicator. */
 export function hideLoading(): void {
-  clearChildren(getElement('loading'));
+  const container = document.getElementById('loading');
+  if (container) {
+    clearChildren(container);
+  }
 }
