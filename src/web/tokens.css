@@ -1,0 +1,116 @@
+/* ══════════════════════════════════════════════════════════════
+   Atmosphere Editorial — Design Tokens
+   WCAG 2.1 AA Compliant • Single Source of Truth
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Base Canvas & Surface ── */
+  --color-canvas: #f9f9f7;
+  --color-surface: #ffffff;
+  --color-surface-dim: #f4f4f2;
+  --color-border: #e5e5e0;
+  --color-border-hover: #747878;
+  --color-accent-soft: #e2e8e5;
+
+  /* ── Typography Inks ── */
+  --color-ink: #111111;
+  --color-ink-muted: #4d635c;
+
+  /* ── Status Tokens (Paired with Text & SVG Icon) ── */
+  --color-status-good-bg: rgba(5, 150, 105, 0.1);
+  --color-status-good-text: #047857;
+  --color-status-moderate-bg: rgba(217, 119, 6, 0.12);
+  --color-status-moderate-text: #b45309;
+  --color-status-sensitive-bg: rgba(220, 38, 38, 0.12);
+  --color-status-sensitive-text: #b91c1c;
+  --color-status-unhealthy-bg: rgba(185, 28, 28, 0.15);
+  --color-status-unhealthy-text: #991b1b;
+  --color-status-very-unhealthy-bg: rgba(124, 58, 237, 0.14);
+  --color-status-very-unhealthy-text: #6d28d9;
+  --color-status-severe-bg: rgba(69, 10, 10, 0.18);
+  --color-status-severe-text: #450a0a;
+
+  /* ── Typography Scale (Inter Variable + System Fallback) ── */
+  --font-family: 'InterVariable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+  --font-size-display-hero: 3.5rem; /* 56px */
+  --line-height-display-hero: 1.15; /* 64px */
+  --font-size-display-hero-mobile: 2.375rem; /* 38px */
+  --line-height-display-hero-mobile: 1.2; /* 46px */
+  --font-size-headline-lg: 2rem; /* 32px */
+  --line-height-headline-lg: 1.25; /* 40px */
+  --font-size-headline-md: 1.5rem; /* 24px */
+  --line-height-headline-md: 1.33; /* 32px */
+  --font-size-headline-sm: 1.25rem; /* 20px */
+  --line-height-headline-sm: 1.4; /* 28px */
+  --font-size-title-md: 1rem; /* 16px */
+  --line-height-title-md: 1.5; /* 24px */
+  --font-size-body-lg: 1.125rem; /* 18px */
+  --line-height-body-lg: 1.55; /* 28px */
+  --font-size-body-md: 0.9375rem; /* 15px */
+  --line-height-body-md: 1.6; /* 24px */
+  --font-size-label-md: 0.8125rem; /* 13px - enforced minimum */
+  --line-height-label-md: 1.38; /* 18px */
+  --font-size-label-sm: 0.8125rem; /* 13px - enforced minimum */
+  --line-height-label-sm: 1.38; /* 18px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ── Spacing Scale ── */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 1rem; /* 16px */
+  --space-lg: 1.5rem; /* 24px */
+  --space-xl: 2.5rem; /* 40px */
+  --space-2xl: 4rem; /* 64px */
+
+  /* ── Radius Scale ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* ── Shadows & Elevation ── */
+  --shadow-subtle: 0 2px 6px 0 rgba(17, 17, 17, 0.02);
+  --shadow-ambient: 0 8px 30px -4px rgba(17, 17, 17, 0.04),
+    0 2px 6px 0 rgba(17, 17, 17, 0.02);
+
+  /* ── Focus Indicator ── */
+  --focus-outline-width: 2px;
+  --focus-outline-offset: 2px;
+  --focus-outline-color: var(--color-ink);
+
+  /* ── Minimum Touch Target ── */
+  --touch-target-min: 44px;
+
+  /* ── Decorative Gradients (Carries no data) ── */
+  --gradient-hero: radial-gradient(
+    100% 100% at 50% 0%,
+    rgba(226, 232, 229, 0.7) 0%,
+    rgba(244, 244, 242, 0.4) 60%,
+    rgba(249, 249, 247, 0) 100%
+  );
+
+  /* ── Aliases for Component Continuity ── */
+  --color-bg: var(--color-canvas);
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-ink-muted);
+  --color-primary: var(--color-ink);
+  --color-primary-hover: #333333;
+  --color-focus: var(--color-ink);
+  --color-error: var(--color-status-sensitive-text);
+  --color-error-bg: var(--color-status-sensitive-bg);
+  --color-success: var(--color-status-good-text);
+  --aqi-good: var(--color-status-good-text);
+  --aqi-moderate: var(--color-status-moderate-text);
+  --aqi-usg: var(--color-status-sensitive-text);
+  --aqi-unhealthy: var(--color-status-unhealthy-text);
+  --aqi-very-unhealthy: var(--color-status-very-unhealthy-text);
+  --aqi-hazardous: var(--color-status-severe-text);
+  --radius: var(--radius-md);
+  --shadow: var(--shadow-ambient);
+}
