@@ -142,10 +142,16 @@ npm run dev
 - Backend API server: `http://localhost:3000`
 
 ### Production Build & Run
+Build the frontend client bundle into `dist/web`:
 ```bash
 npm run build
+```
+Start the production server via `tsx`:
+```bash
 npm start
 ```
+- Starts the backend server with TypeScript execution (`tsx src/server/index.ts`).
+- Automatically serves the production client bundle (`dist/web`) and API endpoints on `http://localhost:3000`.
 
 ---
 

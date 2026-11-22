@@ -5,6 +5,9 @@
  * Separated from server startup for testability.
  */
 
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import express, { type Express } from 'express';
 
 import { errorHandler } from './middleware/error-handler.js';
@@ -40,6 +43,11 @@ export function createApp(config: AppConfig): Express {
       modelName: config.geminiModel,
     }),
   );
+
+  const clientDist = resolve(process.cwd(), 'dist/web');
+  if (existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+  }
 
   app.use(errorHandler);
 
