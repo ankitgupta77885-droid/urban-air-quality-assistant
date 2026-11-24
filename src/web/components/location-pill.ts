@@ -19,10 +19,7 @@ export interface LocationPillProps {
  * @param container - Target container element.
  * @param props - Real location name, AQI value, and category.
  */
-export function renderLocationPill(
-  container: HTMLElement,
-  props: LocationPillProps,
-): void {
+export function renderLocationPill(container: HTMLElement, props: LocationPillProps): void {
   container.replaceChildren();
 
   const pill = createElement('div', 'location-aqi-pill');

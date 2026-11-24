@@ -36,18 +36,12 @@ export function createCard(options: CardOptions = {}): HTMLElement {
 }
 
 /** Applies card background variant. */
-function applyCardVariant(
-  card: HTMLElement,
-  variant: CardOptions['variant'] = 'surface',
-): void {
+function applyCardVariant(card: HTMLElement, variant: CardOptions['variant'] = 'surface'): void {
   card.classList.add(`card-${variant}`);
 }
 
 /** Applies card padding scale. */
-function applyCardPadding(
-  card: HTMLElement,
-  padding: CardOptions['padding'] = 'lg',
-): void {
+function applyCardPadding(card: HTMLElement, padding: CardOptions['padding'] = 'lg'): void {
   card.classList.add(`card-pad-${padding}`);
 }
 

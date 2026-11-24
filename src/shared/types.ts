@@ -116,16 +116,7 @@ export type AdviceCategory =
 
 /** Allowed icon key for actions (maps to inline SVG icons). */
 export type ActionIconKey =
-  | 'sun'
-  | 'moon'
-  | 'home'
-  | 'car'
-  | 'walk'
-  | 'leaf'
-  | 'wind'
-  | 'shield'
-  | 'sparkle'
-  | 'alert';
+  'sun' | 'moon' | 'home' | 'car' | 'walk' | 'leaf' | 'wind' | 'shield' | 'sparkle' | 'alert';
 
 /** A single structured action from the rules engine. */
 export interface RecommendedAction {

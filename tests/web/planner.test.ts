@@ -99,7 +99,9 @@ describe('Step 3: Unified Planner and Context Form', () => {
     expect(placeholder.disabled).toBe(true);
     expect(placeholder.textContent).toBe('Select age group');
 
-    const checkedInputs = document.querySelectorAll<HTMLInputElement>('.context-form-grid input:checked');
+    const checkedInputs = document.querySelectorAll<HTMLInputElement>(
+      '.context-form-grid input:checked',
+    );
     expect(checkedInputs.length).toBe(0);
   });
 
@@ -236,7 +238,8 @@ describe('Step 3: Unified Planner and Context Form', () => {
 
 describe('Layout Fidelity: Planner Tabs & Location Pill', () => {
   it('should initialize planner tabs with accessible WAI-ARIA roles, roving tabindex, and hint', async () => {
-    const { initPlannerTabs, setPlannerTabsEnabled } = await import('../../src/web/components/planner-tabs.js');
+    const { initPlannerTabs, setPlannerTabsEnabled } =
+      await import('../../src/web/components/planner-tabs.js');
     const container = document.createElement('div');
     initPlannerTabs(container);
 
@@ -261,7 +264,8 @@ describe('Layout Fidelity: Planner Tabs & Location Pill', () => {
   });
 
   it('should render location and real AQI pill only when requested', async () => {
-    const { renderLocationPill, clearLocationPill } = await import('../../src/web/components/location-pill.js');
+    const { renderLocationPill, clearLocationPill } =
+      await import('../../src/web/components/location-pill.js');
     const container = document.createElement('div');
 
     renderLocationPill(container, {

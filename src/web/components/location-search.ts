@@ -81,7 +81,11 @@ function createSearchControls(): {
 }
 
 /** Handles city search and renders result options. */
-async function handleSearch(query: string, listEl: HTMLElement, onSelect: LocationCallback): Promise<void> {
+async function handleSearch(
+  query: string,
+  listEl: HTMLElement,
+  onSelect: LocationCallback,
+): Promise<void> {
   try {
     const cities = await searchCities(query);
     clearChildren(listEl);
@@ -96,7 +100,9 @@ async function handleSearch(query: string, listEl: HTMLElement, onSelect: Locati
       listEl.appendChild(createCityOption(city, listEl, onSelect));
     }
   } catch (error: unknown) {
-    if (error instanceof DOMException && error.name === 'AbortError') { return; }
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      return;
+    }
     clearChildren(listEl);
     const li = createElement('li', 'search-error');
     setText(li, 'Search failed. Please try again.');
@@ -105,7 +111,11 @@ async function handleSearch(query: string, listEl: HTMLElement, onSelect: Locati
 }
 
 /** Creates a selectable city option element. */
-function createCityOption(city: GeocodingResult, listEl: HTMLElement, onSelect: LocationCallback): HTMLElement {
+function createCityOption(
+  city: GeocodingResult,
+  listEl: HTMLElement,
+  onSelect: LocationCallback,
+): HTMLElement {
   const li = createElement('li', 'search-result-item');
   li.setAttribute('role', 'option');
   li.setAttribute('tabindex', '0');
@@ -116,7 +126,9 @@ function createCityOption(city: GeocodingResult, listEl: HTMLElement, onSelect: 
     onSelect(city);
     clearChildren(listEl);
     const input = document.getElementById('city-search') as HTMLInputElement | null;
-    if (input) { input.value = displayText; }
+    if (input) {
+      input.value = displayText;
+    }
   };
 
   li.addEventListener('click', select);

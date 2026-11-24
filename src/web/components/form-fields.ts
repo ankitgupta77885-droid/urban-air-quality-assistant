@@ -135,8 +135,12 @@ export function createMoreDetailsSection(): { toggleBtn: HTMLButtonElement; cont
   const content = createElement('div', 'more-details-section');
   content.id = 'more-details-section';
   content.hidden = true;
-  content.appendChild(buildSelect('activityLevel', 'Family outdoor activity level', ACTIVITY_LEVEL_OPTIONS));
-  content.appendChild(buildSelect('heatingSource', 'Primary heating source', HEATING_SOURCE_OPTIONS));
+  content.appendChild(
+    buildSelect('activityLevel', 'Family outdoor activity level', ACTIVITY_LEVEL_OPTIONS),
+  );
+  content.appendChild(
+    buildSelect('heatingSource', 'Primary heating source', HEATING_SOURCE_OPTIONS),
+  );
 
   const toggleBtn = createElement('button', 'btn', 'btn-secondary', 'btn-pill', 'more-details-btn');
   toggleBtn.type = 'button';

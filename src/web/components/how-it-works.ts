@@ -23,7 +23,8 @@ const STEPS: readonly StepItem[] = [
     stepNumber: '01',
     iconKey: 'wind',
     title: 'Check Air',
-    description: 'Hyperlocal telemetry for 6 pollutants and weather inversion trends from Open-Meteo.',
+    description:
+      'Hyperlocal telemetry for 6 pollutants and weather inversion trends from Open-Meteo.',
   },
   {
     stepNumber: '02',
@@ -62,7 +63,7 @@ function buildSectionHeader(): HTMLElement {
   const subtitle = createElement('p', 'how-it-works-subtitle');
   setText(
     subtitle,
-    "Personalized air defense for your family, grounded in hyperlocal atmospheric data.",
+    'Personalized air defense for your family, grounded in hyperlocal atmospheric data.',
   );
 
   header.append(title, subtitle);

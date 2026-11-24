@@ -11,7 +11,11 @@ import type { AqiData, PersonalizedAdvice } from '../../src/shared/types.js';
 import { renderAdvicePlan } from '../../src/web/components/advice-plan.js';
 import { renderAqiDisplay } from '../../src/web/components/aqi-display.js';
 import { createMedicalGuidanceNote } from '../../src/web/components/medical-guidance.js';
-import { initPlannerTabs, selectTab, setPlannerTabsEnabled } from '../../src/web/components/planner-tabs.js';
+import {
+  initPlannerTabs,
+  selectTab,
+  setPlannerTabsEnabled,
+} from '../../src/web/components/planner-tabs.js';
 import { createRecommendationCard } from '../../src/web/components/recommendation-card.js';
 
 const MOCK_AQI_DATA: AqiData = {
@@ -33,9 +37,30 @@ const MOCK_ADVICE: PersonalizedAdvice = {
   riskLevel: 'moderate',
   riskSummary: 'Moderate winter inversion detected. Sensitive individuals should be mindful.',
   actions: [
-    { category: 'morning-routine', title: 'Ventilate midday', description: 'Brief windows open.', impact: 'Disperses pollutants.', benefit: 'Moderate', icon: 'sun' },
-    { category: 'indoor-air-hack', title: 'Run HEPA filter', description: 'Filter sleeping areas.', impact: 'Lowers exposure.', benefit: 'High', icon: 'shield' },
-    { category: 'sustainable-alternative', title: 'Electric transit', description: 'Take subway/bus.', impact: 'Cuts zone emissions.', benefit: 'Sustainable Choice', icon: 'leaf' },
+    {
+      category: 'morning-routine',
+      title: 'Ventilate midday',
+      description: 'Brief windows open.',
+      impact: 'Disperses pollutants.',
+      benefit: 'Moderate',
+      icon: 'sun',
+    },
+    {
+      category: 'indoor-air-hack',
+      title: 'Run HEPA filter',
+      description: 'Filter sleeping areas.',
+      impact: 'Lowers exposure.',
+      benefit: 'High',
+      icon: 'shield',
+    },
+    {
+      category: 'sustainable-alternative',
+      title: 'Electric transit',
+      description: 'Take subway/bus.',
+      impact: 'Cuts zone emissions.',
+      benefit: 'Sustainable Choice',
+      icon: 'leaf',
+    },
   ],
   isBasicMode: false,
   personalization: 'ai',
@@ -50,20 +75,28 @@ function setupDOM(): void {
 }
 
 describe('Step 4: Real-Time AQI Display and Pollutants Grid', () => {
-  beforeEach(() => { setupDOM(); });
+  beforeEach(() => {
+    setupDOM();
+  });
 
   it('should render AQI metric, category, description, and Open-Meteo timestamp', () => {
     renderAqiDisplay(MOCK_AQI_DATA);
     expect(document.getElementById('aqi-section')?.hidden).toBe(false);
     expect(document.querySelector('.aqi-value')?.textContent).toBe('72');
     expect(document.querySelector('.aqi-category')?.textContent).toBe('Moderate');
-    expect(document.querySelector('.aqi-description')?.textContent).toContain('Air quality is acceptable');
-    expect(document.querySelector('.aqi-time')?.textContent).toContain('Data from Open-Meteo • Updated at');
+    expect(document.querySelector('.aqi-description')?.textContent).toContain(
+      'Air quality is acceptable',
+    );
+    expect(document.querySelector('.aqi-time')?.textContent).toContain(
+      'Data from Open-Meteo • Updated at',
+    );
   });
 
   it('should render 6 pollutants with values, units, and status badges', () => {
     renderAqiDisplay(MOCK_AQI_DATA);
-    const names = Array.from(document.querySelectorAll('.pollutant-name')).map((el) => el.textContent);
+    const names = Array.from(document.querySelectorAll('.pollutant-name')).map(
+      (el) => el.textContent,
+    );
     expect(names).toEqual(['PM2.5', 'PM10', 'NO₂', 'O₃', 'SO₂', 'CO']);
     const badges = document.querySelectorAll('.pollutant-badge');
     expect(badges.length).toBe(6);
@@ -76,7 +109,9 @@ describe('Step 4: Recommendation Cards and Medical Note', () => {
   it('should render recommendation card with domain badge, icon, and Why this helps', () => {
     const firstAction = MOCK_ADVICE.actions[0];
     expect(firstAction).toBeDefined();
-    if (!firstAction) { return; }
+    if (!firstAction) {
+      return;
+    }
     const card = createRecommendationCard(firstAction);
     expect(card.classList.contains('action-card')).toBe(true);
     expect(card.querySelector('.action-title')?.textContent).toBe('Ventilate midday');
@@ -98,7 +133,9 @@ describe('Step 4: Advice Plan and Tab Filtering', () => {
   beforeEach(() => {
     setupDOM();
     const tabsContainer = document.getElementById('planner-tabs-container');
-    if (tabsContainer) { initPlannerTabs(tabsContainer); }
+    if (tabsContainer) {
+      initPlannerTabs(tabsContainer);
+    }
   });
 
   it('should populate 3 tab panels and activate daily routines by default', () => {
@@ -128,7 +165,9 @@ describe('Step 4: Advice Plan and Tab Filtering', () => {
   it('should render basic mode notice without emoji when in fallback mode', () => {
     renderAdvicePlan({ ...MOCK_ADVICE, isBasicMode: true, personalization: 'basic' });
     const notice = document.querySelector('.basic-mode-notice');
-    expect(notice?.textContent).toContain('Showing standard advice (AI personalization unavailable)');
+    expect(notice?.textContent).toContain(
+      'Showing standard advice (AI personalization unavailable)',
+    );
     expect(notice?.textContent).not.toContain('⚡');
   });
 

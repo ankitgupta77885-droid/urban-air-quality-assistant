@@ -87,7 +87,9 @@ function createTabButton(tabData: TabItem, isSelected: boolean): HTMLButtonEleme
   setText(tab, tabData.label);
 
   tab.addEventListener('click', () => {
-    if (isEnabled) { selectTab(tabData.id); }
+    if (isEnabled) {
+      selectTab(tabData.id);
+    }
   });
 
   return tab;
@@ -100,11 +102,15 @@ export function selectTab(tabId: string): void {
     const isTarget = tab.id === `tab-${tabId}`;
     tab.setAttribute('aria-selected', isTarget ? 'true' : 'false');
     tab.tabIndex = isTarget ? 0 : -1;
-    if (isTarget) { tab.focus(); }
+    if (isTarget) {
+      tab.focus();
+    }
   }
   for (const item of PLANNER_TABS) {
     const panel = document.getElementById(`panel-${item.id}`);
-    if (panel) { panel.hidden = item.id !== tabId; }
+    if (panel) {
+      panel.hidden = item.id !== tabId;
+    }
   }
   if (onTabChangeCb && isEnabled) {
     onTabChangeCb(tabId);
@@ -113,7 +119,9 @@ export function selectTab(tabId: string): void {
 
 /** Handles arrow key roaming between tabs. */
 function handleTabKeydown(e: KeyboardEvent): void {
-  if (tabsList.length === 0) { return; }
+  if (tabsList.length === 0) {
+    return;
+  }
   const curIdx = tabsList.findIndex((t) => t.id === `tab-${currentTabId}`);
   let newIdx = -1;
 
@@ -130,6 +138,8 @@ function handleTabKeydown(e: KeyboardEvent): void {
   if (newIdx !== -1 && tabsList[newIdx]) {
     e.preventDefault();
     const nextTab = PLANNER_TABS[newIdx];
-    if (nextTab) { selectTab(nextTab.id); }
+    if (nextTab) {
+      selectTab(nextTab.id);
+    }
   }
 }

@@ -57,7 +57,9 @@ async function onLocationSelected(result: GeocodingResult): Promise<void> {
       return;
     }
     const message = error instanceof Error ? error.message : 'Failed to fetch air quality data';
-    showError(message, () => { void onLocationSelected(result); });
+    showError(message, () => {
+      void onLocationSelected(result);
+    });
   }
 }
 
@@ -85,7 +87,9 @@ async function onContextSubmit(context: UserContext): Promise<void> {
       return;
     }
     const message = error instanceof Error ? error.message : 'Failed to generate advice';
-    showError(message, () => { void onContextSubmit(context); });
+    showError(message, () => {
+      void onContextSubmit(context);
+    });
   }
 }
 
@@ -111,8 +115,12 @@ function init(): void {
     renderHowItWorks(howItWorksContainer);
   }
 
-  initLocationSearch((result) => { void onLocationSelected(result); });
-  initContextForm((context) => { void onContextSubmit(context); });
+  initLocationSearch((result) => {
+    void onLocationSelected(result);
+  });
+  initContextForm((context) => {
+    void onContextSubmit(context);
+  });
   renderDisclaimer();
 }
 

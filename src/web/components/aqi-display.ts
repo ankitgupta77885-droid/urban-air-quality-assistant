@@ -94,33 +94,63 @@ function buildPollutantsSection(pollutants: readonly PollutantReading[]): HTMLEl
 /** Evaluates pollutant concentration into Optimal, Moderate, or Elevated status. */
 function getPollutantStatusBadge(name: string, val: number): { label: string; className: string } {
   const k = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const isElev = (k.includes('pm25') || k.includes('25')) ? val > 35
-    : (k.includes('pm10') || k.includes('10')) ? val > 150
-    : (k.includes('no2') || k.includes('nitrogen')) ? val > 100
-    : (k.includes('o3') || k.includes('ozone')) ? val > 70
-    : (k.includes('so2') || k.includes('sulphur')) ? val > 75
-    : (k.includes('co') || k.includes('carbon')) ? val > 9 : val > 50;
+  const isElev =
+    k.includes('pm25') || k.includes('25')
+      ? val > 35
+      : k.includes('pm10') || k.includes('10')
+        ? val > 150
+        : k.includes('no2') || k.includes('nitrogen')
+          ? val > 100
+          : k.includes('o3') || k.includes('ozone')
+            ? val > 70
+            : k.includes('so2') || k.includes('sulphur')
+              ? val > 75
+              : k.includes('co') || k.includes('carbon')
+                ? val > 9
+                : val > 50;
 
-  const isMod = (k.includes('pm25') || k.includes('25')) ? val > 12
-    : (k.includes('pm10') || k.includes('10')) ? val > 54
-    : (k.includes('no2') || k.includes('nitrogen')) ? val > 53
-    : (k.includes('o3') || k.includes('ozone')) ? val > 54
-    : (k.includes('so2') || k.includes('sulphur')) ? val > 35
-    : (k.includes('co') || k.includes('carbon')) ? val > 4.4 : val > 25;
+  const isMod =
+    k.includes('pm25') || k.includes('25')
+      ? val > 12
+      : k.includes('pm10') || k.includes('10')
+        ? val > 54
+        : k.includes('no2') || k.includes('nitrogen')
+          ? val > 53
+          : k.includes('o3') || k.includes('ozone')
+            ? val > 54
+            : k.includes('so2') || k.includes('sulphur')
+              ? val > 35
+              : k.includes('co') || k.includes('carbon')
+                ? val > 4.4
+                : val > 25;
 
-  if (isElev) { return { label: 'Elevated', className: 'badge-elevated' }; }
-  if (isMod) { return { label: 'Moderate', className: 'badge-moderate' }; }
+  if (isElev) {
+    return { label: 'Elevated', className: 'badge-elevated' };
+  }
+  if (isMod) {
+    return { label: 'Moderate', className: 'badge-moderate' };
+  }
   return { label: 'Optimal', className: 'badge-optimal' };
 }
 
 /** Returns plain-language impact description for children based on AQI category. */
 function getAqiDescription(category: string): string {
   const n = category.toLowerCase();
-  if (n.includes('good')) { return 'Air quality is satisfactory with little or no risk for children.'; }
-  if (n.includes('moderate')) { return 'Air quality is acceptable; unusually sensitive children may experience minor symptoms.'; }
-  if (n.includes('sensitive') || n.includes('usg')) { return 'Children with asthma or allergies should limit prolonged outdoor exertion.'; }
-  if (n.includes('very unhealthy')) { return 'Avoid outdoor activities for children. Keep indoor air filtered and windows sealed.'; }
-  if (n.includes('hazardous')) { return 'Emergency conditions. Everyone should remain indoors with air filtration.'; }
+  if (n.includes('good')) {
+    return 'Air quality is satisfactory with little or no risk for children.';
+  }
+  if (n.includes('moderate')) {
+    return 'Air quality is acceptable; unusually sensitive children may experience minor symptoms.';
+  }
+  if (n.includes('sensitive') || n.includes('usg')) {
+    return 'Children with asthma or allergies should limit prolonged outdoor exertion.';
+  }
+  if (n.includes('very unhealthy')) {
+    return 'Avoid outdoor activities for children. Keep indoor air filtered and windows sealed.';
+  }
+  if (n.includes('hazardous')) {
+    return 'Emergency conditions. Everyone should remain indoors with air filtration.';
+  }
   return 'All children should limit prolonged outdoor exertion; sensitive groups should stay indoors.';
 }
 

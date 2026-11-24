@@ -5,12 +5,16 @@ import type { UserContext } from '@shared/types.js';
 import { createElement, getElement, setText } from '../utils/dom.js';
 
 import {
-  CHILD_AGE_OPTIONS, COMMUTE_MODE_OPTIONS,
-  HEALTH_CONDITION_OPTIONS, HOME_TYPE_OPTIONS,
+  CHILD_AGE_OPTIONS,
+  COMMUTE_MODE_OPTIONS,
+  HEALTH_CONDITION_OPTIONS,
+  HOME_TYPE_OPTIONS,
 } from './context-form-options.js';
 import {
-  buildCheckboxChipGroup, buildRadioChipGroup,
-  buildSelect, createMoreDetailsSection,
+  buildCheckboxChipGroup,
+  buildRadioChipGroup,
+  buildSelect,
+  createMoreDetailsSection,
 } from './form-fields.js';
 
 type ContextCallback = (context: UserContext) => void;
@@ -28,9 +32,13 @@ export function initContextForm(onSubmit: ContextCallback): void {
   const form = buildForm();
   form.addEventListener('submit', (e: Event) => {
     e.preventDefault();
-    if (submitButtonEl?.disabled) { return; }
+    if (submitButtonEl?.disabled) {
+      return;
+    }
     const context = extractAndValidateContext(form);
-    if (context) { onSubmit(context); }
+    if (context) {
+      onSubmit(context);
+    }
   });
 
   container.appendChild(form);
@@ -40,7 +48,9 @@ export function initContextForm(onSubmit: ContextCallback): void {
 /** Retained for backwards compatibility in test runners. */
 export function showContextForm(): void {
   const el = document.getElementById('context-section');
-  if (el) { el.hidden = false; }
+  if (el) {
+    el.hidden = false;
+  }
 }
 
 /** Updates the submission button state based on location selection. */
@@ -48,19 +58,26 @@ export function setContextFormLocationSelected(selected: boolean, locationName?:
   isLocationSelected = selected;
   selectedLocationName = locationName ?? '';
   const form = document.querySelector<HTMLFormElement>('form.context-form');
-  if (form) { updateSubmitButtonState(form); }
+  if (form) {
+    updateSubmitButtonState(form);
+  }
 }
 
 /** Evaluates form state and updates submit button disabled state and reason. */
 function updateSubmitButtonState(form: HTMLFormElement): void {
-  if (!submitButtonEl || !disabledHintEl) { return; }
+  if (!submitButtonEl || !disabledHintEl) {
+    return;
+  }
   const hasAge = Boolean(form.querySelector<HTMLSelectElement>('#childAgeGroup')?.value);
   const canSubmit = isLocationSelected && hasAge;
   submitButtonEl.disabled = !canSubmit;
 
   if (canSubmit) {
     submitButtonEl.removeAttribute('aria-disabled');
-    setText(disabledHintEl, selectedLocationName ? `Location: ${selectedLocationName}` : 'Ready to generate your plan.');
+    setText(
+      disabledHintEl,
+      selectedLocationName ? `Location: ${selectedLocationName}` : 'Ready to generate your plan.',
+    );
   } else {
     submitButtonEl.setAttribute('aria-disabled', 'true');
     const msg = !isLocationSelected
@@ -78,8 +95,17 @@ function buildForm(): HTMLFormElement {
   setText(heading, 'Household Context');
   const grid = createElement('div', 'context-form-grid');
   grid.append(
-    buildSelect('childAgeGroup', "Youngest child's age group", CHILD_AGE_OPTIONS, 'Select age group'),
-    buildCheckboxChipGroup('healthConditions', 'Health conditions in household', HEALTH_CONDITION_OPTIONS),
+    buildSelect(
+      'childAgeGroup',
+      "Youngest child's age group",
+      CHILD_AGE_OPTIONS,
+      'Select age group',
+    ),
+    buildCheckboxChipGroup(
+      'healthConditions',
+      'Health conditions in household',
+      HEALTH_CONDITION_OPTIONS,
+    ),
     buildRadioChipGroup('homeType', 'Type of home', HOME_TYPE_OPTIONS),
     buildRadioChipGroup('commuteMode', 'Primary commute mode', COMMUTE_MODE_OPTIONS),
   );
@@ -88,20 +114,34 @@ function buildForm(): HTMLFormElement {
   setupHealthConditionsExclusive(form);
 
   const ageSelect = form.querySelector<HTMLSelectElement>('#childAgeGroup');
-  ageSelect?.addEventListener('change', () => { updateSubmitButtonState(form); });
+  ageSelect?.addEventListener('change', () => {
+    updateSubmitButtonState(form);
+  });
   return form;
 }
 
 /** Configures exclusive selection behavior for the "None" health condition chip. */
 function setupHealthConditionsExclusive(form: HTMLFormElement): void {
   const none = form.querySelector<HTMLInputElement>('#healthConditions-none');
-  const others = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="healthConditions"]:not([value="none"])'));
-  if (!none) { return; }
+  const others = Array.from(
+    form.querySelectorAll<HTMLInputElement>('input[name="healthConditions"]:not([value="none"])'),
+  );
+  if (!none) {
+    return;
+  }
   none.addEventListener('change', () => {
-    if (none.checked) { others.forEach((o) => { o.checked = false; }); }
+    if (none.checked) {
+      others.forEach((o) => {
+        o.checked = false;
+      });
+    }
   });
   others.forEach((o) => {
-    o.addEventListener('change', () => { if (o.checked) { none.checked = false; } });
+    o.addEventListener('change', () => {
+      if (o.checked) {
+        none.checked = false;
+      }
+    });
   });
 }
 
@@ -137,7 +177,10 @@ function extractAndValidateContext(form: HTMLFormElement): UserContext | null {
   });
   if (!parsed.success) {
     if (disabledHintEl) {
-      setText(disabledHintEl, parsed.error.issues[0]?.message ?? 'Complete required household questions.');
+      setText(
+        disabledHintEl,
+        parsed.error.issues[0]?.message ?? 'Complete required household questions.',
+      );
     }
     return null;
   }

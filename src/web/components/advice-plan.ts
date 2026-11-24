@@ -14,7 +14,12 @@ import { createMedicalGuidanceNote } from './medical-guidance.js';
 import { selectTab } from './planner-tabs.js';
 import { createRecommendationCard } from './recommendation-card.js';
 
-const DAILY_CATEGORIES = new Set(['morning-routine', 'commute', 'outdoor-activity', 'evening-routine']);
+const DAILY_CATEGORIES = new Set([
+  'morning-routine',
+  'commute',
+  'outdoor-activity',
+  'evening-routine',
+]);
 
 /** Renders the personalized advice plan into accessible tabpanels. */
 export function renderAdvicePlan(advice: PersonalizedAdvice): void {
@@ -115,7 +120,11 @@ function populatePanels(panels: TabPanelElements, actions: readonly Personalized
 }
 
 /** Renders actions into a specific panel or an empty message if none. */
-function renderPanelActions(panel: HTMLElement, actions: PersonalizedAction[], emptyMsg: string): void {
+function renderPanelActions(
+  panel: HTMLElement,
+  actions: PersonalizedAction[],
+  emptyMsg: string,
+): void {
   if (actions.length === 0) {
     const p = createElement('p', 'panel-empty-hint');
     setText(p, emptyMsg);
