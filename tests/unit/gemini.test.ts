@@ -6,7 +6,23 @@
  */
 
 import type { AqiData, RulesEngineOutput, UserContext } from '@shared/types.js';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+const { mockGenerateContent, mockGetGenerativeModel } = vi.hoisted(() => {
+  const mockGenerateContent = vi.fn();
+  const mockGetGenerativeModel = vi.fn().mockImplementation(() => ({
+    generateContent: mockGenerateContent,
+  }));
+  return { mockGenerateContent, mockGetGenerativeModel };
+});
+
+vi.mock('@google/generative-ai', () => ({
+  GoogleGenerativeAI: class {
+    getGenerativeModel(args: unknown): unknown {
+      return mockGetGenerativeModel(args);
+    }
+  },
+}));
 
 import {
   buildFallbackAdvice,
@@ -15,6 +31,14 @@ import {
   parseGeminiResponse,
   personalizeAdvice,
 } from '../../src/server/services/gemini.service.js';
+
+beforeEach(() => {
+  mockGenerateContent.mockReset();
+  mockGetGenerativeModel.mockReset();
+  mockGetGenerativeModel.mockImplementation(() => ({
+    generateContent: mockGenerateContent,
+  }));
+});
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -219,13 +243,66 @@ describe('buildFallbackAdvice', () => {
 });
 
 describe('personalizeAdvice', () => {
-  it('should fall back to basic mode when API key is invalid', async () => {
+  it('should return AI personalized advice on successful Gemini API response', async () => {
+    const validJson = JSON.stringify({
+      riskLevel: 'moderate',
+      riskSummary: 'Tailored advice for your family.',
+      actions: [
+        {
+          category: 'morning-routine',
+          title: 'Ventilate carefully',
+          description: 'Open windows briefly at noon.',
+          impact: 'Reduces stale air.',
+          benefit: 'High',
+          icon: 'sun',
+        },
+      ],
+    });
+    mockGenerateContent.mockResolvedValueOnce({
+      response: { text: () => validJson },
+    });
+
     const result = await personalizeAdvice(
       makeRulesOutput(),
       makeAqiData(),
       makeContext(),
-      'invalid-key',
-      'gemini-2.0-flash',
+      'fake-key',
+      'gemini-3.6-flash',
+    );
+
+    expect(result.isBasicMode).toBe(false);
+    expect(result.personalization).toBe('ai');
+    expect(result.riskSummary).toBe('Tailored advice for your family.');
+    expect(result.actions).toHaveLength(1);
+    expect(result.actions[0]?.title).toBe('Ventilate carefully');
+  });
+
+  it('should pass with no GEMINI_API_KEY set and fall back safely without network', async () => {
+    mockGenerateContent.mockRejectedValueOnce(new Error('API key required'));
+
+    const result = await personalizeAdvice(
+      makeRulesOutput(),
+      makeAqiData(),
+      makeContext(),
+      '',
+      'gemini-3.6-flash',
+    );
+
+    expect(result.isBasicMode).toBe(true);
+    expect(result.personalization).toBe('basic');
+    expect(result.riskLevel).toBe('moderate');
+    expect(result.actions.length).toBeGreaterThan(0);
+  });
+
+  it('should pass with a fake key and fall back when API call fails', async () => {
+    mockGenerateContent.mockRejectedValueOnce(new Error('API key not valid'));
+
+    const result = await personalizeAdvice(
+      makeRulesOutput(),
+      makeAqiData(),
+      makeContext(),
+      'fake-api-key-12345',
+      'gemini-3.6-flash',
     );
 
     expect(result.isBasicMode).toBe(true);
@@ -235,11 +312,15 @@ describe('personalizeAdvice', () => {
   });
 
   it('should fall back to basic mode when model name is invalid', async () => {
+    mockGetGenerativeModel.mockImplementationOnce(() => {
+      throw new Error('Model not found');
+    });
+
     const result = await personalizeAdvice(
       makeRulesOutput(),
       makeAqiData(),
       makeContext(),
-      'some-key',
+      'fake-key',
       'nonexistent-model-999',
     );
 
@@ -248,14 +329,33 @@ describe('personalizeAdvice', () => {
     expect(result.riskLevel).toBe('moderate');
   });
 
+  it('should fall back to basic mode when Gemini returns malformed response', async () => {
+    mockGenerateContent.mockResolvedValueOnce({
+      response: { text: () => 'Not a valid JSON payload' },
+    });
+
+    const result = await personalizeAdvice(
+      makeRulesOutput(),
+      makeAqiData(),
+      makeContext(),
+      'fake-key',
+      'gemini-3.6-flash',
+    );
+
+    expect(result.isBasicMode).toBe(true);
+    expect(result.personalization).toBe('basic');
+    expect(result.riskLevel).toBe('moderate');
+  });
+
   it('should preserve all rules-engine data in fallback', async () => {
+    mockGenerateContent.mockRejectedValueOnce(new Error('Network error'));
     const rulesOutput = makeRulesOutput();
     const result = await personalizeAdvice(
       rulesOutput,
       makeAqiData(),
       makeContext(),
-      'invalid-key',
-      'gemini-2.0-flash',
+      'fake-key',
+      'gemini-3.6-flash',
     );
 
     expect(result.riskSummary).toBe(rulesOutput.riskSummary);
