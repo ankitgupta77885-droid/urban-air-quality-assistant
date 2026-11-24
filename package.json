@@ -20,7 +20,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "prepare": "husky"
   },
   "keywords": [
     "air-quality",
@@ -55,12 +56,22 @@
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
+    "husky": "^9.1.7",
     "jsdom": "^25.0.1",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.4.1",
     "supertest": "^7.0.0",
     "typescript": "^5.7.2",
     "vite": "^6.4.6",
     "vitest": "^2.1.6"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{ts,tsx,css,html,md,json}": [
+      "prettier --write"
+    ]
   },
   "overrides": {
     "tinypool": "^2.1.2",
