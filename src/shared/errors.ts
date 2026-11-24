@@ -1,8 +1,10 @@
+/* v8 ignore start */
 /**
  * Shared error classes for BreatheWell.
  *
  * Base and typed application errors used across both server and client.
  */
+/* v8 ignore stop */
 
 /** Base application error with a typed error code and HTTP status. */
 export class AppError extends Error {

@@ -235,6 +235,76 @@ describe('generateAdvice', () => {
       const diyFilter = result.actions.find((a) => a.title.includes('DIY'));
       expect(diyFilter).toBeDefined();
     });
+
+    it('generates active commute advice for bicycle and walking in normal and elevated AQI', () => {
+      const normalResult = generateAdvice(
+        makeAqiData({ aqi: 40 }),
+        makeContext({ commuteMode: 'bicycle' }),
+      );
+      const normalCommute = normalResult.actions.find((a) => a.category === 'commute');
+      expect(normalCommute?.title).toBe('Time your commute wisely');
+
+      const elevatedResult = generateAdvice(
+        makeAqiData({ aqi: 180 }),
+        makeContext({ commuteMode: 'walking' }),
+      );
+      const elevatedCommute = elevatedResult.actions.find((a) => a.category === 'commute');
+      expect(elevatedCommute?.title).toBe('Switch to enclosed transport today');
+    });
+
+    it('generates transit commute advice in normal and elevated AQI', () => {
+      const normalResult = generateAdvice(
+        makeAqiData({ aqi: 40 }),
+        makeContext({ commuteMode: 'public-transit' }),
+      );
+      const normalCommute = normalResult.actions.find((a) => a.category === 'commute');
+      expect(normalCommute?.title).toBe('Stand back from the platform edge');
+
+      const elevatedResult = generateAdvice(
+        makeAqiData({ aqi: 160 }),
+        makeContext({ commuteMode: 'public-transit' }),
+      );
+      const elevatedCommute = elevatedResult.actions.find((a) => a.category === 'commute');
+      expect(elevatedCommute?.title).toBe('Wear a mask at transit stops');
+    });
+
+    it('generates critical, high, and standard outdoor activity actions', () => {
+      const criticalResult = generateAdvice(
+        makeAqiData({ aqi: 350 }),
+        makeContext({ activityLevel: 'high' }),
+      );
+      const criticalOutdoor = criticalResult.actions.find((a) => a.category === 'outdoor-activity');
+      expect(criticalOutdoor?.title).toBe('Avoid all outdoor activities');
+
+      const highResult = generateAdvice(
+        makeAqiData({ aqi: 120 }),
+        makeContext({ childAgeGroup: 'school-age', activityLevel: 'high' }),
+      );
+      const highOutdoor = highResult.actions.find((a) => a.category === 'outdoor-activity');
+      expect(highOutdoor?.title).toBe('Shorten outdoor playtime');
+
+      const normalResult = generateAdvice(
+        makeAqiData({ aqi: 45 }),
+        makeContext({ childAgeGroup: 'school-age', activityLevel: 'high' }),
+      );
+      const normalOutdoor = normalResult.actions.find((a) => a.category === 'outdoor-activity');
+      expect(normalOutdoor?.title).toBe('Enjoy outdoor time with awareness');
+    });
+
+    it('generates heating source recommendations for wood, electric, and heat pump', () => {
+      const woodResult = generateAdvice(
+        makeAqiData({ aqi: 90 }),
+        makeContext({ heatingSource: 'wood' }),
+      );
+      const woodAction = woodResult.actions.find((a) => a.title.includes('wood'));
+      expect(woodAction).toBeDefined();
+
+      const heatPumpResult = generateAdvice(
+        makeAqiData({ aqi: 90 }),
+        makeContext({ heatingSource: 'heat-pump' }),
+      );
+      expect(heatPumpResult.actions.length).toBeGreaterThan(0);
+    });
   });
 });
 

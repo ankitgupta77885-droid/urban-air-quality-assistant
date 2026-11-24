@@ -65,6 +65,8 @@ const mockAdviceResponse = {
 };
 
 beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
   mockFetchAqiData.mockReset();
   mockPersonalizeAdvice.mockReset();
   mockFetchAqiData.mockResolvedValue(mockAqiData);

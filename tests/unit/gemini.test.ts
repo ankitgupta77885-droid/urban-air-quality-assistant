@@ -33,6 +33,8 @@ import {
 } from '../../src/server/services/gemini.service.js';
 
 beforeEach(() => {
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  vi.spyOn(console, 'error').mockImplementation(() => {});
   mockGenerateContent.mockReset();
   mockGetGenerativeModel.mockReset();
   mockGetGenerativeModel.mockImplementation(() => ({

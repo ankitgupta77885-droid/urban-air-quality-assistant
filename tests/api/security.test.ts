@@ -18,6 +18,8 @@ describe('Security Middleware - CORS allowlist', () => {
   const app = createApp({ geminiApiKey: 'test-key', geminiModel: 'test-model' });
 
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockSearchCities.mockReset();
     mockSearchCities.mockResolvedValue([
       {

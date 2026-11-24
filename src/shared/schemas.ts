@@ -1,9 +1,11 @@
+/* v8 ignore start */
 /**
  * Shared Zod schemas for input validation and response parsing.
  *
  * Used on the server for request validation and Gemini response parsing,
  * and importable from shared for type inference.
  */
+/* v8 ignore stop */
 
 import { z } from 'zod';
 

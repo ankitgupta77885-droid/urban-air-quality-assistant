@@ -1,9 +1,11 @@
+/* v8 ignore start */
 /**
  * Shared constants for BreatheWell.
  *
  * All magic numbers, breakpoints, labels, and configuration constants
  * live here as named exports.
  */
+/* v8 ignore stop */
 
 import type { ActionIconKey, AqiCategory } from './types.js';
 

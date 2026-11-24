@@ -7,18 +7,38 @@
 
 import { ApiClientError, AppError, UpstreamApiError, ValidationError } from '@shared/errors.js';
 import {
+  ACTION_ICON_KEYS,
+  actionIconKeySchema,
+  activityLevelSchema,
   adviceApiResponseSchema,
+  adviceCategorySchema,
   adviceRequestSchema,
   aqiApiResponseSchema,
+  aqiCategorySchema,
   aqiQuerySchema,
+  childAgeGroupSchema,
+  commuteModeSchema,
+  createApiResponseSchema,
   geocodingApiResponseSchema,
   geocodingQuerySchema,
+  geocodingResultSchema,
   geminiResponseSchema,
+  healthConditionSchema,
+  heatingSourceSchema,
+  homeTypeSchema,
+  latitudeSchema,
+  longitudeSchema,
+  openMeteoAqiCurrentSchema,
   openMeteoAqiResponseSchema,
   openMeteoGeoResponseSchema,
+  openMeteoGeoResultSchema,
+  personalizedActionSchema,
+  pollutantReadingSchema,
+  riskLevelSchema,
   userContextSchema,
 } from '@shared/schemas.js';
 import { describe, it, expect } from 'vitest';
+import { z } from 'zod';
 
 describe('userContextSchema', () => {
   const validContext = {
@@ -320,6 +340,20 @@ describe('openMeteoGeoResponseSchema', () => {
 });
 
 describe('Client API response schemas', () => {
+  it('should validate generic createApiResponseSchema with success and failure payloads', () => {
+    const stringResponseSchema = createApiResponseSchema(z.string());
+
+    const successResult = stringResponseSchema.safeParse({ success: true, data: 'hello' });
+    expect(successResult.success).toBe(true);
+
+    const errorResult = stringResponseSchema.safeParse({
+      success: false,
+      error: 'Not found',
+      code: 'ERR_NOT_FOUND',
+    });
+    expect(errorResult.success).toBe(true);
+  });
+
   it('should validate geocodingApiResponseSchema', () => {
     const result = geocodingApiResponseSchema.safeParse({
       success: true,
@@ -376,12 +410,20 @@ describe('Client API response schemas', () => {
 });
 
 describe('Application error classes', () => {
-  it('should construct AppError with defaults', () => {
-    const error = new AppError('Server error');
-    expect(error.message).toBe('Server error');
-    expect(error.statusCode).toBe(500);
-    expect(error.code).toBe('INTERNAL_ERROR');
-    expect(error.name).toBe('AppError');
+  it('should construct AppError with defaults and custom values', () => {
+    const defaultError = new AppError('Server error');
+    expect(defaultError.message).toBe('Server error');
+    expect(defaultError.statusCode).toBe(500);
+    expect(defaultError.code).toBe('INTERNAL_ERROR');
+    expect(defaultError.name).toBe('AppError');
+
+    const statusOnlyError = new AppError('Status only', 403);
+    expect(statusOnlyError.statusCode).toBe(403);
+    expect(statusOnlyError.code).toBe('INTERNAL_ERROR');
+
+    const customError = new AppError('Custom error', 503, 'SERVICE_UNAVAILABLE');
+    expect(customError.statusCode).toBe(503);
+    expect(customError.code).toBe('SERVICE_UNAVAILABLE');
   });
 
   it('should construct ValidationError with 400', () => {
@@ -390,15 +432,105 @@ describe('Application error classes', () => {
     expect(error.code).toBe('VALIDATION_ERROR');
   });
 
-  it('should construct UpstreamApiError with 502', () => {
-    const error = new UpstreamApiError();
-    expect(error.statusCode).toBe(502);
-    expect(error.code).toBe('UPSTREAM_API_ERROR');
+  it('should construct UpstreamApiError with defaults and custom arguments', () => {
+    const defaultError = new UpstreamApiError();
+    expect(defaultError.statusCode).toBe(502);
+    expect(defaultError.code).toBe('UPSTREAM_API_ERROR');
+    expect(defaultError.message).toBe('Upstream service returned an invalid response');
+
+    const msgOnlyError = new UpstreamApiError('Custom message');
+    expect(msgOnlyError.statusCode).toBe(502);
+    expect(msgOnlyError.message).toBe('Custom message');
+
+    const customError = new UpstreamApiError('Downstream timeout', 504);
+    expect(customError.statusCode).toBe(504);
+    expect(customError.message).toBe('Downstream timeout');
   });
 
-  it('should construct ApiClientError with custom status', () => {
+  it('should construct ApiClientError with default and custom status', () => {
+    const defaultError = new ApiClientError('Client error');
+    expect(defaultError.statusCode).toBe(500);
+    expect(defaultError.code).toBe('API_CLIENT_ERROR');
+
+    const statusOnlyError = new ApiClientError('Custom status', 422);
+    expect(statusOnlyError.statusCode).toBe(422);
+    expect(statusOnlyError.code).toBe('API_CLIENT_ERROR');
+
     const error = new ApiClientError('Client failure', 404, 'NOT_FOUND');
     expect(error.statusCode).toBe(404);
     expect(error.code).toBe('NOT_FOUND');
+  });
+
+  it('should validate standalone enum and building-block schemas', () => {
+    expect(childAgeGroupSchema.safeParse('toddler').success).toBe(true);
+    expect(childAgeGroupSchema.safeParse('invalid').success).toBe(false);
+
+    expect(healthConditionSchema.safeParse('asthma').success).toBe(true);
+    expect(homeTypeSchema.safeParse('apartment').success).toBe(true);
+    expect(commuteModeSchema.safeParse('bicycle').success).toBe(true);
+    expect(activityLevelSchema.safeParse('high').success).toBe(true);
+    expect(heatingSourceSchema.safeParse('wood').success).toBe(true);
+    expect(adviceCategorySchema.safeParse('commute').success).toBe(true);
+    expect(riskLevelSchema.safeParse('moderate').success).toBe(true);
+    expect(aqiCategorySchema.safeParse('Moderate').success).toBe(true);
+    expect(actionIconKeySchema.safeParse(ACTION_ICON_KEYS[0]).success).toBe(true);
+
+    expect(latitudeSchema.safeParse('28.61').success).toBe(true);
+    expect(longitudeSchema.safeParse('77.21').success).toBe(true);
+
+    expect(
+      pollutantReadingSchema.safeParse({
+        name: 'pm2_5',
+        displayName: 'PM2.5',
+        value: 25,
+        unit: 'µg/m³',
+      }).success,
+    ).toBe(true);
+
+    expect(
+      geocodingResultSchema.safeParse({
+        id: 1,
+        name: 'Delhi',
+        country: 'India',
+        countryCode: 'IN',
+        latitude: 28.61,
+        longitude: 77.21,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      openMeteoGeoResultSchema.safeParse({
+        id: 1,
+        name: 'Delhi',
+        country: 'India',
+        country_code: 'IN',
+        latitude: 28.61,
+        longitude: 77.21,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      openMeteoAqiCurrentSchema.safeParse({
+        time: '2026-01-15T10:00:00Z',
+        us_aqi: 55,
+        pm2_5: 20,
+        pm10: 35,
+        nitrogen_dioxide: 12,
+        ozone: 25,
+        sulphur_dioxide: 8,
+        carbon_monoxide: 300,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      personalizedActionSchema.safeParse({
+        category: 'commute',
+        title: 'Title',
+        description: 'Desc',
+        impact: 'Impact',
+        benefit: 'Benefit',
+        icon: 'car',
+      }).success,
+    ).toBe(true);
   });
 });

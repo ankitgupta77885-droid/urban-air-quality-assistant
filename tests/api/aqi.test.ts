@@ -22,6 +22,7 @@ const app = createApp({ geminiApiKey: 'test-key', geminiModel: 'test-model' });
 const request = supertest(app);
 
 beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
   mockFetchAqiData.mockReset();
 });
 
