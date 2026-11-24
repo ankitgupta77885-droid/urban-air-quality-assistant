@@ -193,6 +193,7 @@ describe('buildFallbackAdvice', () => {
     const result = buildFallbackAdvice(rulesOutput);
 
     expect(result.isBasicMode).toBe(true);
+    expect(result.personalization).toBe('basic');
     expect(result.riskLevel).toBe(rulesOutput.riskLevel);
     expect(result.riskSummary).toBe(rulesOutput.riskSummary);
     expect(result.actions).toHaveLength(rulesOutput.actions.length);
@@ -228,6 +229,7 @@ describe('personalizeAdvice', () => {
     );
 
     expect(result.isBasicMode).toBe(true);
+    expect(result.personalization).toBe('basic');
     expect(result.riskLevel).toBe('moderate');
     expect(result.actions.length).toBeGreaterThan(0);
   });
@@ -242,6 +244,7 @@ describe('personalizeAdvice', () => {
     );
 
     expect(result.isBasicMode).toBe(true);
+    expect(result.personalization).toBe('basic');
     expect(result.riskLevel).toBe('moderate');
   });
 

@@ -179,6 +179,8 @@ export interface PersonalizedAdvice {
   readonly actions: readonly PersonalizedAction[];
   /** Whether this is from Gemini or the rules-engine fallback. */
   readonly isBasicMode: boolean;
+  /** Personalization source flag. */
+  readonly personalization: 'ai' | 'basic';
 }
 
 /* ── API Request / Response ── */

@@ -76,6 +76,7 @@ async function callGemini(
   return {
     ...parsed,
     isBasicMode: false,
+    personalization: 'ai',
   };
 }
 
@@ -161,6 +162,7 @@ function buildFallbackAdvice(rulesOutput: RulesEngineOutput): PersonalizedAdvice
       icon: action.icon,
     })),
     isBasicMode: true,
+    personalization: 'basic',
   };
 }
 

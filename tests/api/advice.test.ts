@@ -61,6 +61,7 @@ const mockAdviceResponse = {
     },
   ],
   isBasicMode: false,
+  personalization: 'ai' as const,
 };
 
 beforeEach(() => {
@@ -141,10 +142,11 @@ describe('POST /api/advice', () => {
     expect(body.success).toBe(false);
   });
 
-  it('should handle Gemini failure and still return advice', async () => {
+  it('should handle Gemini failure and still return advice with basic personalization flag', async () => {
     mockPersonalizeAdvice.mockResolvedValue({
       ...mockAdviceResponse,
       isBasicMode: true,
+      personalization: 'basic',
     });
 
     const res = await request.post('/api/advice').send(validBody);
@@ -153,6 +155,7 @@ describe('POST /api/advice', () => {
     expect(res.status).toBe(200);
     expect(body.success).toBe(true);
     expect(body.data?.isBasicMode).toBe(true);
+    expect(body.data?.personalization).toBe('basic');
   });
 
   it('should reject request body exceeding size limit', async () => {

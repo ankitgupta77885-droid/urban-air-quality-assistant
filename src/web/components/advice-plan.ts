@@ -22,7 +22,7 @@ export function renderAdvicePlan(advice: PersonalizedAdvice): void {
   const section = getElement('advice-section');
   clearChildren(container);
 
-  if (advice.isBasicMode) {
+  if (advice.isBasicMode || advice.personalization === 'basic') {
     container.appendChild(renderBasicNotice());
   }
 
@@ -46,7 +46,7 @@ function renderBasicNotice(): HTMLElement {
   alertIcon.classList.add('notice-icon');
 
   const text = createElement('span', 'notice-text');
-  setText(text, 'Showing standard recommendations. AI personalization is temporarily unavailable.');
+  setText(text, 'Showing standard advice (AI personalization unavailable)');
 
   notice.append(alertIcon, text);
   return notice;

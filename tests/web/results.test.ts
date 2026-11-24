@@ -38,6 +38,7 @@ const MOCK_ADVICE: PersonalizedAdvice = {
     { category: 'sustainable-alternative', title: 'Electric transit', description: 'Take subway/bus.', impact: 'Cuts zone emissions.', benefit: 'Sustainable Choice', icon: 'leaf' },
   ],
   isBasicMode: false,
+  personalization: 'ai',
 };
 
 function setupDOM(): void {
@@ -125,9 +126,16 @@ describe('Step 4: Advice Plan and Tab Filtering', () => {
   });
 
   it('should render basic mode notice without emoji when in fallback mode', () => {
-    renderAdvicePlan({ ...MOCK_ADVICE, isBasicMode: true });
+    renderAdvicePlan({ ...MOCK_ADVICE, isBasicMode: true, personalization: 'basic' });
     const notice = document.querySelector('.basic-mode-notice');
-    expect(notice?.textContent).toContain('Showing standard recommendations');
+    expect(notice?.textContent).toContain('Showing standard advice (AI personalization unavailable)');
     expect(notice?.textContent).not.toContain('⚡');
+  });
+
+  it('should render visible note when personalization is basic', () => {
+    renderAdvicePlan({ ...MOCK_ADVICE, isBasicMode: false, personalization: 'basic' });
+    const notice = document.querySelector('.basic-mode-notice');
+    expect(notice).not.toBeNull();
+    expect(notice?.textContent).toBe('Showing standard advice (AI personalization unavailable)');
   });
 });
