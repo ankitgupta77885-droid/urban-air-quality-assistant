@@ -8,19 +8,16 @@
 import type { AqiData, RulesEngineOutput, UserContext } from '@shared/types.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockGenerateContent, mockGetGenerativeModel } = vi.hoisted(() => {
+const { mockGenerateContent } = vi.hoisted(() => {
   const mockGenerateContent = vi.fn();
-  const mockGetGenerativeModel = vi.fn().mockImplementation(() => ({
-    generateContent: mockGenerateContent,
-  }));
-  return { mockGenerateContent, mockGetGenerativeModel };
+  return { mockGenerateContent };
 });
 
-vi.mock('@google/generative-ai', () => ({
-  GoogleGenerativeAI: class {
-    getGenerativeModel(args: unknown): unknown {
-      return mockGetGenerativeModel(args);
-    }
+vi.mock('@google/genai', () => ({
+  GoogleGenAI: class {
+    public models = {
+      generateContent: mockGenerateContent,
+    };
   },
 }));
 
@@ -30,16 +27,13 @@ import {
   cleanJsonResponse,
   parseGeminiResponse,
   personalizeAdvice,
+  rejectAfterTimeout,
 } from '../../src/server/services/gemini.service.js';
 
 beforeEach(() => {
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mockGenerateContent.mockReset();
-  mockGetGenerativeModel.mockReset();
-  mockGetGenerativeModel.mockImplementation(() => ({
-    generateContent: mockGenerateContent,
-  }));
 });
 
 afterEach(() => {
@@ -261,7 +255,7 @@ describe('personalizeAdvice', () => {
       ],
     });
     mockGenerateContent.mockResolvedValueOnce({
-      response: { text: () => validJson },
+      text: validJson,
     });
 
     const result = await personalizeAdvice({
@@ -314,9 +308,7 @@ describe('personalizeAdvice', () => {
   });
 
   it('should fall back to basic mode when model name is invalid', async () => {
-    mockGetGenerativeModel.mockImplementationOnce(() => {
-      throw new Error('Model not found');
-    });
+    mockGenerateContent.mockRejectedValueOnce(new Error('Model not found'));
 
     const result = await personalizeAdvice({
       rulesOutput: makeRulesOutput(),
@@ -333,7 +325,7 @@ describe('personalizeAdvice', () => {
 
   it('should fall back to basic mode when Gemini returns malformed response', async () => {
     mockGenerateContent.mockResolvedValueOnce({
-      response: { text: () => 'Not a valid JSON payload' },
+      text: 'Not a valid JSON payload',
     });
 
     const result = await personalizeAdvice({
@@ -362,6 +354,17 @@ describe('personalizeAdvice', () => {
 
     expect(result.riskSummary).toBe(rulesOutput.riskSummary);
     expect(result.actions).toHaveLength(rulesOutput.actions.length);
+  });
+
+  it('should reject with GeminiError when rejectAfterTimeout is triggered', async () => {
+    vi.useFakeTimers();
+    try {
+      const promise = rejectAfterTimeout(100);
+      vi.advanceTimersByTime(100);
+      await expect(promise).rejects.toThrow('Gemini API timed out after 100ms');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

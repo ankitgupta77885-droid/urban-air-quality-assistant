@@ -6,7 +6,7 @@
  * a Zod schema, and falls back to rules-engine output on failure.
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { GEMINI_TIMEOUT_MS } from '@shared/constants.js';
 import { geminiResponseSchema } from '@shared/schemas.js';
 import type { AqiData, PersonalizedAdvice, RulesEngineOutput, UserContext } from '@shared/types.js';
@@ -57,17 +57,16 @@ export async function personalizeAdvice(
  */
 async function callGemini(options: PersonalizeAdviceOptions): Promise<PersonalizedAdvice> {
   const { rulesOutput, aqiData, context, apiKey, modelName } = options;
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: modelName });
+  const ai = new GoogleGenAI({ apiKey });
 
   const prompt = buildPrompt(rulesOutput, aqiData, context);
 
   const result = await Promise.race([
-    model.generateContent(prompt),
+    ai.models.generateContent({ model: modelName, contents: prompt }),
     rejectAfterTimeout(GEMINI_TIMEOUT_MS),
   ]);
 
-  const responseText = result.response.text();
+  const responseText = result.text ?? '';
   const parsed = parseGeminiResponse(responseText);
 
   return {
@@ -133,7 +132,7 @@ function cleanJsonResponse(text: string): string {
  * @param ms - Timeout in milliseconds.
  * @returns A promise that always rejects with a GeminiError.
  */
-function rejectAfterTimeout(ms: number): Promise<never> {
+export function rejectAfterTimeout(ms: number): Promise<never> {
   return new Promise((_resolve, reject) => {
     setTimeout(() => {
       reject(new GeminiError(`Gemini API timed out after ${ms}ms`));

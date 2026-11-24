@@ -63,6 +63,14 @@ describe('generateAdvice', () => {
       expect(result.riskLevel).toBe('critical');
     });
 
+    it('should return critical risk for very unhealthy AQI in 201-300 range', () => {
+      const result = generateAdvice(
+        makeAqiData({ aqi: 250, category: 'Very Unhealthy' }),
+        makeContext(),
+      );
+      expect(result.riskLevel).toBe('critical');
+    });
+
     it('should return critical risk for hazardous AQI', () => {
       const result = generateAdvice(
         makeAqiData({ aqi: 350, category: 'Hazardous' }),
