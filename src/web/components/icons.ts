@@ -79,6 +79,14 @@ export function createMedicalIcon(): SVGSVGElement {
   );
 }
 
+/** Creates a close / dismiss SVG icon. */
+export function createCloseIcon(): SVGSVGElement {
+  const icon = createSvgIcon('0 0 24 24', 'M18 6L6 18M6 6l12 12', 'icon icon-close');
+  icon.setAttribute('width', '16');
+  icon.setAttribute('height', '16');
+  return icon;
+}
+
 /** Creates an AQI status indicator SVG icon. */
 export function createAqiStatusIcon(category: string): SVGSVGElement {
   const norm = category.toLowerCase();

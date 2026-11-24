@@ -7,7 +7,7 @@
 
 import { clearChildren, createElement, getElement, setText } from '../utils/dom.js';
 
-import { createAqiStatusIcon } from './icons.js';
+import { createAqiStatusIcon, createCloseIcon } from './icons.js';
 
 /**
  * Shows an accessible error banner with alert icon, message, and optional Retry button.
@@ -44,8 +44,7 @@ export function showError(message: string, onRetry?: () => void): void {
   const closeBtn = createElement('button', 'error-close');
   closeBtn.type = 'button';
   closeBtn.setAttribute('aria-label', 'Dismiss error');
-  closeBtn.innerHTML =
-    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  closeBtn.appendChild(createCloseIcon());
   closeBtn.addEventListener('click', clearError);
 
   wrapper.appendChild(closeBtn);
