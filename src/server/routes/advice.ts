@@ -57,13 +57,13 @@ async function handleAdviceRequest(req: Request, res: Response, env: AdviceEnv):
   const { latitude, longitude, context } = parsed.data;
   const aqiData = await fetchAqiData(latitude, longitude);
   const rulesOutput = generateAdvice(aqiData, context);
-  const personalizedAdvice = await personalizeAdvice(
+  const personalizedAdvice = await personalizeAdvice({
     rulesOutput,
     aqiData,
     context,
-    env.apiKey,
-    env.modelName,
-  );
+    apiKey: env.apiKey,
+    modelName: env.modelName,
+  });
 
   const response: ApiResponse<PersonalizedAdvice> = {
     success: true,

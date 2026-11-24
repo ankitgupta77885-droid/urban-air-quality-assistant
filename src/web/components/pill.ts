@@ -6,8 +6,11 @@
 
 import { createElement, setText } from '../utils/dom.js';
 
+/** Configuration options for the Pill / Chip component. */
 export interface PillOptions {
+  /** Visible label text inside the pill. */
   readonly text: string;
+  /** Visual status or layout variant. */
   readonly variant?:
     | 'default'
     | 'active'
@@ -16,11 +19,17 @@ export interface PillOptions {
     | 'status-moderate'
     | 'status-warning'
     | 'status-alert';
+  /** Optional inline SVG icon prepended to the text. */
   readonly icon?: SVGSVGElement;
+  /** Whether the pill is an interactive button or a static span. */
   readonly interactive?: boolean;
+  /** Selection state when rendered as an interactive button. */
   readonly selected?: boolean;
+  /** Accessible label attribute for screen readers. */
   readonly ariaLabel?: string;
+  /** Optional extra CSS classes to append. */
   readonly className?: string;
+  /** Click event listener callback. */
   readonly onClick?: (event: MouseEvent) => void;
 }
 

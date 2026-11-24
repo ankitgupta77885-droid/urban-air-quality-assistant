@@ -6,16 +6,27 @@
 
 import { createElement, setText } from '../utils/dom.js';
 
+/** Configuration options for the Button primitive component. */
 export interface ButtonOptions {
+  /** Visible button text. */
   readonly text: string;
+  /** Visual button style variant. */
   readonly variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  /** Whether to render with full-rounded pill border radius. */
   readonly pill?: boolean;
+  /** HTML button element type attribute. */
   readonly type?: 'button' | 'submit' | 'reset';
+  /** Optional inline SVG icon element. */
   readonly icon?: SVGSVGElement;
+  /** Position of the icon relative to button text. */
   readonly iconPosition?: 'left' | 'right';
+  /** Accessible label attribute for screen readers. */
   readonly ariaLabel?: string;
+  /** Additional CSS class names to append. */
   readonly className?: string;
+  /** Whether the button is disabled. */
   readonly disabled?: boolean;
+  /** Click event listener callback. */
   readonly onClick?: (event: MouseEvent) => void;
 }
 

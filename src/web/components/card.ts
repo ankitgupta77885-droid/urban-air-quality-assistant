@@ -6,12 +6,19 @@
 
 import { createElement } from '../utils/dom.js';
 
+/** Configuration options for the Card primitive container. */
 export interface CardOptions {
+  /** Visual surface style variant. */
   readonly variant?: 'surface' | 'gradient' | 'subtle';
+  /** Padding scale applied to the card inner area. */
   readonly padding?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Optional additional CSS classes to append. */
   readonly className?: string;
+  /** ARIA role for accessibility semantics. */
   readonly role?: string;
+  /** Accessible label describing card contents when role is set. */
   readonly ariaLabel?: string;
+  /** HTML element ID attribute. */
   readonly id?: string;
 }
 

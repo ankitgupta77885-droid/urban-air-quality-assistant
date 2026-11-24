@@ -91,43 +91,46 @@ function buildPollutantsSection(pollutants: readonly PollutantReading[]): HTMLEl
   return wrapper;
 }
 
+interface PollutantThreshold {
+  readonly elevated: number;
+  readonly moderate: number;
+}
+
+const DEFAULT_THRESHOLD: PollutantThreshold = { elevated: 50, moderate: 25 };
+
+interface ThresholdRule {
+  readonly patterns: readonly string[];
+  readonly threshold: PollutantThreshold;
+}
+
+const POLLUTANT_THRESHOLDS: readonly ThresholdRule[] = [
+  { patterns: ['pm25', '25'], threshold: { elevated: 35, moderate: 12 } },
+  { patterns: ['pm10', '10'], threshold: { elevated: 150, moderate: 54 } },
+  { patterns: ['no2', 'nitrogen'], threshold: { elevated: 100, moderate: 53 } },
+  { patterns: ['o3', 'ozone'], threshold: { elevated: 70, moderate: 54 } },
+  { patterns: ['so2', 'sulphur'], threshold: { elevated: 75, moderate: 35 } },
+  { patterns: ['co', 'carbon'], threshold: { elevated: 9, moderate: 4.4 } },
+] as const;
+
+/** Looks up the relevant concentration threshold for a pollutant. */
+function lookupThreshold(normalizedName: string): PollutantThreshold {
+  for (const rule of POLLUTANT_THRESHOLDS) {
+    if (rule.patterns.some((pattern) => normalizedName.includes(pattern))) {
+      return rule.threshold;
+    }
+  }
+  return DEFAULT_THRESHOLD;
+}
+
 /** Evaluates pollutant concentration into Optimal, Moderate, or Elevated status. */
 function getPollutantStatusBadge(name: string, val: number): { label: string; className: string } {
-  const k = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const isElev =
-    k.includes('pm25') || k.includes('25')
-      ? val > 35
-      : k.includes('pm10') || k.includes('10')
-        ? val > 150
-        : k.includes('no2') || k.includes('nitrogen')
-          ? val > 100
-          : k.includes('o3') || k.includes('ozone')
-            ? val > 70
-            : k.includes('so2') || k.includes('sulphur')
-              ? val > 75
-              : k.includes('co') || k.includes('carbon')
-                ? val > 9
-                : val > 50;
+  const normalized = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const { elevated, moderate } = lookupThreshold(normalized);
 
-  const isMod =
-    k.includes('pm25') || k.includes('25')
-      ? val > 12
-      : k.includes('pm10') || k.includes('10')
-        ? val > 54
-        : k.includes('no2') || k.includes('nitrogen')
-          ? val > 53
-          : k.includes('o3') || k.includes('ozone')
-            ? val > 54
-            : k.includes('so2') || k.includes('sulphur')
-              ? val > 35
-              : k.includes('co') || k.includes('carbon')
-                ? val > 4.4
-                : val > 25;
-
-  if (isElev) {
+  if (val > elevated) {
     return { label: 'Elevated', className: 'badge-elevated' };
   }
-  if (isMod) {
+  if (val > moderate) {
     return { label: 'Moderate', className: 'badge-moderate' };
   }
   return { label: 'Optimal', className: 'badge-optimal' };

@@ -262,13 +262,13 @@ describe('personalizeAdvice', () => {
       response: { text: () => validJson },
     });
 
-    const result = await personalizeAdvice(
-      makeRulesOutput(),
-      makeAqiData(),
-      makeContext(),
-      'fake-key',
-      'gemini-3.6-flash',
-    );
+    const result = await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: makeAqiData(),
+      context: makeContext(),
+      apiKey: 'fake-key',
+      modelName: 'gemini-3.6-flash',
+    });
 
     expect(result.isBasicMode).toBe(false);
     expect(result.personalization).toBe('ai');
@@ -280,13 +280,13 @@ describe('personalizeAdvice', () => {
   it('should pass with no GEMINI_API_KEY set and fall back safely without network', async () => {
     mockGenerateContent.mockRejectedValueOnce(new Error('API key required'));
 
-    const result = await personalizeAdvice(
-      makeRulesOutput(),
-      makeAqiData(),
-      makeContext(),
-      '',
-      'gemini-3.6-flash',
-    );
+    const result = await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: makeAqiData(),
+      context: makeContext(),
+      apiKey: '',
+      modelName: 'gemini-3.6-flash',
+    });
 
     expect(result.isBasicMode).toBe(true);
     expect(result.personalization).toBe('basic');
@@ -297,13 +297,13 @@ describe('personalizeAdvice', () => {
   it('should pass with a fake key and fall back when API call fails', async () => {
     mockGenerateContent.mockRejectedValueOnce(new Error('API key not valid'));
 
-    const result = await personalizeAdvice(
-      makeRulesOutput(),
-      makeAqiData(),
-      makeContext(),
-      'fake-api-key-12345',
-      'gemini-3.6-flash',
-    );
+    const result = await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: makeAqiData(),
+      context: makeContext(),
+      apiKey: 'fake-api-key-12345',
+      modelName: 'gemini-3.6-flash',
+    });
 
     expect(result.isBasicMode).toBe(true);
     expect(result.personalization).toBe('basic');
@@ -316,13 +316,13 @@ describe('personalizeAdvice', () => {
       throw new Error('Model not found');
     });
 
-    const result = await personalizeAdvice(
-      makeRulesOutput(),
-      makeAqiData(),
-      makeContext(),
-      'fake-key',
-      'nonexistent-model-999',
-    );
+    const result = await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: makeAqiData(),
+      context: makeContext(),
+      apiKey: 'fake-key',
+      modelName: 'nonexistent-model-999',
+    });
 
     expect(result.isBasicMode).toBe(true);
     expect(result.personalization).toBe('basic');
@@ -334,13 +334,13 @@ describe('personalizeAdvice', () => {
       response: { text: () => 'Not a valid JSON payload' },
     });
 
-    const result = await personalizeAdvice(
-      makeRulesOutput(),
-      makeAqiData(),
-      makeContext(),
-      'fake-key',
-      'gemini-3.6-flash',
-    );
+    const result = await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: makeAqiData(),
+      context: makeContext(),
+      apiKey: 'fake-key',
+      modelName: 'gemini-3.6-flash',
+    });
 
     expect(result.isBasicMode).toBe(true);
     expect(result.personalization).toBe('basic');
@@ -350,13 +350,13 @@ describe('personalizeAdvice', () => {
   it('should preserve all rules-engine data in fallback', async () => {
     mockGenerateContent.mockRejectedValueOnce(new Error('Network error'));
     const rulesOutput = makeRulesOutput();
-    const result = await personalizeAdvice(
+    const result = await personalizeAdvice({
       rulesOutput,
-      makeAqiData(),
-      makeContext(),
-      'fake-key',
-      'gemini-3.6-flash',
-    );
+      aqiData: makeAqiData(),
+      context: makeContext(),
+      apiKey: 'fake-key',
+      modelName: 'gemini-3.6-flash',
+    });
 
     expect(result.riskSummary).toBe(rulesOutput.riskSummary);
     expect(result.actions).toHaveLength(rulesOutput.actions.length);

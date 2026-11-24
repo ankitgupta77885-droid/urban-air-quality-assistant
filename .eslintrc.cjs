@@ -59,6 +59,29 @@ module.exports = {
         alphabetize: { order: 'asc' },
       },
     ],
+
+    /* ── Code complexity & size limits ── */
+    complexity: ['error', 10],
+    'max-lines-per-function': [
+      'error',
+      { max: 40, skipBlankLines: true, skipComments: true },
+    ],
+    'max-lines': [
+      'error',
+      { max: 200, skipBlankLines: true, skipComments: true },
+    ],
+    'max-params': ['error', 4],
+    'max-depth': ['error', 3],
   },
+  overrides: [
+    {
+      files: ['tests/**/*.ts'],
+      rules: {
+        'max-lines': ['error', { max: 600, skipBlankLines: true, skipComments: true }],
+        'max-lines-per-function': 'off',
+        'max-depth': 'off',
+      },
+    },
+  ],
   ignorePatterns: ['dist/', 'node_modules/', '*.js', '*.cjs', '*.mjs'],
 };

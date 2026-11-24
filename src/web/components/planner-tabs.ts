@@ -6,11 +6,15 @@
 
 import { createElement, setText } from '../utils/dom.js';
 
+/** Representation of a single tab item in the planner interface. */
 export interface TabItem {
+  /** Unique category identifier matching the corresponding panel ID. */
   readonly id: string;
+  /** Human-readable display label for the tab button. */
   readonly label: string;
 }
 
+/** Predefined category tabs displayed in the lifestyle planner. */
 export const PLANNER_TABS: readonly TabItem[] = [
   { id: 'daily-routines', label: 'Daily routines' },
   { id: 'indoor-air', label: 'Indoor air' },
@@ -117,29 +121,31 @@ export function selectTab(tabId: string): void {
   }
 }
 
-/** Handles arrow key roaming between tabs. */
+type TabKeyAction = (currentIdx: number, total: number) => number;
+
+/** Key-to-index calculation map for roving tab navigation. */
+const TAB_KEY_ACTIONS: Readonly<Record<string, TabKeyAction>> = {
+  ArrowRight: (idx, total) => (idx + 1) % total,
+  ArrowDown: (idx, total) => (idx + 1) % total,
+  ArrowLeft: (idx, total) => (idx - 1 + total) % total,
+  ArrowUp: (idx, total) => (idx - 1 + total) % total,
+  Home: () => 0,
+  End: (_idx, total) => total - 1,
+};
+
+/** Handles arrow key roving between tabs using a data-driven key action map. */
 function handleTabKeydown(e: KeyboardEvent): void {
-  if (tabsList.length === 0) {
+  const action = TAB_KEY_ACTIONS[e.key];
+  if (!action || tabsList.length === 0) {
     return;
   }
+
   const curIdx = tabsList.findIndex((t) => t.id === `tab-${currentTabId}`);
-  let newIdx = -1;
+  const newIdx = action(curIdx, tabsList.length);
+  const nextTab = PLANNER_TABS[newIdx];
 
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-    newIdx = (curIdx + 1) % tabsList.length;
-  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-    newIdx = (curIdx - 1 + tabsList.length) % tabsList.length;
-  } else if (e.key === 'Home') {
-    newIdx = 0;
-  } else if (e.key === 'End') {
-    newIdx = tabsList.length - 1;
-  }
-
-  if (newIdx !== -1 && tabsList[newIdx]) {
+  if (nextTab) {
     e.preventDefault();
-    const nextTab = PLANNER_TABS[newIdx];
-    if (nextTab) {
-      selectTab(nextTab.id);
-    }
+    selectTab(nextTab.id);
   }
 }

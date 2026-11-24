@@ -18,48 +18,45 @@ import { createLogger } from './logger.js';
 
 const logger = createLogger('gemini');
 
+/** Options for personalizing advice via the Gemini service. */
+export interface PersonalizeAdviceOptions {
+  /** Structured output from the deterministic rules engine. */
+  readonly rulesOutput: RulesEngineOutput;
+  /** Current air quality data. */
+  readonly aqiData: AqiData;
+  /** User's household and lifestyle context. */
+  readonly context: UserContext;
+  /** Gemini API key. */
+  readonly apiKey: string;
+  /** Gemini model identifier from environment. */
+  readonly modelName: string;
+}
+
 /**
  * Personalizes rules-engine advice using the Gemini API.
  * Falls back to raw rules-engine output on any failure.
- * @param rulesOutput - Structured output from the deterministic rules engine.
- * @param aqiData - Current air quality data.
- * @param context - User's household and lifestyle context.
- * @param apiKey - Gemini API key.
- * @param modelName - Gemini model name from environment.
+ * @param options - Advice personalization parameters.
  * @returns Personalized advice, with isBasicMode flag indicating fallback.
  */
 export async function personalizeAdvice(
-  rulesOutput: RulesEngineOutput,
-  aqiData: AqiData,
-  context: UserContext,
-  apiKey: string,
-  modelName: string,
+  options: PersonalizeAdviceOptions,
 ): Promise<PersonalizedAdvice> {
   try {
-    return await callGemini(rulesOutput, aqiData, context, apiKey, modelName);
+    return await callGemini(options);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     logger.warn('Gemini personalization failed, using basic mode:', message);
-    return buildFallbackAdvice(rulesOutput);
+    return buildFallbackAdvice(options.rulesOutput);
   }
 }
 
 /**
  * Calls the Gemini API to personalize advice.
- * @param rulesOutput - Rules engine structured output.
- * @param aqiData - Current AQI data.
- * @param context - User context.
- * @param apiKey - Gemini API key.
- * @param modelName - Gemini model identifier.
+ * @param options - Advice personalization parameters.
  * @returns Validated personalized advice from Gemini.
  */
-async function callGemini(
-  rulesOutput: RulesEngineOutput,
-  aqiData: AqiData,
-  context: UserContext,
-  apiKey: string,
-  modelName: string,
-): Promise<PersonalizedAdvice> {
+async function callGemini(options: PersonalizeAdviceOptions): Promise<PersonalizedAdvice> {
+  const { rulesOutput, aqiData, context, apiKey, modelName } = options;
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: modelName });
 

@@ -8,9 +8,13 @@ import { createElement, setText } from '../utils/dom.js';
 
 import { createAqiStatusIcon, createLocationPinIcon } from './icons.js';
 
+/** Properties for rendering the location and AQI summary pill. */
 export interface LocationPillProps {
+  /** Formatted locality name displayed in the pill. */
   readonly locationName: string;
+  /** Numerical Air Quality Index value. */
   readonly aqi: number;
+  /** Human-readable category label (e.g., 'Good', 'Moderate'). */
   readonly category: string;
 }
 

@@ -48,16 +48,27 @@ export function buildSelect(
   return group;
 }
 
+/** Options for creating a single pill-style chip input item. */
+export interface ChipItemOptions {
+  /** Form input control type. */
+  readonly type: 'checkbox' | 'radio';
+  /** Shared form field name. */
+  readonly name: string;
+  /** Value submitted for this option. */
+  readonly value: string;
+  /** Visual text displayed inside the chip label. */
+  readonly display: string;
+  /** Whether this chip is initially selected. */
+  readonly checked?: boolean;
+}
+
 /**
  * Builds a single pill-style chip input item with 44px hit area.
+ * @param options - Configuration options for the chip input.
+ * @returns Configured wrapper element containing the input and label.
  */
-export function createChipItem(
-  type: 'checkbox' | 'radio',
-  name: string,
-  value: string,
-  display: string,
-  checked = false,
-): HTMLElement {
+export function createChipItem(options: ChipItemOptions): HTMLElement {
+  const { type, name, value, display, checked = false } = options;
   const wrapper = createElement('div', 'chip-wrapper');
 
   const input = createElement('input', 'chip-input');
@@ -101,7 +112,9 @@ export function buildCheckboxChipGroup(
   const container = createElement('div', 'chip-grid');
   for (const [value, display] of options) {
     const isChecked = Boolean(defaultSelected && value === defaultSelected);
-    container.appendChild(createChipItem('checkbox', name, value, display, isChecked));
+    container.appendChild(
+      createChipItem({ type: 'checkbox', name, value, display, checked: isChecked }),
+    );
   }
   fieldset.appendChild(container);
   return fieldset;
@@ -124,7 +137,9 @@ export function buildRadioChipGroup(
   const container = createElement('div', 'chip-grid');
   for (const [value, display] of options) {
     const isChecked = Boolean(defaultSelected && value === defaultSelected);
-    container.appendChild(createChipItem('radio', name, value, display, isChecked));
+    container.appendChild(
+      createChipItem({ type: 'radio', name, value, display, checked: isChecked }),
+    );
   }
   fieldset.appendChild(container);
   return fieldset;
