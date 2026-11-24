@@ -23,6 +23,7 @@ import { renderHowItWorks } from './components/how-it-works.js';
 import { hideLoading, showLoading } from './components/loading.js';
 import { renderLocationPill } from './components/location-pill.js';
 import { initLocationSearch } from './components/location-search.js';
+import { renderNavbar } from './components/navbar.js';
 import { initPlannerTabs, setPlannerTabsEnabled } from './components/planner-tabs.js';
 
 /** Currently selected location coordinates. */
@@ -95,6 +96,11 @@ async function onContextSubmit(context: UserContext): Promise<void> {
 
 /** Initializes the application layout and components. */
 function init(): void {
+  const headerContainer = document.getElementById('app-header');
+  if (headerContainer) {
+    renderNavbar(headerContainer);
+  }
+
   const heroContainer = document.getElementById('hero');
   if (heroContainer) {
     renderHero(heroContainer);

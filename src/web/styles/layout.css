@@ -36,6 +36,11 @@ section {
   margin-bottom: var(--space-xl);
 }
 
+section[id],
+div[id='results'] {
+  scroll-margin-top: 80px;
+}
+
 /* ── Planner Top Row & Location Pill ── */
 
 .planner-top-row {
@@ -50,15 +55,18 @@ section {
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
+    gap: var(--space-md);
   }
 
   .planner-search-zone {
-    flex: 1;
+    flex: 1 1 320px;
+    min-width: 280px;
     max-width: 540px;
   }
 
   .planner-location-zone {
-    flex-shrink: 0;
+    flex-shrink: 1;
+    max-width: 100%;
   }
 }
 

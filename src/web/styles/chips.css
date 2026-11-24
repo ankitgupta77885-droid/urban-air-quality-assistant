@@ -51,7 +51,8 @@
 
 /* ── Location AQI Pill ── */
 
-.location-aqi-pill {display: inline-flex;
+.location-aqi-pill {
+  display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
   min-height: 44px;
@@ -63,6 +64,7 @@
   font-weight: var(--font-weight-medium);
   color: var(--color-ink);
   box-shadow: var(--shadow-subtle);
+  max-width: 100%;
 }
 
 .pill-pin-icon svg,
@@ -74,6 +76,10 @@
 
 .pill-location-name {
   font-weight: var(--font-weight-semibold);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pill-divider {

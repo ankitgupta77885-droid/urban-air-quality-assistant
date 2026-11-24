@@ -61,6 +61,25 @@ function createNavLinksElement(): HTMLElement {
     const a = createElement('a', 'nav-link');
     a.href = item.href;
     setText(a, item.label);
+
+    a.addEventListener('click', (e) => {
+      if (item.href === '#planner') {
+        const aqiSection = document.getElementById('aqi-section');
+        if (aqiSection && !aqiSection.hidden) {
+          e.preventDefault();
+          aqiSection.scrollIntoView({ behavior: 'smooth' });
+          history.pushState(null, '', '#aqi-section');
+        }
+      } else if (item.href === '#results') {
+        const adviceSection = document.getElementById('advice-section');
+        if (adviceSection && !adviceSection.hidden) {
+          e.preventDefault();
+          adviceSection.scrollIntoView({ behavior: 'smooth' });
+          history.pushState(null, '', '#advice-section');
+        }
+      }
+    });
+
     li.appendChild(a);
     list.appendChild(li);
   }
