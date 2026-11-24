@@ -94,8 +94,8 @@ function createCtaElement(): HTMLElement {
   a.href = '#planner';
   setText(a, 'Check Your Area');
   a.addEventListener('click', () => {
-    const searchInput = document.getElementById('city-search') as HTMLInputElement | null;
-    if (searchInput) {
+    const searchInput = document.getElementById('city-search');
+    if (searchInput instanceof HTMLInputElement) {
       searchInput.focus();
     }
   });

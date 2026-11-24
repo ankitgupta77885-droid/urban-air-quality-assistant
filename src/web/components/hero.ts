@@ -59,8 +59,8 @@ function createHeroActions(): HTMLElement {
 
 /** Scrolls to the planner card and focuses the search input. */
 function focusPlannerInput(): void {
-  const searchInput = document.getElementById('city-search') as HTMLInputElement | null;
-  if (searchInput) {
+  const searchInput = document.getElementById('city-search');
+  if (searchInput instanceof HTMLInputElement) {
     searchInput.focus();
   }
 }

@@ -125,8 +125,8 @@ function createCityOption(
   const select = (): void => {
     onSelect(city);
     clearChildren(listEl);
-    const input = document.getElementById('city-search') as HTMLInputElement | null;
-    if (input) {
+    const input = document.getElementById('city-search');
+    if (input instanceof HTMLInputElement) {
       input.value = displayText;
     }
   };

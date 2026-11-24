@@ -42,6 +42,20 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
 }
 
 /**
+ * Type guard to check if an unknown error has a numeric status property.
+ * @param value - Unknown error value.
+ * @returns True if value is an object with a numeric status property.
+ */
+function hasStatusProperty(value: unknown): value is { status: number } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'status' in value &&
+    typeof value.status === 'number'
+  );
+}
+
+/**
  * Handles Express built-in errors (e.g., PayloadTooLargeError, SyntaxError).
  * Logs internal details to server log and returns a safe generic message to clients.
  * @param err - Error instance.
@@ -49,8 +63,8 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
  * @returns True if handled.
  */
 function handleExpressBuiltIn(err: Error, res: Response): boolean {
-  if ('status' in err && typeof (err as Record<string, unknown>).status === 'number') {
-    const status = (err as Record<string, unknown>).status as number;
+  if (hasStatusProperty(err)) {
+    const status = err.status;
     logger.warn('Express request error:', err.message);
 
     res.status(status).json({

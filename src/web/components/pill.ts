@@ -35,7 +35,9 @@ export function createPill(options: PillOptions): HTMLElement {
     : createElement('span', 'pill');
 
   if (options.interactive) {
-    (el as HTMLButtonElement).type = 'button';
+    if (el instanceof HTMLButtonElement) {
+      el.type = 'button';
+    }
     el.setAttribute('aria-pressed', options.selected ? 'true' : 'false');
   }
 

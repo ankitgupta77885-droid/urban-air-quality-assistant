@@ -10,7 +10,10 @@ import {
   POLLUTANT_DISPLAY_NAMES,
   POLLUTANT_UNIT,
 } from '@shared/constants.js';
+import { openMeteoAqiResponseSchema, type OpenMeteoAqiCurrent } from '@shared/schemas.js';
 import type { AqiData, PollutantReading } from '@shared/types.js';
+
+import { UpstreamApiError } from '../errors/app-errors.js';
 
 import { categorizeAqi } from './aqi-categorizer.js';
 import { TtlCache } from './cache.js';
@@ -30,23 +33,6 @@ const POLLUTANT_VARS = [
   'sulphur_dioxide',
   'carbon_monoxide',
 ] as const;
-
-/** Shape of the Open-Meteo Air Quality API current data. */
-interface OpenMeteoAqiCurrent {
-  readonly time: string;
-  readonly us_aqi: number;
-  readonly pm2_5: number;
-  readonly pm10: number;
-  readonly nitrogen_dioxide: number;
-  readonly ozone: number;
-  readonly sulphur_dioxide: number;
-  readonly carbon_monoxide: number;
-}
-
-/** Shape of the Open-Meteo Air Quality API response. */
-interface OpenMeteoAqiResponse {
-  readonly current?: OpenMeteoAqiCurrent;
-}
 
 /**
  * Fetches current air quality data for the given coordinates.
@@ -70,15 +56,16 @@ export async function fetchAqiData(latitude: number, longitude: number): Promise
   });
 
   if (!response.ok) {
-    throw new Error(`Air Quality API returned status ${response.status}`);
+    throw new UpstreamApiError(`Air Quality API returned status ${response.status}`);
   }
 
-  const data = (await response.json()) as OpenMeteoAqiResponse;
-  if (!data.current) {
-    throw new Error('Air Quality API returned no current data');
+  const rawJson: unknown = await response.json();
+  const parsed = openMeteoAqiResponseSchema.safeParse(rawJson);
+  if (!parsed.success || !parsed.data.current) {
+    throw new UpstreamApiError('Air Quality API returned invalid data');
   }
 
-  const aqiData = mapAqiResponse(data.current);
+  const aqiData = mapAqiResponse(parsed.data.current);
   aqiCache.set(cacheKey, aqiData);
   return aqiData;
 }

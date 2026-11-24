@@ -64,8 +64,8 @@ function applyGeolocationResult(position: GeolocationPosition, onSelect: Locatio
     longitude: position.coords.longitude,
   });
 
-  const input = document.getElementById('city-search') as HTMLInputElement | null;
-  if (input) {
+  const input = document.getElementById('city-search');
+  if (input instanceof HTMLInputElement) {
     input.value = `${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)}`;
   }
 }

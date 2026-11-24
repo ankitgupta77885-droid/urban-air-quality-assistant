@@ -5,13 +5,13 @@
  * Cancels stale requests automatically.
  */
 
-import type {
-  AqiData,
-  GeocodingResult,
-  PersonalizedAdvice,
-  UserContext,
-  ApiResponse,
-} from '@shared/types.js';
+import { ApiClientError } from '@shared/errors.js';
+import {
+  adviceApiResponseSchema,
+  aqiApiResponseSchema,
+  geocodingApiResponseSchema,
+} from '@shared/schemas.js';
+import type { AqiData, GeocodingResult, PersonalizedAdvice, UserContext } from '@shared/types.js';
 
 /** Active abort controllers keyed by request type. */
 const controllers = new Map<string, AbortController>();
@@ -41,10 +41,16 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
   const url = `/api/geocoding/search?q=${encodeURIComponent(query)}`;
 
   const res = await fetch(url, { signal });
-  const data = (await res.json()) as ApiResponse<GeocodingResult[]>;
+  const rawJson: unknown = await res.json();
+  const parsed = geocodingApiResponseSchema.safeParse(rawJson);
 
+  if (!parsed.success) {
+    throw new ApiClientError('Invalid response received from location service');
+  }
+
+  const data = parsed.data;
   if (!data.success || !data.data) {
-    throw new Error(data.error ?? 'Failed to search cities');
+    throw new ApiClientError(data.error ?? 'Failed to search cities');
   }
 
   return data.data;
@@ -61,10 +67,16 @@ export async function fetchAqi(lat: number, lon: number): Promise<AqiData> {
   const url = `/api/aqi?lat=${lat}&lon=${lon}`;
 
   const res = await fetch(url, { signal });
-  const data = (await res.json()) as ApiResponse<AqiData>;
+  const rawJson: unknown = await res.json();
+  const parsed = aqiApiResponseSchema.safeParse(rawJson);
 
+  if (!parsed.success) {
+    throw new ApiClientError('Invalid response received from air quality service');
+  }
+
+  const data = parsed.data;
   if (!data.success || !data.data) {
-    throw new Error(data.error ?? 'Failed to fetch AQI data');
+    throw new ApiClientError(data.error ?? 'Failed to fetch AQI data');
   }
 
   return data.data;
@@ -91,10 +103,16 @@ export async function fetchAdvice(
     signal,
   });
 
-  const data = (await res.json()) as ApiResponse<PersonalizedAdvice>;
+  const rawJson: unknown = await res.json();
+  const parsed = adviceApiResponseSchema.safeParse(rawJson);
 
+  if (!parsed.success) {
+    throw new ApiClientError('Invalid response received from advice service');
+  }
+
+  const data = parsed.data;
   if (!data.success || !data.data) {
-    throw new Error(data.error ?? 'Failed to fetch advice');
+    throw new ApiClientError(data.error ?? 'Failed to fetch advice');
   }
 
   return data.data;

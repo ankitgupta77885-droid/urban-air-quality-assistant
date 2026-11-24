@@ -5,11 +5,17 @@
  * and advice requests, including edge cases and invalid inputs.
  */
 
+import { ApiClientError, AppError, UpstreamApiError, ValidationError } from '@shared/errors.js';
 import {
+  adviceApiResponseSchema,
   adviceRequestSchema,
+  aqiApiResponseSchema,
   aqiQuerySchema,
+  geocodingApiResponseSchema,
   geocodingQuerySchema,
   geminiResponseSchema,
+  openMeteoAqiResponseSchema,
+  openMeteoGeoResponseSchema,
   userContextSchema,
 } from '@shared/schemas.js';
 import { describe, it, expect } from 'vitest';
@@ -259,5 +265,140 @@ describe('geminiResponseSchema', () => {
       actions: [{ ...validResponse.actions[0], icon: '🌅' }],
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe('openMeteoAqiResponseSchema', () => {
+  it('should accept valid Open-Meteo AQI payload', () => {
+    const result = openMeteoAqiResponseSchema.safeParse({
+      current: {
+        time: '2026-01-15T12:00:00Z',
+        us_aqi: 55,
+        pm2_5: 14.2,
+        pm10: 25.1,
+        nitrogen_dioxide: 18.5,
+        ozone: 32.0,
+        sulphur_dioxide: 5.2,
+        carbon_monoxide: 210.0,
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should reject invalid current field types', () => {
+    const result = openMeteoAqiResponseSchema.safeParse({
+      current: {
+        time: 12345,
+        us_aqi: 'not-a-number',
+      },
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('openMeteoGeoResponseSchema', () => {
+  it('should accept valid Open-Meteo geocoding payload', () => {
+    const result = openMeteoGeoResponseSchema.safeParse({
+      results: [
+        {
+          id: 1,
+          name: 'London',
+          country: 'United Kingdom',
+          country_code: 'GB',
+          latitude: 51.5,
+          longitude: -0.1,
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should accept payload with missing results', () => {
+    const result = openMeteoGeoResponseSchema.safeParse({});
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('Client API response schemas', () => {
+  it('should validate geocodingApiResponseSchema', () => {
+    const result = geocodingApiResponseSchema.safeParse({
+      success: true,
+      data: [
+        {
+          id: 1,
+          name: 'Delhi',
+          country: 'India',
+          countryCode: 'IN',
+          latitude: 28.6,
+          longitude: 77.2,
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should validate aqiApiResponseSchema', () => {
+    const result = aqiApiResponseSchema.safeParse({
+      success: true,
+      data: {
+        aqi: 72,
+        category: 'Moderate',
+        pollutants: [{ name: 'pm2_5', displayName: 'PM2.5', value: 22.4, unit: 'µg/m³' }],
+        dominantPollutant: 'pm2_5',
+        timestamp: '2026-01-15T12:00:00Z',
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should validate adviceApiResponseSchema', () => {
+    const result = adviceApiResponseSchema.safeParse({
+      success: true,
+      data: {
+        riskLevel: 'moderate',
+        riskSummary: 'Moderate air pollution level.',
+        actions: [
+          {
+            category: 'outdoor-activity',
+            title: 'Shift workout indoors',
+            description: 'Avoid running outdoors during peak traffic.',
+            impact: 'Reduces particulate exposure by 60%.',
+            benefit: 'High',
+            icon: 'shield',
+          },
+        ],
+        isBasicMode: false,
+        personalization: 'ai',
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('Application error classes', () => {
+  it('should construct AppError with defaults', () => {
+    const error = new AppError('Server error');
+    expect(error.message).toBe('Server error');
+    expect(error.statusCode).toBe(500);
+    expect(error.code).toBe('INTERNAL_ERROR');
+    expect(error.name).toBe('AppError');
+  });
+
+  it('should construct ValidationError with 400', () => {
+    const error = new ValidationError('Bad request');
+    expect(error.statusCode).toBe(400);
+    expect(error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('should construct UpstreamApiError with 502', () => {
+    const error = new UpstreamApiError();
+    expect(error.statusCode).toBe(502);
+    expect(error.code).toBe('UPSTREAM_API_ERROR');
+  });
+
+  it('should construct ApiClientError with custom status', () => {
+    const error = new ApiClientError('Client failure', 404, 'NOT_FOUND');
+    expect(error.statusCode).toBe(404);
+    expect(error.code).toBe('NOT_FOUND');
   });
 });

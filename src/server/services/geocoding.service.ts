@@ -9,7 +9,10 @@ import {
   GEOCODING_CACHE_TTL_MS,
   MAX_GEOCODING_RESULTS,
 } from '@shared/constants.js';
+import { openMeteoGeoResponseSchema, type OpenMeteoGeoResult } from '@shared/schemas.js';
 import type { GeocodingResult } from '@shared/types.js';
+
+import { UpstreamApiError } from '../errors/app-errors.js';
 
 import { TtlCache } from './cache.js';
 import { createLogger } from './logger.js';
@@ -18,22 +21,6 @@ const logger = createLogger('geocoding');
 
 /** Cache for geocoding results keyed by normalized query. */
 const geocodingCache = new TtlCache<GeocodingResult[]>(GEOCODING_CACHE_TTL_MS);
-
-/** Shape of a single result from the Open-Meteo Geocoding API. */
-interface OpenMeteoGeoResult {
-  readonly id: number;
-  readonly name: string;
-  readonly admin1?: string;
-  readonly country: string;
-  readonly country_code: string;
-  readonly latitude: number;
-  readonly longitude: number;
-}
-
-/** Shape of the Open-Meteo Geocoding API response. */
-interface OpenMeteoGeoResponse {
-  readonly results?: readonly OpenMeteoGeoResult[];
-}
 
 /**
  * Searches for cities matching the given query string.
@@ -56,11 +43,16 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
   });
 
   if (!response.ok) {
-    throw new Error(`Geocoding API returned status ${response.status}`);
+    throw new UpstreamApiError(`Geocoding API returned status ${response.status}`);
   }
 
-  const data = (await response.json()) as OpenMeteoGeoResponse;
-  const results = mapGeoResults(data.results ?? []);
+  const rawJson: unknown = await response.json();
+  const parsed = openMeteoGeoResponseSchema.safeParse(rawJson);
+  if (!parsed.success) {
+    throw new UpstreamApiError('Geocoding API returned invalid data');
+  }
+
+  const results = mapGeoResults(parsed.data.results ?? []);
   geocodingCache.set(cacheKey, results);
   return results;
 }

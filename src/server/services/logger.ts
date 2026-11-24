@@ -1,6 +1,9 @@
 /** Logger utility — thin wrapper around structured logging. */
 
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+import { z } from 'zod';
+
+export const logLevelSchema = z.enum(['debug', 'info', 'warn', 'error']);
+export type LogLevel = z.infer<typeof logLevelSchema>;
 
 const LOG_LEVELS: Record<LogLevel, number> = {
   debug: 0,
@@ -9,7 +12,8 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   error: 3,
 };
 
-const currentLevel: LogLevel = (process.env['LOG_LEVEL'] as LogLevel | undefined) ?? 'info';
+const parsedLevel = logLevelSchema.safeParse(process.env['LOG_LEVEL']);
+const currentLevel: LogLevel = parsedLevel.success ? parsedLevel.data : 'info';
 
 /**
  * Creates a namespaced logger instance.
@@ -19,7 +23,7 @@ export function createLogger(namespace: string): Record<LogLevel, (...args: unkn
   const shouldLog = (level: LogLevel): boolean => LOG_LEVELS[level] >= LOG_LEVELS[currentLevel];
 
   return {
-    /* eslint-disable no-console */
+    /* eslint-disable no-console -- Logger utility is the single authorized console wrapper */
     debug: (...args: unknown[]) => {
       if (shouldLog('debug')) {
         console.debug(`[${namespace}]`, ...args);
