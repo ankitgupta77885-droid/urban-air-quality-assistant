@@ -1,0 +1,78 @@
+/* ── Responsive Refinements (360px – 767px) ── */
+
+@media (max-width: 768px) {
+  .planner-card,
+  .aqi-card,
+  .action-card,
+  .risk-summary,
+  .how-it-works-card,
+  .empty-state,
+  .card-pad-xl {
+    padding: var(--space-lg);
+  }
+
+  .hero-headline {
+    font-size: var(--font-size-display-hero-mobile);
+    line-height: var(--line-height-display-hero-mobile);
+  }
+}
+
+@media (max-width: 480px) {
+  .planner-card,
+  .aqi-card,
+  .action-card,
+  .risk-summary,
+  .how-it-works-card,
+  .empty-state,
+  .card-pad-xl {
+    padding: var(--space-md);
+  }
+
+  .nav-container {
+    gap: var(--space-xs);
+  }
+
+  .brand-title {
+    font-size: var(--font-size-body-sm);
+  }
+
+  .nav-cta {
+    padding: 0 var(--space-sm);
+    font-size: var(--font-size-label-sm);
+    white-space: nowrap;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-actions .hero-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .aqi-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .aqi-value {
+    font-size: 2rem;
+  }
+
+  .pollutants-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs);
+  }
+
+  .pollutant-item {
+    padding: var(--space-sm);
+  }
+
+  .pollutant-badge {
+    padding: 2px 6px;
+    font-size: var(--font-size-label-sm);
+  }
+}

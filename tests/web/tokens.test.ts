@@ -16,6 +16,20 @@ describe('Design Tokens & Global Styles (Step 1)', () => {
   const stylePath = path.join(rootDir, 'src', 'web', 'style.css');
   const fontPath = path.join(rootDir, 'public', 'fonts', 'InterVariable.woff2');
 
+  function readCssWithImports(filePath: string): string {
+    const content = fs.readFileSync(filePath, 'utf8');
+    return content.replace(
+      /@import\s+['"]([^'"]+)['"];/g,
+      (_match: string, importPath: string): string => {
+        const fullPath = path.resolve(path.dirname(filePath), importPath);
+        if (fs.existsSync(fullPath)) {
+          return readCssWithImports(fullPath);
+        }
+        return '';
+      },
+    );
+  }
+
   it('provides a complete tokens.css file with core color tokens', () => {
     expect(fs.existsSync(tokensPath)).toBe(true);
     const content = fs.readFileSync(tokensPath, 'utf8');
@@ -61,9 +75,10 @@ describe('Design Tokens & Global Styles (Step 1)', () => {
   });
 
   it('configures @font-face with font-display: swap in style.css', () => {
-    const content = fs.readFileSync(stylePath, 'utf8');
+    const rawContent = fs.readFileSync(stylePath, 'utf8');
+    const content = readCssWithImports(stylePath);
 
-    expect(content).toContain("@import './tokens.css';");
+    expect(rawContent).toContain("@import './tokens.css';");
     expect(content).toContain('@font-face');
     expect(content).toContain("font-family: 'InterVariable'");
     expect(content).toContain("src: url('/fonts/InterVariable.woff2') format('woff2')");
@@ -71,7 +86,7 @@ describe('Design Tokens & Global Styles (Step 1)', () => {
   });
 
   it('includes prefers-reduced-motion media query in style.css', () => {
-    const content = fs.readFileSync(stylePath, 'utf8');
+    const content = readCssWithImports(stylePath);
     expect(content).toContain('@media (prefers-reduced-motion: reduce)');
   });
 });

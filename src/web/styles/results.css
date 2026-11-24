@@ -1,0 +1,228 @@
+/* ── AQI Display ── */
+
+.aqi-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-subtle);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  border-left: 6px solid var(--color-border);
+}
+
+.aqi-card.aqi-good { border-left-color: var(--aqi-good); }
+.aqi-card.aqi-moderate { border-left-color: var(--aqi-moderate); }
+.aqi-card.aqi-usg { border-left-color: var(--aqi-usg); }
+.aqi-card.aqi-unhealthy { border-left-color: var(--aqi-unhealthy); }
+.aqi-card.aqi-very-unhealthy { border-left-color: var(--aqi-very-unhealthy); }
+.aqi-card.aqi-hazardous { border-left-color: var(--aqi-hazardous); }
+
+.aqi-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.aqi-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink);
+}
+
+.aqi-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.aqi-value {
+  font-size: 2.25rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  color: var(--color-ink);
+}
+
+.aqi-category {
+  font-size: var(--font-size-headline-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+}
+
+.aqi-description {
+  font-size: var(--font-size-body-md);
+  line-height: var(--line-height-body-md);
+  color: var(--color-ink-muted);
+  margin-top: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.aqi-time {
+  font-size: var(--font-size-label-sm);
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.pollutants-title {
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+  margin: var(--space-lg) 0 var(--space-sm);
+}
+
+.pollutants-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+}
+
+@media (min-width: 768px) {
+  .pollutants-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+  }
+}
+
+.pollutant-item {
+  background: var(--color-canvas, #f9f9f7);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.pollutant-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.pollutant-name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-ink);
+}
+
+.pollutant-badge {
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.badge-optimal {
+  background: var(--color-secondary-container, #cde5dc);
+  color: var(--color-secondary, #4d635c);
+}
+
+.badge-moderate {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-elevated {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.pollutant-value {
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
+}
+
+/* ── Advice Plan ── */
+
+.basic-mode-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--color-warning-container, #fef3c7);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-body-sm, 0.875rem);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-lg);
+}
+
+.basic-mode-notice .notice-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #92400e;
+}
+
+.basic-mode-notice .notice-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.risk-summary {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-subtle);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  border-left: 6px solid var(--color-border);
+}
+
+.risk-summary.risk-low { border-left-color: var(--aqi-good); }
+.risk-summary.risk-moderate { border-left-color: var(--aqi-moderate); }
+.risk-summary.risk-high { border-left-color: var(--aqi-usg); }
+.risk-summary.risk-very-high { border-left-color: var(--aqi-unhealthy); }
+.risk-summary.risk-critical { border-left-color: var(--aqi-hazardous); }
+
+.risk-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.risk-title {
+  font-size: var(--font-size-title-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.risk-badge {
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.02em;
+}
+
+.badge-risk-low {
+  background: var(--color-status-good-bg);
+  color: var(--color-status-good-text);
+}
+
+.badge-risk-moderate {
+  background: var(--color-status-moderate-bg);
+  color: var(--color-status-moderate-text);
+}
+
+.badge-risk-high,
+.badge-risk-very-high,
+.badge-risk-critical {
+  background: var(--color-status-sensitive-bg);
+  color: var(--color-status-sensitive-text);
+}
+
+.risk-text {
+  font-size: var(--font-size-body-md);
+  line-height: var(--line-height-body-md);
+  color: var(--color-ink-muted);
+  margin: 0;
+}

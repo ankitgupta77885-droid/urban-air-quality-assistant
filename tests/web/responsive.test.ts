@@ -9,11 +9,25 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+function readCssWithImports(filePath: string): string {
+  const content = fs.readFileSync(filePath, 'utf8');
+  return content.replace(
+    /@import\s+['"]([^'"]+)['"];/g,
+    (_match: string, importPath: string): string => {
+      const fullPath = path.resolve(path.dirname(filePath), importPath);
+      if (fs.existsSync(fullPath)) {
+        return readCssWithImports(fullPath);
+      }
+      return '';
+    },
+  );
+}
+
 describe('Step 6: Responsive Rules & Breakpoints', () => {
   const rootDir = process.cwd();
   const stylePath = path.join(rootDir, 'src', 'web', 'style.css');
   const tokensPath = path.join(rootDir, 'src', 'web', 'tokens.css');
-  const styleContent = fs.readFileSync(stylePath, 'utf8');
+  const styleContent = readCssWithImports(stylePath);
   const tokensContent = fs.readFileSync(tokensPath, 'utf8');
 
   it('defines desktop and mobile hero headline scale tokens', () => {
@@ -54,7 +68,7 @@ describe('Step 6: Responsive Rules & Breakpoints', () => {
 describe('Step 6: Reduced-Motion Preference', () => {
   const rootDir = process.cwd();
   const stylePath = path.join(rootDir, 'src', 'web', 'style.css');
-  const styleContent = fs.readFileSync(stylePath, 'utf8');
+  const styleContent = readCssWithImports(stylePath);
 
   it('disables or zeroes all animations and transitions under prefers-reduced-motion', () => {
     expect(styleContent).toContain('@media (prefers-reduced-motion: reduce)');

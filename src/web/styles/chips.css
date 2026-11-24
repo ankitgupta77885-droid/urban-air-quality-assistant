@@ -1,0 +1,183 @@
+/* ── Shared Primitives: Pill / Chip ── */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  font-family: inherit;
+  font-size: var(--font-size-label-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-label-md);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.pill-interactive {
+  min-height: var(--touch-target-min);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-border);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.pill-interactive:hover {
+  background: var(--color-accent-soft);
+  border-color: var(--color-border-hover);
+}
+
+.pill-default {
+  background: var(--color-surface-dim);
+  color: var(--color-ink-muted);
+  border-color: var(--color-border);
+}
+
+.pill-selected {
+  background: var(--color-ink);
+  color: #ffffff;
+  border-color: var(--color-ink);
+}
+
+
+
+
+
+
+
+
+
+/* ── Location AQI Pill ── */
+
+.location-aqi-pill {display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 44px;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-pill);
+  background: var(--color-canvas, #f9f9f7);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-subtle);
+}
+
+.pill-pin-icon svg,
+.pill-aqi-icon svg {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+.pill-location-name {
+  font-weight: var(--font-weight-semibold);
+}
+
+.pill-divider {
+  color: var(--color-border);
+  margin: 0 2px;
+}
+
+.pill-aqi-text {
+  font-weight: var(--font-weight-medium);
+}
+
+.planner-search-zone {
+  margin-bottom: var(--space-lg);
+}
+
+.planner-context-zone {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-lg);
+}
+
+/* ── Pill-Style Input Chips ── */
+
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.chip-wrapper {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.chip-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.chip-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.chip-text {
+  text-align: center;
+}
+
+.chip-label:hover {
+  background: var(--color-canvas, #f9f9f7);
+  border-color: var(--color-border-hover);
+}
+
+/* Visible Focus Indicator */
+.chip-input:focus-visible + .chip-label {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.chip-input:disabled + .chip-label {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Non-colour selected indicator: check icon + fill + 2px border */
+.chip-check {
+  display: none;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--color-ink);
+}
+
+.chip-input:checked + .chip-label {
+  background: var(--color-secondary-container, #cde5dc);
+  border-color: var(--color-secondary, #4d635c);
+  color: var(--color-ink);
+  font-weight: var(--font-weight-semibold);
+}
+
+.chip-input:checked + .chip-label .chip-check {
+  display: inline-block;
+}
