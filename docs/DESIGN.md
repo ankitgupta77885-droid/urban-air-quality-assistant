@@ -12,6 +12,7 @@
 The **Atmosphere Editorial** design system combines warm editorial minimalism with quiet parental reassurance. It rejects alarmist technical dread and sterile dashboard aesthetics in favor of a calm, tactile digital companion mirroring high-end print publishing.
 
 ### Key Pillars
+
 - **Warm Editorial Tone:** Warm off-white canvas (`#F9F9F7`), crisp deep carbon typography (`#111111`), and generous whitespace.
 - **Calm Reassurance:** Focuses on actionable household safety routines rather than panic-inducing telemetry.
 - **Strictly No Emoji:** Zero emoji anywhere in the UI. All icons are lightweight inline SVGs with `aria-hidden="true"`, always paired with visible descriptive status text.
@@ -25,12 +26,12 @@ The **Atmosphere Editorial** design system combines warm editorial minimalism wi
 
 ## 2. Screen Reference (Stitch MCP Generated)
 
-| Screen | Stitch Identifier | Description |
-|---|---|---|
-| **Screen 1: Home / Search** | `0c8f2e35a0884c6b9440c16ec1d5cd5e` | Landing hero, pill navigation, rounded planner card with household context form, "How it works" 3-card section, and Open-Meteo trust strip. |
+| Screen                         | Stitch Identifier                  | Description                                                                                                                                                                                               |
+| ------------------------------ | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Screen 1: Home / Search**    | `0c8f2e35a0884c6b9440c16ec1d5cd5e` | Landing hero, pill navigation, rounded planner card with household context form, "How it works" 3-card section, and Open-Meteo trust strip.                                                               |
 | **Screen 2: Results & Advice** | `7c8dd681777e4b6d8c798b606726c372` | Accessible AQI summary card with live 6-pollutant grid, personalized recommendation cards with qualitative/estimated "Why this helps" rationales, medical guidance note, and real runtime state handlers. |
 
-*Screenshots omitted from git tracking to keep total repository footprint at ~0.46 MB (well below the 10 MB limit).*
+_Screenshots omitted from git tracking to keep total repository footprint at ~0.46 MB (well below the 10 MB limit)._
 
 ---
 
@@ -40,35 +41,36 @@ All text meets or exceeds **WCAG AA 4.5:1** contrast against its background. No 
 
 ### 3.1 Base Surface & Ink Tokens
 
-| Token | Hex Value | Usage | Contrast vs Background |
-|---|---|---|---|
-| `--color-canvas` | `#F9F9F7` | Main warm off-white page background | *N/A (base canvas)* |
-| `--color-ink` | `#111111` | Primary headings, body copy, active pill buttons | **17.8:1** (AAA Compliant) |
-| `--color-ink-muted` | `#4D635C` | Secondary labels, timestamps, metadata | **5.4:1** (AA Compliant) |
-| `--color-surface` | `#FFFFFF` | Elevated primary cards and input containers | **1.05:1** (delimited by hairline border) |
-| `--color-surface-dim` | `#F4F4F2` | Secondary option wells, table row shading | Inner container fill |
-| `--color-border` | `#E5E5E0` | 1px hairline framing stroke on cards and inputs | Visual boundary |
-| `--color-border-hover` | `#747878` | Focus and interactive hover stroke | **3.2:1** (Non-text UI element AA) |
-| `--color-accent-soft` | `#E2E8E5` | Active chip fill, secondary pill button background | Light tactile fill |
+| Token                  | Hex Value | Usage                                              | Contrast vs Background                    |
+| ---------------------- | --------- | -------------------------------------------------- | ----------------------------------------- |
+| `--color-canvas`       | `#F9F9F7` | Main warm off-white page background                | _N/A (base canvas)_                       |
+| `--color-ink`          | `#111111` | Primary headings, body copy, active pill buttons   | **17.8:1** (AAA Compliant)                |
+| `--color-ink-muted`    | `#4D635C` | Secondary labels, timestamps, metadata             | **5.4:1** (AA Compliant)                  |
+| `--color-surface`      | `#FFFFFF` | Elevated primary cards and input containers        | **1.05:1** (delimited by hairline border) |
+| `--color-surface-dim`  | `#F4F4F2` | Secondary option wells, table row shading          | Inner container fill                      |
+| `--color-border`       | `#E5E5E0` | 1px hairline framing stroke on cards and inputs    | Visual boundary                           |
+| `--color-border-hover` | `#747878` | Focus and interactive hover stroke                 | **3.2:1** (Non-text UI element AA)        |
+| `--color-accent-soft`  | `#E2E8E5` | Active chip fill, secondary pill button background | Light tactile fill                        |
 
 ### 3.2 Diagnostic Status Tokens (Inline SVG + Visible Text)
 
 Color is strictly secondary; every status level is accompanied by an inline SVG icon (`aria-hidden="true"`) and an explicit descriptive label. **Zero emoji.**
 
-| Level / Category | Status Text | Inline SVG Icon Type | Badge Background | Text / Stroke | Contrast vs Badge |
-|---|---|---|---|---|---|
-| **Good / Low Risk** | "Good" | Leaf / Checkmark SVG | `rgba(5, 150, 105, 0.10)` | `#047857` | **5.2:1** (AA) |
-| **Moderate Risk** | "Moderate" | Shield-Dot / Ring SVG | `rgba(217, 119, 6, 0.12)` | `#B45309` | **5.6:1** (AA) |
-| **Unhealthy for Sensitive** | "Sensitive Warning"| Exclamation Triangle SVG | `rgba(220, 38, 38, 0.12)` | `#B91C1C` | **6.1:1** (AA) |
-| **Unhealthy / High** | "Unhealthy" | Octagon-Alert SVG | `rgba(185, 28, 28, 0.15)` | `#991B1B` | **7.4:1** (AA) |
-| **Very Unhealthy** | "Very Unhealthy" | Diamond-Hazard SVG | `rgba(124, 58, 237, 0.14)`| `#6D28D9` | **6.5:1** (AA) |
-| **Hazardous / Severe** | "Severe" | Cross-Alert SVG | `rgba(69, 10, 10, 0.18)` | `#450A0A` | **10.2:1** (AAA) |
+| Level / Category            | Status Text         | Inline SVG Icon Type     | Badge Background           | Text / Stroke | Contrast vs Badge |
+| --------------------------- | ------------------- | ------------------------ | -------------------------- | ------------- | ----------------- |
+| **Good / Low Risk**         | "Good"              | Leaf / Checkmark SVG     | `rgba(5, 150, 105, 0.10)`  | `#047857`     | **5.2:1** (AA)    |
+| **Moderate Risk**           | "Moderate"          | Shield-Dot / Ring SVG    | `rgba(217, 119, 6, 0.12)`  | `#B45309`     | **5.6:1** (AA)    |
+| **Unhealthy for Sensitive** | "Sensitive Warning" | Exclamation Triangle SVG | `rgba(220, 38, 38, 0.12)`  | `#B91C1C`     | **6.1:1** (AA)    |
+| **Unhealthy / High**        | "Unhealthy"         | Octagon-Alert SVG        | `rgba(185, 28, 28, 0.15)`  | `#991B1B`     | **7.4:1** (AA)    |
+| **Very Unhealthy**          | "Very Unhealthy"    | Diamond-Hazard SVG       | `rgba(124, 58, 237, 0.14)` | `#6D28D9`     | **6.5:1** (AA)    |
+| **Hazardous / Severe**      | "Severe"            | Cross-Alert SVG          | `rgba(69, 10, 10, 0.18)`   | `#450A0A`     | **10.2:1** (AAA)  |
 
 ---
 
 ## 4. Typography Scale & Font Architecture
 
 ### 4.1 Font Asset Strategy
+
 - **Self-Hosted:** Single Inter variable font (`InterVariable.woff2`, Latin subset) bundled locally in client assets (`/public/fonts/`).
 - **Zero Remote Calls:** No `<link>` to Google Fonts or remote stylesheet `@import` rules.
 - **Fallback Stack:**  
@@ -76,18 +78,18 @@ Color is strictly secondary; every status level is accompanied by an inline SVG 
 
 ### 4.2 Scale (Minimum 13px Enforced)
 
-| Style Name | Font Size | Line Height | Weight | Letter Spacing | Purpose |
-|---|---|---|---|---|---|
-| `display-hero` | `56px` (`3.5rem`) | `64px` (`1.15`) | `600` | `-0.03em` | Hero main headline |
-| `display-hero-mobile` | `38px` (`2.375rem`)| `46px` (`1.2`) | `600` | `-0.025em`| Mobile hero headline |
-| `headline-lg` | `32px` (`2.0rem`) | `40px` (`1.25`) | `600` | `-0.02em` | Section titles ("How it works", Results H1) |
-| `headline-md` | `24px` (`1.5rem`) | `32px` (`1.33`) | `600` | `-0.015em`| Card titles, AQI numeric display |
-| `headline-sm` | `20px` (`1.25rem`)| `28px` (`1.4`) | `500` | `-0.01em` | Recommendation card headings |
-| `title-md` | `16px` (`1.0rem`) | `24px` (`1.5`) | `600` | `-0.005em`| Form labels, component headers |
-| `body-lg` | `18px` (`1.125rem`)| `28px` (`1.55`) | `400` | `-0.005em`| Hero sub-paragraph, introductory leads |
-| `body-md` | `15px` (`0.9375rem`)| `24px` (`1.6`) | `400` | `0em` | Primary body, "Why this helps" explanations |
-| `label-md` | **`13px`** (`0.8125rem`)| `18px` (`1.38`) | `600` | `+0.03em` | Category badges, uppercase tags (**min 13px**) |
-| `label-sm` | **`13px`** (`0.8125rem`)| `18px` (`1.38`) | `500` | `+0.02em` | Timestamps, trust strip, disclaimer (**min 13px**) |
+| Style Name            | Font Size                | Line Height     | Weight | Letter Spacing | Purpose                                            |
+| --------------------- | ------------------------ | --------------- | ------ | -------------- | -------------------------------------------------- |
+| `display-hero`        | `56px` (`3.5rem`)        | `64px` (`1.15`) | `600`  | `-0.03em`      | Hero main headline                                 |
+| `display-hero-mobile` | `38px` (`2.375rem`)      | `46px` (`1.2`)  | `600`  | `-0.025em`     | Mobile hero headline                               |
+| `headline-lg`         | `32px` (`2.0rem`)        | `40px` (`1.25`) | `600`  | `-0.02em`      | Section titles ("How it works", Results H1)        |
+| `headline-md`         | `24px` (`1.5rem`)        | `32px` (`1.33`) | `600`  | `-0.015em`     | Card titles, AQI numeric display                   |
+| `headline-sm`         | `20px` (`1.25rem`)       | `28px` (`1.4`)  | `500`  | `-0.01em`      | Recommendation card headings                       |
+| `title-md`            | `16px` (`1.0rem`)        | `24px` (`1.5`)  | `600`  | `-0.005em`     | Form labels, component headers                     |
+| `body-lg`             | `18px` (`1.125rem`)      | `28px` (`1.55`) | `400`  | `-0.005em`     | Hero sub-paragraph, introductory leads             |
+| `body-md`             | `15px` (`0.9375rem`)     | `24px` (`1.6`)  | `400`  | `0em`          | Primary body, "Why this helps" explanations        |
+| `label-md`            | **`13px`** (`0.8125rem`) | `18px` (`1.38`) | `600`  | `+0.03em`      | Category badges, uppercase tags (**min 13px**)     |
+| `label-sm`            | **`13px`** (`0.8125rem`) | `18px` (`1.38`) | `500`  | `+0.02em`      | Timestamps, trust strip, disclaimer (**min 13px**) |
 
 ---
 
@@ -96,6 +98,7 @@ Color is strictly secondary; every status level is accompanied by an inline SVG 
 The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 
 ### 5.1 Spacing Tokens
+
 - `--space-xs`: `4px` (`0.25rem`) — Micro gap between SVG icon and text
 - `--space-sm`: `8px` (`0.5rem`) — Chip padding, internal tag spacing
 - `--space-md`: `16px` (`1.0rem`) — Mobile container gutter, form field gap
@@ -104,6 +107,7 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 - `--space-2xl`: `64px` (`4.0rem`) — Major landing section separation
 
 ### 5.2 Breakpoints & Grid Composition
+
 - **Mobile (`360px` – `767px`):** 4-column fluid grid, `16px` margin, `16px` gutter. Full-width stacked planner cards. Minimum touch targets `44px` enforced.
 - **Tablet (`768px` – `1023px`):** 8-column fluid grid, `32px` margin, `24px` gutter. 2-column card layouts.
 - **Desktop (`1024px`+):** 12-column grid capped at `1280px` max-width, `48px` margins, `32px` gutters. Two-column hero with juxtaposed context planner.
@@ -113,6 +117,7 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 ## 6. Shapes, Radius & Elevation
 
 ### 6.1 Radius Tokens
+
 - `--radius-sm`: `4px` — Checkboxes, fine inputs
 - `--radius-md`: `8px` — Dropdown menus, sub-metric wells
 - `--radius-lg`: `16px` — Pollutant sub-cards, state alert banners
@@ -120,6 +125,7 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 - `--radius-pill`: `9999px` — Action buttons, category tabs, filter chips
 
 ### 6.2 Elevation & Shadows
+
 - **Hairline Framing:** `1px solid #E5E5E0` on all surface cards, preventing harsh muddy drop shadows.
 - **Ambient Diffusion:** `0 8px 30px -4px rgba(17, 17, 17, 0.04), 0 2px 6px 0 rgba(17, 17, 17, 0.02)` for gentle tactile separation.
 - **Frosted Blur:** `backdrop-filter: blur(12px); background: rgba(249, 249, 247, 0.85)` for sticky navigation and search filters.
@@ -138,13 +144,15 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 ## 7. Component Rules
 
 ### 7.1 Slim Top Navigation
+
 - Height: `64px`.
 - Left: Inline SVG air icon (`aria-hidden="true"`) + `"BreatheWell"` in `Inter SemiBold 16px`.
 - Center: 3 quiet in-page anchor links (`"How It Works"` -> `#how-it-works`, `"Air Quality"` -> `#planner`, `"Recommendations"` -> `#results`), text color `#4D635C`, hover `#111111`. No dead links.
 - Right: Primary black pill button (`"Check Your Area"` linking/scrolling to `#planner`), height `44px`, padding `0 20px`.
 
 ### 7.2 Hero Section & Rounded Planner Card
-- **Headline (Left):** *"Breathe easier through severe winter smog."* (`display-hero`).
+
+- **Headline (Left):** _"Breathe easier through severe winter smog."_ (`display-hero`).
 - **Support Paragraph (Right):** Summary of personalized routines, indoor air hacks, and sustainable travel options with measured impact.
 - **Hero Card Container:**
   - Radius: `24px`, background: frosted pastel gradient + white surface well.
@@ -157,6 +165,7 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
   - **Bottom Action Bar:** Quick filter tags + primary black pill button: `"Generate Personalized Advice"`.
 
 ### 7.3 Real-Time AQI Summary Card
+
 - **Live Data Binding:** Metric score, status text, and pollutant values populate solely from the live Open-Meteo response.
 - **Prominent Level Display:**
   - Metric number (e.g., `57`) in `36px SemiBold`.
@@ -167,31 +176,37 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
   - Each item displays: Pollutant code (`PM2.5`, `PM10`, `NO₂`, `O₃`, `SO₂`, `CO`), measured numeric value with \(\mu\text{g/m}^3\), and explicit status text badge (`Optimal`, `Moderate`, `Elevated`).
 
 ### 7.4 Personalized Recommendation Cards
+
 - **Card Structure:** `20px` radius, white surface, hairline border.
 - **Domain Badge:** e.g., `"Morning Routine"`, `"School Commute"`, `"Indoor Air Hack"`, `"Sustainable Alternative"`.
-- **Action Title:** Direct, practical guidance (e.g., *"Shift Toddler Stroller Walk to 1:30 PM"*).
-- **"Why This Helps" Line:** Evidence-based qualitative explanation or labeled estimate (e.g., *"Winter inversion traps morning vehicle exhaust near stroller height; afternoon sunlight aids pollutant dispersion."* or *"Estimated to lower indoor exposure"*). No fabricated percentage stats.
+- **Action Title:** Direct, practical guidance (e.g., _"Shift Toddler Stroller Walk to 1:30 PM"_).
+- **"Why This Helps" Line:** Evidence-based qualitative explanation or labeled estimate (e.g., _"Winter inversion traps morning vehicle exhaust near stroller height; afternoon sunlight aids pollutant dispersion."_ or _"Estimated to lower indoor exposure"_). No fabricated percentage stats.
 - **Impact Badge:** Pill badge indicating `"High Impact"`, `"Moderate Impact"`, or `"Sustainable Choice"`.
 
 ### 7.5 Medical Guidance Note
+
 - A clear, permanent guidance note rendered alongside recommendations:
   > **General guidance, not medical advice.** Consult your pediatrician or qualified healthcare provider for clinical management of respiratory conditions.
 
 ### 7.6 "How It Works" Section
-- Centered header: *"Simple steps to cut smog exposure at home"* + short subtitle.
+
+- Centered header: _"Simple steps to cut smog exposure at home"_ + short subtitle.
 - Three rounded feature cards:
   1. **Check Air:** Hyperlocal telemetry for 6 pollutants and weather inversion trends from Open-Meteo.
   2. **Personalize:** Rules engine adapting advice to child age, respiratory health, and housing.
   3. **Act & Protect:** Practical daily actions with clear exposure reduction rationales.
 
 ### 7.7 Runtime State Specifications
+
 States render **strictly under real runtime conditions**:
+
 - **Loading State:** Replaces results during active network requests with an accessible loading spinner and `aria-live="polite"` text (`"Fetching air quality data..."`).
 - **Error State:** Renders only upon API failure or network error with an inline SVG alert icon (`aria-hidden="true"`), high-contrast message, and a `"Retry"` button.
-- **Empty State:** Renders *"Search for your city to see today's air quality."* Shown strictly before the first search.
+- **Empty State:** Renders _"Search for your city to see today's air quality."_ Shown strictly before the first search.
 
 ### 7.8 Trust Strip
-- Subtle bottom bar: *"Data from Open-Meteo"* accompanied by the real fetch timestamp from the API response (e.g. *"Data from Open-Meteo • Fetched at [Time]"*). No invented source names and no "every 15 minutes". All display text and values come exclusively from real data; zero sample numbers.
+
+- Subtle bottom bar: _"Data from Open-Meteo"_ accompanied by the real fetch timestamp from the API response (e.g. _"Data from Open-Meteo • Fetched at [Time]"_). No invented source names and no "every 15 minutes". All display text and values come exclusively from real data; zero sample numbers.
 
 ---
 

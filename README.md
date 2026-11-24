@@ -13,7 +13,7 @@ Children breathe faster per pound of body weight, have developing lungs, and spe
 
 ## Problem & Approach
 
-Winter smog and urban air pollution pose severe health risks, yet standard AQI reports only provide raw numbers and broad classifications. Busy parents are left asking: *"What specific steps should our family take today?"*
+Winter smog and urban air pollution pose severe health risks, yet standard AQI reports only provide raw numbers and broad classifications. Busy parents are left asking: _"What specific steps should our family take today?"_
 
 BreatheWell provides targeted, practical guidance:
 
@@ -79,6 +79,7 @@ The assistant employs a strict hybrid decision-making architecture:
 ```
 
 ### 1. Risk Calculator & Rules Engine
+
 - **Base Score Calculation**: Maps current AQI (0–500) to a baseline risk score (1–10) following US EPA breakpoints.
 - **Context Modifiers**: Adds weighted modifiers based on vulnerability factors:
   - Child age: Infant (+2.0), Toddler (+1.5), Preschooler (+1.0), School-age (+0.5).
@@ -94,6 +95,7 @@ The assistant employs a strict hybrid decision-making architecture:
   - Sustainable Alternatives (e.g. trip consolidation, cleaner heating transition, air-purifying plants)
 
 ### 2. GenAI Personalization Layer
+
 - The structured rules-engine output is passed to the Gemini API (`@google/generative-ai`).
 - System instructions enforce:
   - No manufactured medical advice or statistical claims.
@@ -109,10 +111,12 @@ The assistant employs a strict hybrid decision-making architecture:
 ## Setup & Run Steps
 
 ### Prerequisites
+
 - **Node.js** ≥ 20.0.0
 - **npm** ≥ 9.0.0
 
 ### Installation
+
 ```bash
 git clone <repo-url>
 cd urban-air-quality-assistant
@@ -120,36 +124,49 @@ npm install
 ```
 
 ### Configuration
+
 Copy the environment template:
+
 ```bash
 cp .env.example .env
 ```
+
 Edit `.env` and set your Google Gemini API key:
+
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
 GEMINI_MODEL=gemini-3.6-flash
 PORT=3000
 NODE_ENV=development
 ```
-*(Never commit `.env` or paste real API keys into version control.)*
+
+_(Never commit `.env` or paste real API keys into version control.)_
 
 ### Development Mode
+
 Runs the Express API server and Vite frontend concurrently with hot reloading:
+
 ```bash
 npm run dev
 ```
+
 - Frontend application: `http://localhost:5173`
 - Backend API server: `http://localhost:3000`
 
 ### Production Build & Run
+
 Build the frontend client bundle into `dist/web`:
+
 ```bash
 npm run build
 ```
+
 Start the production server via `tsx`:
+
 ```bash
 npm start
 ```
+
 - Starts the backend server with TypeScript execution (`tsx src/server/index.ts`).
 - Automatically serves the production client bundle (`dist/web`) and API endpoints on `http://localhost:3000`.
 
@@ -159,13 +176,13 @@ npm start
 
 All variables are loaded and validated at server startup via Zod (`src/server/config/env.ts`):
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `GEMINI_API_KEY` | **Yes** | *None* | Google Gemini API key (see `.env.example`). |
-| `GEMINI_MODEL` | No | `gemini-3.6-flash` | Gemini model name (e.g. `gemini-3.6-flash`, `gemini-1.5-pro`). |
-| `PORT` | No | `3000` | HTTP port for the Express backend server. |
-| `NODE_ENV` | No | `development` | Environment mode (`development`, `production`, `test`). |
-| `LOG_LEVEL` | No | `info` | Logger severity threshold (`debug`, `info`, `warn`, `error`). |
+| Variable         | Required | Default            | Description                                                    |
+| ---------------- | -------- | ------------------ | -------------------------------------------------------------- |
+| `GEMINI_API_KEY` | **Yes**  | _None_             | Google Gemini API key (see `.env.example`).                    |
+| `GEMINI_MODEL`   | No       | `gemini-3.6-flash` | Gemini model name (e.g. `gemini-3.6-flash`, `gemini-1.5-pro`). |
+| `PORT`           | No       | `3000`             | HTTP port for the Express backend server.                      |
+| `NODE_ENV`       | No       | `development`      | Environment mode (`development`, `production`, `test`).        |
+| `LOG_LEVEL`      | No       | `info`             | Logger severity threshold (`debug`, `info`, `warn`, `error`).  |
 
 ---
 
@@ -188,6 +205,7 @@ npm run lint
 ```
 
 ### Test Coverage Highlights
+
 - **Unit Tests (108 tests)**:
   - Rules engine risk calculations, context modifiers, and action generation (`rules-engine.test.ts`).
   - AQI breakpoint mapping, color tokens, and category labels (`aqi-categorization.test.ts`).

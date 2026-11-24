@@ -35,8 +35,6 @@
   flex-shrink: 0;
 }
 
-
-
 .brand-title {
   font-size: var(--font-size-title-md);
   font-weight: var(--font-weight-semibold);
@@ -84,6 +82,4 @@
   .nav-links {
     display: none;
   }
-
-  
 }

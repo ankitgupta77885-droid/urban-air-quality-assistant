@@ -11,12 +11,18 @@
   background: var(--gradient-mist), var(--color-surface);
 }
 
-
-
-.card-pad-sm { padding: var(--space-sm); }
-.card-pad-md { padding: var(--space-md); }
-.card-pad-lg { padding: var(--space-lg); }
-.card-pad-xl { padding: var(--space-xl); }
+.card-pad-sm {
+  padding: var(--space-sm);
+}
+.card-pad-md {
+  padding: var(--space-md);
+}
+.card-pad-lg {
+  padding: var(--space-lg);
+}
+.card-pad-xl {
+  padding: var(--space-xl);
+}
 
 /* ── Unified Planner Card ── */
 
@@ -68,7 +74,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .action-card:hover {

@@ -120,7 +120,10 @@ select,
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .btn-pill {
@@ -160,8 +163,6 @@ select,
 .btn-outline:hover {
   background: var(--color-accent-soft);
 }
-
-
 
 .btn:disabled {
   opacity: 0.5;

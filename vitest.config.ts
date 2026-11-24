@@ -17,7 +17,25 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/server/index.ts', 'src/web/main.ts'],
+      exclude: ['src/server/index.ts', 'src/web/main.ts', 'src/shared/types.ts'],
+      thresholds: {
+        statements: 80,
+        branches: 80,
+        functions: 80,
+        lines: 80,
+        'src/server/services/**': {
+          statements: 90,
+          branches: 90,
+          functions: 90,
+          lines: 90,
+        },
+        'src/shared/**': {
+          statements: 90,
+          branches: 90,
+          functions: 90,
+          lines: 90,
+        },
+      },
     },
     testTimeout: 10000,
   },

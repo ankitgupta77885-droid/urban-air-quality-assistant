@@ -147,7 +147,8 @@ div[id='results'] {
 
 /* ── More Details & Submit ── */
 
-.more-details-btn {margin-top: var(--space-sm);
+.more-details-btn {
+  margin-top: var(--space-sm);
   margin-bottom: var(--space-md);
 }
 

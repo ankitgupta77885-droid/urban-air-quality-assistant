@@ -21,7 +21,9 @@
   background: var(--color-surface);
   color: var(--color-ink);
   border-color: var(--color-border);
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .pill-interactive:hover {
@@ -40,14 +42,6 @@
   color: #ffffff;
   border-color: var(--color-ink);
 }
-
-
-
-
-
-
-
-
 
 /* ── Location AQI Pill ── */
 
@@ -142,7 +136,10 @@
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
   margin-bottom: 0;
   text-align: center;
 }

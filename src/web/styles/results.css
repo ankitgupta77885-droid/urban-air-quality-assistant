@@ -10,12 +10,24 @@
   border-left: 6px solid var(--color-border);
 }
 
-.aqi-card.aqi-good { border-left-color: var(--aqi-good); }
-.aqi-card.aqi-moderate { border-left-color: var(--aqi-moderate); }
-.aqi-card.aqi-usg { border-left-color: var(--aqi-usg); }
-.aqi-card.aqi-unhealthy { border-left-color: var(--aqi-unhealthy); }
-.aqi-card.aqi-very-unhealthy { border-left-color: var(--aqi-very-unhealthy); }
-.aqi-card.aqi-hazardous { border-left-color: var(--aqi-hazardous); }
+.aqi-card.aqi-good {
+  border-left-color: var(--aqi-good);
+}
+.aqi-card.aqi-moderate {
+  border-left-color: var(--aqi-moderate);
+}
+.aqi-card.aqi-usg {
+  border-left-color: var(--aqi-usg);
+}
+.aqi-card.aqi-unhealthy {
+  border-left-color: var(--aqi-unhealthy);
+}
+.aqi-card.aqi-very-unhealthy {
+  border-left-color: var(--aqi-very-unhealthy);
+}
+.aqi-card.aqi-hazardous {
+  border-left-color: var(--aqi-hazardous);
+}
 
 .aqi-header {
   display: flex;
@@ -173,11 +185,21 @@
   border-left: 6px solid var(--color-border);
 }
 
-.risk-summary.risk-low { border-left-color: var(--aqi-good); }
-.risk-summary.risk-moderate { border-left-color: var(--aqi-moderate); }
-.risk-summary.risk-high { border-left-color: var(--aqi-usg); }
-.risk-summary.risk-very-high { border-left-color: var(--aqi-unhealthy); }
-.risk-summary.risk-critical { border-left-color: var(--aqi-hazardous); }
+.risk-summary.risk-low {
+  border-left-color: var(--aqi-good);
+}
+.risk-summary.risk-moderate {
+  border-left-color: var(--aqi-moderate);
+}
+.risk-summary.risk-high {
+  border-left-color: var(--aqi-usg);
+}
+.risk-summary.risk-very-high {
+  border-left-color: var(--aqi-unhealthy);
+}
+.risk-summary.risk-critical {
+  border-left-color: var(--aqi-hazardous);
+}
 
 .risk-header {
   display: flex;
