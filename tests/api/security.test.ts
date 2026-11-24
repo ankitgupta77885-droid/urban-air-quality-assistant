@@ -76,6 +76,16 @@ describe('Security Middleware - CORS allowlist', () => {
     expect(csp).not.toContain("'unsafe-inline'");
   });
 
+  it('should enforce CSP img-src self data: and script-src self without unsafe-inline', async () => {
+    const res = await request(app).get('/api/geocoding/search?q=London');
+
+    const csp = res.headers['content-security-policy'] as string;
+    expect(csp).toBeDefined();
+    expect(csp).toContain("img-src 'self' data:");
+    expect(csp).toContain("script-src 'self'");
+    expect(csp).not.toContain("script-src 'unsafe-inline'");
+  });
+
   it('should return safe generic error message on malformed JSON without leaking parser internals', async () => {
     const res = await request(app)
       .post('/api/advice')
