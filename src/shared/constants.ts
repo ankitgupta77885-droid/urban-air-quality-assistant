@@ -138,6 +138,9 @@ export const BODY_SIZE_LIMIT = '10kb' as const;
 /** Request timeout in milliseconds (15 seconds). */
 export const REQUEST_TIMEOUT_MS = 15_000 as const;
 
+/** Outbound external HTTP request timeout in milliseconds (8 seconds). */
+export const OUTBOUND_TIMEOUT_MS = 8000 as const;
+
 /** Gemini API timeout in milliseconds (12 seconds). */
 export const GEMINI_TIMEOUT_MS = 12_000 as const;
 
@@ -147,6 +150,9 @@ export const RATE_LIMIT_MAX = 60 as const;
 /** Rate limit: window size in milliseconds (1 minute). */
 export const RATE_LIMIT_WINDOW_MS = 60_000 as const;
 
+/** CORS preflight cache duration in seconds (10 minutes). */
+export const CORS_MAX_AGE_SECONDS = 600 as const;
+
 /* ── Frontend ── */
 
 /** Debounce delay for search input (milliseconds). */
@@ -154,3 +160,9 @@ export const SEARCH_DEBOUNCE_MS = 300 as const;
 
 /** Minimum characters before triggering a search. */
 export const MIN_SEARCH_LENGTH = 2 as const;
+
+/** Geolocation request timeout in milliseconds (10 seconds). */
+export const GEOLOCATION_TIMEOUT_MS = 10_000 as const;
+
+/** Geolocation cached position maximum age in milliseconds (5 minutes). */
+export const GEOLOCATION_MAX_AGE_MS = 300_000 as const;

@@ -51,6 +51,20 @@ describe('Security Middleware - CORS allowlist', () => {
     expect(res.headers['access-control-allow-origin']).toBeUndefined();
   });
 
+  it('should allow custom origins injected via app configuration', async () => {
+    const customApp = createApp({
+      geminiApiKey: 'test-key',
+      geminiModel: 'test-model',
+      allowedOrigins: ['https://breathewell.example.com'],
+    });
+
+    const res = await request(customApp)
+      .get('/api/geocoding/search?q=London')
+      .set('Origin', 'https://breathewell.example.com');
+
+    expect(res.headers['access-control-allow-origin']).toBe('https://breathewell.example.com');
+  });
+
   it('should enforce strict style-src without unsafe-inline in Content-Security-Policy', async () => {
     const res = await request(app).get('/api/geocoding/search?q=London');
 

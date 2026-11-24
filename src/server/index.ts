@@ -19,6 +19,7 @@ function start(): void {
   const app = createApp({
     geminiApiKey: env.GEMINI_API_KEY,
     geminiModel: env.GEMINI_MODEL,
+    allowedOrigins: env.ALLOWED_ORIGINS,
   });
 
   app.listen(env.PORT, () => {

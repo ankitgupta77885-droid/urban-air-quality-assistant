@@ -12,8 +12,23 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   error: 3,
 };
 
-const parsedLevel = logLevelSchema.safeParse(process.env['LOG_LEVEL']);
-const currentLevel: LogLevel = parsedLevel.success ? parsedLevel.data : 'info';
+let currentLevel: LogLevel = 'info';
+
+/**
+ * Sets the active logging level.
+ * @param level - Log level to set.
+ */
+export function setLogLevel(level: LogLevel): void {
+  currentLevel = level;
+}
+
+/**
+ * Gets the current active logging level.
+ * @returns The active LogLevel.
+ */
+export function getLogLevel(): LogLevel {
+  return currentLevel;
+}
 
 /**
  * Creates a namespaced logger instance.

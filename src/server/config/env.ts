@@ -8,6 +8,8 @@
 import { DEFAULT_PORT } from '@shared/constants.js';
 import { z } from 'zod';
 
+import { setLogLevel } from '../services/logger.js';
+
 /** Schema for environment variable validation. */
 const envSchema = z.object({
   GEMINI_API_KEY: z.string().min(1, 'GEMINI_API_KEY is required'),
@@ -15,6 +17,17 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(DEFAULT_PORT),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+  ALLOWED_ORIGINS: z
+    .string()
+    .default('')
+    .transform((val) =>
+      val
+        ? val
+            .split(',')
+            .map((o) => o.trim())
+            .filter(Boolean)
+        : [],
+    ),
 });
 
 /** Validated environment configuration type. */
@@ -39,5 +52,6 @@ export function loadEnvConfig(): EnvConfig {
     throw new Error(`Environment validation failed:\n${issues.join('\n')}`);
   }
 
+  setLogLevel(result.data.LOG_LEVEL);
   return result.data;
 }

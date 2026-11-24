@@ -8,6 +8,7 @@ import {
   GEOCODING_API_URL,
   GEOCODING_CACHE_TTL_MS,
   MAX_GEOCODING_RESULTS,
+  OUTBOUND_TIMEOUT_MS,
 } from '@shared/constants.js';
 import { openMeteoGeoResponseSchema, type OpenMeteoGeoResult } from '@shared/schemas.js';
 import type { GeocodingResult } from '@shared/types.js';
@@ -39,7 +40,7 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
 
   logger.info('Fetching geocoding results');
   const response = await fetch(buildGeocodingUrl(query), {
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(OUTBOUND_TIMEOUT_MS),
   });
 
   if (!response.ok) {

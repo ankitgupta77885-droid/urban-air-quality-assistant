@@ -7,6 +7,7 @@
 import {
   AIR_QUALITY_API_URL,
   AQI_CACHE_TTL_MS,
+  OUTBOUND_TIMEOUT_MS,
   POLLUTANT_DISPLAY_NAMES,
   POLLUTANT_UNIT,
 } from '@shared/constants.js';
@@ -52,7 +53,7 @@ export async function fetchAqiData(latitude: number, longitude: number): Promise
 
   logger.info('Fetching AQI data for:', cacheKey);
   const response = await fetch(buildAqiUrl(latitude, longitude), {
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(OUTBOUND_TIMEOUT_MS),
   });
 
   if (!response.ok) {

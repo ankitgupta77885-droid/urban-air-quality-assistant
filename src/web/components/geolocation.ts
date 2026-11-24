@@ -2,6 +2,7 @@
  * Browser geolocation helper for location search.
  */
 
+import { GEOLOCATION_MAX_AGE_MS, GEOLOCATION_TIMEOUT_MS } from '@shared/constants.js';
 import type { GeocodingResult } from '@shared/types.js';
 
 import { clearChildren, setText } from '../utils/dom.js';
@@ -47,8 +48,8 @@ export async function handleGeolocation(
 function requestCurrentPosition(): Promise<GeolocationPosition> {
   return new Promise<GeolocationPosition>((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject, {
-      timeout: 10000,
-      maximumAge: 300000,
+      timeout: GEOLOCATION_TIMEOUT_MS,
+      maximumAge: GEOLOCATION_MAX_AGE_MS,
     });
   });
 }

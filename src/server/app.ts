@@ -18,9 +18,10 @@ import { aqiRouter } from './routes/aqi.js';
 import { geocodingRouter } from './routes/geocoding.js';
 
 /** Configuration for creating the Express app. */
-interface AppConfig {
+export interface AppConfig {
   readonly geminiApiKey: string;
   readonly geminiModel: string;
+  readonly allowedOrigins?: readonly string[];
 }
 
 /**
@@ -31,7 +32,7 @@ interface AppConfig {
 export function createApp(config: AppConfig): Express {
   const app = express();
 
-  applySecurityMiddleware(app);
+  applySecurityMiddleware(app, { allowedOrigins: config.allowedOrigins });
   app.use('/api', requestTimeout);
 
   app.use('/api/geocoding', geocodingRouter);

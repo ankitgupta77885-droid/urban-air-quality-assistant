@@ -8,6 +8,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { loadEnvConfig } from '../../src/server/config/env.js';
+import { getLogLevel } from '../../src/server/services/logger.js';
 
 describe('loadEnvConfig', () => {
   const originalEnv = { ...process.env };
@@ -43,5 +44,32 @@ describe('loadEnvConfig', () => {
     vi.spyOn(process, 'loadEnvFile').mockImplementation(() => {});
 
     expect(() => loadEnvConfig()).toThrow('GEMINI_API_KEY');
+  });
+
+  it('parses comma-separated ALLOWED_ORIGINS into an array', () => {
+    process.env.ALLOWED_ORIGINS = 'https://app.breathewell.com, https://preview.breathewell.com';
+    vi.spyOn(process, 'loadEnvFile').mockImplementation(() => {});
+
+    const config = loadEnvConfig();
+    expect(config.ALLOWED_ORIGINS).toEqual([
+      'https://app.breathewell.com',
+      'https://preview.breathewell.com',
+    ]);
+  });
+
+  it('defaults ALLOWED_ORIGINS to empty array when unset', () => {
+    delete process.env.ALLOWED_ORIGINS;
+    vi.spyOn(process, 'loadEnvFile').mockImplementation(() => {});
+
+    const config = loadEnvConfig();
+    expect(config.ALLOWED_ORIGINS).toEqual([]);
+  });
+
+  it('updates logger level from LOG_LEVEL config', () => {
+    process.env.LOG_LEVEL = 'warn';
+    vi.spyOn(process, 'loadEnvFile').mockImplementation(() => {});
+
+    loadEnvConfig();
+    expect(getLogLevel()).toBe('warn');
   });
 });
