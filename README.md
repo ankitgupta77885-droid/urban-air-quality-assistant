@@ -1,4 +1,4 @@
-# 🌬️ BreatheWell
+# BreatheWell
 
 > **GenAI-powered web assistant** helping young families navigate severe urban air pollution with personalized, actionable advice.
 
@@ -127,7 +127,7 @@ cp .env.example .env
 Edit `.env` and set your Google Gemini API key:
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.0-flash
+GEMINI_MODEL=gemini-3.6-flash
 PORT=3000
 NODE_ENV=development
 ```
@@ -162,7 +162,7 @@ All variables are loaded and validated at server startup via Zod (`src/server/co
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `GEMINI_API_KEY` | **Yes** | *None* | Google Gemini API key (see `.env.example`). |
-| `GEMINI_MODEL` | No | `gemini-2.0-flash` | Gemini model name (e.g. `gemini-2.0-flash`, `gemini-1.5-pro`). |
+| `GEMINI_MODEL` | No | `gemini-3.6-flash` | Gemini model name (e.g. `gemini-3.6-flash`, `gemini-1.5-pro`). |
 | `PORT` | No | `3000` | HTTP port for the Express backend server. |
 | `NODE_ENV` | No | `development` | Environment mode (`development`, `production`, `test`). |
 | `LOG_LEVEL` | No | `info` | Logger severity threshold (`debug`, `info`, `warn`, `error`). |
@@ -243,6 +243,12 @@ npm run lint
 4. **Target Demographic**: Recommendations are tailored specifically to households with young children (ages 0–8). Guidance may need adaptation for adults or older teenagers.
 5. **Non-Medical Guidance**: This application provides behavioral, environmental, and lifestyle suggestions, not medical diagnoses or treatment. A prominent medical disclaimer is displayed.
 6. **In-Memory Caching**: Caches for geocoding and air quality readings reside in process memory with TTL expiration. Server restarts clear active cache entries.
+
+---
+
+## Known Issues
+
+- **Dev-only Vitest Canvas Warning**: During automated accessibility audits (`vitest run`), jsdom emits an informational note: `Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)`. This occurs because axe-core checks for canvas ligature support if canvas exists. This dev-only diagnostic does not indicate any WCAG 2.1 AA violation or browser runtime issue, and all automated accessibility checks pass with 0 violations.
 
 ---
 
