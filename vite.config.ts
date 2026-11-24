@@ -11,7 +11,7 @@ export default defineConfig({
   build: {
     outDir: 'dist/web',
     emptyOutDir: true,
-    sourcemap: true,
+    sourcemap: false,
     target: 'es2022',
   },
   resolve: {
