@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ankitgupta77885-droid/urban-air-quality-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/ankitgupta77885-droid/urban-air-quality-assistant/actions/workflows/ci.yml)
 
-> **GenAI-powered web assistant** helping families and communities navigate severe urban air pollution with personalized, actionable advice.
+> **GenAI-powered web assistant** helping families and communities navigate severe winter smog and urban air pollution with personalized, actionable advice.
 
 ---
 

@@ -19,7 +19,7 @@ export function renderHero(container: HTMLElement): void {
   const copyCol = createElement('div', 'hero-copy-col');
 
   const h1 = createElement('h1', 'hero-headline');
-  setText(h1, 'Breathe easier through urban air pollution');
+  setText(h1, 'Breathe easier through winter smog');
   headlineCol.appendChild(h1);
 
   const lead = createElement('p', 'hero-lead');

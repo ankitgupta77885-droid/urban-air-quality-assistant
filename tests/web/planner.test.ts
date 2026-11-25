@@ -24,7 +24,7 @@ describe('Step 3: Hero Component', () => {
 
     const h1 = container.querySelector('h1.hero-headline');
     expect(h1).not.toBeNull();
-    expect(h1?.textContent).toBe('Breathe easier through urban air pollution');
+    expect(h1?.textContent).toBe('Breathe easier through winter smog');
     expect(h1?.textContent).not.toContain('severe');
 
     const lead = container.querySelector('.hero-lead');
