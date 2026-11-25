@@ -273,8 +273,41 @@ describe('personalizeAdvice', () => {
     expect(result.actions[0]?.title).toBe('Ventilate carefully');
   });
 
+  it('should retry once when the initial call fails and succeed on retry', async () => {
+    const validJson = JSON.stringify({
+      riskLevel: 'moderate',
+      riskSummary: 'Tailored advice after retry.',
+      actions: [
+        {
+          category: 'morning-routine',
+          title: 'Ventilate carefully',
+          description: 'Open windows briefly at noon.',
+          impact: 'Reduces stale air.',
+          benefit: 'High',
+          icon: 'sun',
+        },
+      ],
+    });
+    mockGenerateContent
+      .mockRejectedValueOnce(new Error('503 Service Unavailable'))
+      .mockResolvedValueOnce({ text: validJson });
+
+    const result = await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: makeAqiData(),
+      context: makeContext(),
+      apiKey: 'fake-key',
+      modelName: 'gemini-flash-lite-latest',
+    });
+
+    expect(result.isBasicMode).toBe(false);
+    expect(result.personalization).toBe('ai');
+    expect(result.riskSummary).toBe('Tailored advice after retry.');
+    expect(mockGenerateContent).toHaveBeenCalledTimes(2);
+  });
+
   it('should pass with no GEMINI_API_KEY set and fall back safely without network', async () => {
-    mockGenerateContent.mockRejectedValueOnce(new Error('API key required'));
+    mockGenerateContent.mockRejectedValue(new Error('API key required'));
 
     const result = await personalizeAdvice({
       rulesOutput: makeRulesOutput(),
@@ -291,7 +324,7 @@ describe('personalizeAdvice', () => {
   });
 
   it('should pass with a fake key and fall back when API call fails', async () => {
-    mockGenerateContent.mockRejectedValueOnce(new Error('API key not valid'));
+    mockGenerateContent.mockRejectedValue(new Error('API key not valid'));
 
     const result = await personalizeAdvice({
       rulesOutput: makeRulesOutput(),
@@ -308,7 +341,7 @@ describe('personalizeAdvice', () => {
   });
 
   it('should fall back to basic mode when model name is invalid', async () => {
-    mockGenerateContent.mockRejectedValueOnce(new Error('Model not found'));
+    mockGenerateContent.mockRejectedValue(new Error('Model not found'));
 
     const result = await personalizeAdvice({
       rulesOutput: makeRulesOutput(),
@@ -342,7 +375,7 @@ describe('personalizeAdvice', () => {
   });
 
   it('should preserve all rules-engine data in fallback', async () => {
-    mockGenerateContent.mockRejectedValueOnce(new Error('Network error'));
+    mockGenerateContent.mockRejectedValue(new Error('Network error'));
     const rulesOutput = makeRulesOutput();
     const result = await personalizeAdvice({
       rulesOutput,

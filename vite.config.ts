@@ -22,6 +22,9 @@ export default defineConfig({
   },
   server: {
     port: CLIENT_PORT,
+    watch: {
+      ignored: ['**/coverage/**', '**/.git/**'],
+    },
     proxy: {
       '/api': {
         target: `http://localhost:${SERVER_PORT}`,

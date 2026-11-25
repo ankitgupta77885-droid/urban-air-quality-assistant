@@ -105,7 +105,7 @@ The assistant employs a strict hybrid decision-making architecture:
   - Strict output adhering to the JSON schema.
 - The prompt treats user context strictly as data, neutralizing prompt injection attempts.
 - Responses are parsed and validated against `geminiResponseSchema` using Zod.
-- A 12-second timeout via `Promise.race` prevents hanging requests.
+- A 20-second timeout via `Promise.race` prevents hanging requests.
 - On any error (network failure, rate limit, timeout, or schema mismatch), the app immediately returns the deterministic advice with `isBasicMode: true`.
 
 ---
@@ -260,7 +260,7 @@ npm run check
 Or run individual gates:
 
 ```bash
-# Run all 281 unit, integration, web, and accessibility tests
+# Run all 282 unit, integration, web, and accessibility tests
 npm test
 
 # Run tests with strict V8 code coverage enforcement
@@ -283,11 +283,11 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 | Area                                           | Statements | Branches   | Functions  | Lines      | Threshold Status      |
 | ---------------------------------------------- | ---------- | ---------- | ---------- | ---------- | --------------------- |
 | **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**   | **100%**   | Exceeds 90% threshold |
-| **Server Services (`src/server/services/**`)** | **98.49%** | **90.28%** | **100%**   | **98.49%** | Exceeds 90% threshold |
-| **Global Overall Codebase**                    | **94.56%** | **84.38%** | **94.71%** | **94.56%** | Exceeds 80% threshold |
+| **Server Services (`src/server/services/**`)** | **98.51%** | **90.32%** | **100%**   | **98.51%** | Exceeds 90% threshold |
+| **Global Overall Codebase**                    | **94.57%** | **84.44%** | **94.75%** | **94.57%** | Exceeds 80% threshold |
 
 - **Total Test Suites**: 27 passed (100%)
-- **Total Tests**: 281 passed (0 failed)
+- **Total Tests**: 282 passed (0 failed)
 - **External Mocking**: All external network requests (Open-Meteo, Gemini GenAI SDK) are strictly mocked; tests execute offline with zero live network calls.
 
 ---
@@ -296,9 +296,9 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 
 | Metric / Dimension                    | Before Refactor                         | After Refactor                           | Improvement Impact                                            |
 | ------------------------------------- | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
-| **Test Count**                        | 211 tests                               | **281 tests**                            | +70 comprehensive tests across edge cases                     |
-| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.56%**                               | Strict 80% CI threshold enforced                              |
-| **Server Services Coverage**          | Untracked (< 75%)                       | **98.49% Lines / 90.28% Branches**       | Strict 90% CI threshold enforced                              |
+| **Test Count**                        | 211 tests                               | **282 tests**                            | +71 comprehensive tests across edge cases                     |
+| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.57%**                               | Strict 80% CI threshold enforced                              |
+| **Server Services Coverage**          | Untracked (< 75%)                       | **98.51% Lines / 90.32% Branches**       | Strict 90% CI threshold enforced                              |
 | **Shared Module Coverage**            | Untracked                               | **100% (all metrics)**                   | 100% verification of constants & schemas                      |
 | **Max Cyclomatic Complexity**         | 27 (`getPollutantStatusBadge`)          | **<= 10**                                | Reduced to lookup tables; ESLint complexity: 10 enforced      |
 | **Files > 200 Lines (`src/`)**        | 6 files > 200 lines                     | **0 files**                              | Split into modular components; ESLint max-lines: 200 enforced |

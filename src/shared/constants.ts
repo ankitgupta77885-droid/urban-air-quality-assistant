@@ -137,14 +137,14 @@ export const DEFAULT_PORT = 3000 as const;
 /** Request body size limit. */
 export const BODY_SIZE_LIMIT = '10kb' as const;
 
-/** Request timeout in milliseconds (15 seconds). */
-export const REQUEST_TIMEOUT_MS = 15_000 as const;
+/** Request timeout in milliseconds (25 seconds). */
+export const REQUEST_TIMEOUT_MS = 25_000 as const;
 
 /** Outbound external HTTP request timeout in milliseconds (8 seconds). */
 export const OUTBOUND_TIMEOUT_MS = 8000 as const;
 
-/** Gemini API timeout in milliseconds (12 seconds). */
-export const GEMINI_TIMEOUT_MS = 12_000 as const;
+/** Gemini API timeout in milliseconds (20 seconds). */
+export const GEMINI_TIMEOUT_MS = 20_000 as const;
 
 /** Rate limit: max requests per window. */
 export const RATE_LIMIT_MAX = 60 as const;

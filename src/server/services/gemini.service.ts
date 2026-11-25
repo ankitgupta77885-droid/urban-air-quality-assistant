@@ -51,6 +51,26 @@ export async function personalizeAdvice(
 }
 
 /**
+ * Calls generateContent with a single retry on transient error or 503 spike.
+ * @param ai - Google GenAI instance.
+ * @param model - Target Gemini model.
+ * @param contents - Prepared prompt text.
+ * @returns Generated content response.
+ */
+async function generateWithRetry(
+  ai: GoogleGenAI,
+  model: string,
+  contents: string,
+): Promise<{ text?: string | null }> {
+  try {
+    return await ai.models.generateContent({ model, contents });
+  } catch (err: unknown) {
+    logger.warn(`Initial call to ${model} failed, retrying once:`, err);
+    return await ai.models.generateContent({ model, contents });
+  }
+}
+
+/**
  * Calls the Gemini API to personalize advice.
  * @param options - Advice personalization parameters.
  * @returns Validated personalized advice from Gemini.
@@ -62,7 +82,7 @@ async function callGemini(options: PersonalizeAdviceOptions): Promise<Personaliz
   const prompt = buildPrompt(rulesOutput, aqiData, context);
 
   const result = await Promise.race([
-    ai.models.generateContent({ model: modelName, contents: prompt }),
+    generateWithRetry(ai, modelName, prompt),
     rejectAfterTimeout(GEMINI_TIMEOUT_MS),
   ]);
 
