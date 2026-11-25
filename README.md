@@ -1,6 +1,6 @@
 # BreatheWell
 
-[![CI](https://github.com/ankit/breathewell/actions/workflows/ci.yml/badge.svg)](https://github.com/ankit/breathewell/actions/workflows/ci.yml)
+[![CI](https://github.com/ankitgupta77885-droid/urban-air-quality-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/ankitgupta77885-droid/urban-air-quality-assistant/actions/workflows/ci.yml)
 
 > **GenAI-powered web assistant** helping families and communities navigate severe urban air pollution with personalized, actionable advice.
 
@@ -174,6 +174,66 @@ npm start
 
 ---
 
+## Deployment
+
+BreatheWell is containerized with a production multi-stage Docker build and is ready to deploy to any container platform (such as Hugging Face Spaces, Google Cloud Run, Render, Railway, or AWS ECS).
+
+### Live Application
+
+- **Live URL**: [https://breathewell.example.com](https://breathewell.example.com) _(deployed application placeholder)_
+
+### Multi-Stage Dockerfile
+
+The multi-stage `Dockerfile` uses `node:22-slim` to create a minimal, secure container:
+
+1. **Build stage**: Runs `npm ci` and `npm run build` to compile the Vite frontend bundle into `dist/web`.
+2. **Runtime stage**: Installs production-only dependencies via `npm ci --omit=dev`, copies compiled `dist/`, TypeScript sources (`src/`), and `tsconfig.json`, sets `NODE_ENV=production` and `PORT=7860`, drops root privileges to run as the unprivileged `node` user, and executes `npx tsx src/server/index.ts`.
+
+#### Build Image
+
+```bash
+docker build -t breathewell .
+```
+
+#### Run Container
+
+```bash
+docker run -d \
+  -p 7860:7860 \
+  -e GEMINI_API_KEY="your_gemini_api_key_here" \
+  -e GEMINI_MODEL="gemini-3.6-flash" \
+  --name breathewell \
+  breathewell
+```
+
+### Required Environment Variables
+
+When running in containerized production environments, configure these environment variables:
+
+| Variable         | Required | Default                          | Description                                                        |
+| ---------------- | -------- | -------------------------------- | ------------------------------------------------------------------ |
+| `GEMINI_API_KEY` | **Yes**  | _None_                           | Google Gemini API key required for personalized advice generation. |
+| `GEMINI_MODEL`   | No       | `gemini-3.6-flash`               | Gemini model name (e.g. `gemini-3.6-flash`).                       |
+| `PORT`           | No       | `7860` (Docker) / `3000` (Local) | HTTP port for the Express application.                             |
+| `NODE_ENV`       | No       | `production`                     | Production environment flag.                                       |
+
+### Health Check Endpoint
+
+Container orchestrators and load balancers can verify application readiness using the dedicated endpoint:
+
+- **Endpoint**: `GET /api/health`
+- **Response**: `200 OK`
+
+```json
+{
+  "status": "ok"
+}
+```
+
+Reverse proxy environments (such as Kubernetes Ingress, Cloudflare, or AWS ALB) are supported via `app.set('trust proxy', 1)` in `createApp`.
+
+---
+
 ## Environment Variables
 
 All variables are loaded and validated at server startup via Zod (`src/server/config/env.ts`):
@@ -200,7 +260,7 @@ npm run check
 Or run individual gates:
 
 ```bash
-# Run all 278 unit, integration, web, and accessibility tests
+# Run all 281 unit, integration, web, and accessibility tests
 npm test
 
 # Run tests with strict V8 code coverage enforcement
@@ -224,10 +284,10 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 | ---------------------------------------------- | ---------- | ---------- | ---------- | ---------- | --------------------- |
 | **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**   | **100%**   | Exceeds 90% threshold |
 | **Server Services (`src/server/services/**`)** | **98.49%** | **90.28%** | **100%**   | **98.49%** | Exceeds 90% threshold |
-| **Global Overall Codebase**                    | **94.67%** | **82.88%** | **95.00%** | **94.67%** | Exceeds 80% threshold |
+| **Global Overall Codebase**                    | **94.56%** | **84.38%** | **94.71%** | **94.56%** | Exceeds 80% threshold |
 
-- **Total Test Suites**: 26 passed (100%)
-- **Total Tests**: 278 passed (0 failed)
+- **Total Test Suites**: 27 passed (100%)
+- **Total Tests**: 281 passed (0 failed)
 - **External Mocking**: All external network requests (Open-Meteo, Gemini GenAI SDK) are strictly mocked; tests execute offline with zero live network calls.
 
 ---
@@ -236,8 +296,8 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 
 | Metric / Dimension                    | Before Refactor                         | After Refactor                           | Improvement Impact                                            |
 | ------------------------------------- | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
-| **Test Count**                        | 211 tests                               | **278 tests**                            | +67 comprehensive tests across edge cases                     |
-| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.67%**                               | Strict 80% CI threshold enforced                              |
+| **Test Count**                        | 211 tests                               | **281 tests**                            | +70 comprehensive tests across edge cases                     |
+| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.56%**                               | Strict 80% CI threshold enforced                              |
 | **Server Services Coverage**          | Untracked (< 75%)                       | **98.49% Lines / 90.28% Branches**       | Strict 90% CI threshold enforced                              |
 | **Shared Module Coverage**            | Untracked                               | **100% (all metrics)**                   | 100% verification of constants & schemas                      |
 | **Max Cyclomatic Complexity**         | 27 (`getPollutantStatusBadge`)          | **<= 10**                                | Reduced to lookup tables; ESLint complexity: 10 enforced      |
@@ -309,6 +369,8 @@ breathewell/
 ├── .husky/
 │   └── pre-commit                          # Husky pre-commit hook (lint-staged)
 ├── .env.example                            # Template for environment variables
+├── .dockerignore                           # Docker build exclusion rules
+├── Dockerfile                              # Production multi-stage Dockerfile (node:22-slim)
 ├── eslint.config.js                        # Modern ESLint 9 flat configuration
 ├── .gitignore                              # Git exclusion rules
 ├── .prettierrc                             # Code formatting rules
@@ -382,7 +444,7 @@ breathewell/
 │       │   ├── pill.ts                     # Reusable status pill component
 │       │   ├── planner-tabs.ts             # Accessible planner tab controller
 │       │   └── recommendation-card.ts      # Action card item
-│       ├── styles/                         # Modular per-component CSS stylesheets
+│       ├── styles/                         # Modular per-component CSS stylesheets (<= 200 lines each)
 │       └── utils/
 │           ├── debounce.ts                 # Input debounce utility
 │           ├── dom.ts                      # Safe DOM manipulation helpers
@@ -392,6 +454,7 @@ breathewell/
     │   ├── advice.test.ts                  # Advice endpoint integration tests
     │   ├── aqi.test.ts                     # AQI endpoint integration tests
     │   ├── geocoding.test.ts               # Geocoding endpoint integration tests
+    │   ├── health.test.ts                  # Health check endpoint integration tests
     │   └── security.test.ts                # Helmet CSP, CORS, rate limiting integration tests
     ├── unit/
     │   ├── aqi-categorization.test.ts      # AQI breakpoint & category tests

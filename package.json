@@ -20,7 +20,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "node -e \"import('node:fs').then(fs => fs.mkdirSync('coverage/.tmp', { recursive: true }))\" && vitest run --coverage",
     "prepare": "husky"
   },
   "keywords": [
