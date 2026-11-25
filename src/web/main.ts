@@ -11,6 +11,7 @@ import { renderAdvicePlan } from './components/advice-plan.js';
 import { renderAqiDisplay } from './components/aqi-display.js';
 import {
   initContextForm,
+  setContextFormBusy,
   setContextFormLocationSelected,
   showContextForm,
 } from './components/context-form.js';
@@ -25,8 +26,12 @@ import { renderLocationPill } from './components/location-pill.js';
 import { initLocationSearch } from './components/location-search.js';
 import { renderNavbar } from './components/navbar.js';
 import { initPlannerTabs, setPlannerTabsEnabled } from './components/planner-tabs.js';
+import { clearSuccess, showSuccess } from './components/success-banner.js';
+import { scrollToElementById } from './utils/scroll.js';
 
 /** Currently selected location coordinates. */
+const PLAN_READY_MESSAGE = 'Your personalized plan is generated.';
+
 let selectedLat = 0;
 let selectedLon = 0;
 
@@ -43,6 +48,7 @@ async function onLocationSelected(result: GeocodingResult): Promise<void> {
   }
 
   clearError();
+  clearSuccess();
   showLoading('Fetching air quality data…');
 
   try {
@@ -75,6 +81,8 @@ function showLocationPill(locationLabel: string, aqi: number, category: string):
 /** Handles context form submission. */
 async function onContextSubmit(context: UserContext): Promise<void> {
   clearError();
+  clearSuccess();
+  setContextFormBusy(true);
   showLoading('Generating your personalized advice…');
 
   try {
@@ -82,6 +90,8 @@ async function onContextSubmit(context: UserContext): Promise<void> {
     hideLoading();
     renderAdvicePlan(advice);
     setPlannerTabsEnabled(true);
+    showSuccess(PLAN_READY_MESSAGE, { label: 'View your plan', href: '#advice-section' });
+    scrollToElementById('success-banner');
   } catch (error: unknown) {
     hideLoading();
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -91,6 +101,8 @@ async function onContextSubmit(context: UserContext): Promise<void> {
     showError(message, () => {
       void onContextSubmit(context);
     });
+  } finally {
+    setContextFormBusy(false);
   }
 }
 

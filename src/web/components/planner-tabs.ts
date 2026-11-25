@@ -99,16 +99,24 @@ function createTabButton(tabData: TabItem, isSelected: boolean): HTMLButtonEleme
   return tab;
 }
 
-/** Selects a specific tab by ID and updates ARIA states and panel visibility. */
-export function selectTab(tabId: string): void {
+/** Options for {@link selectTab}. */
+export interface SelectTabOptions {
+  /**
+   * Move keyboard focus to the selected tab. Only enable this for keyboard
+   * navigation: focusing a tab scrolls the page up to the planner header.
+   */
+  readonly focus?: boolean;
+}
+
+/**
+ * Selects a specific tab by ID and updates ARIA states and panel visibility.
+ * @param tabId - ID of the tab to select.
+ * @param options - Optional behavior flags; focus is not moved by default.
+ */
+export function selectTab(tabId: string, options: SelectTabOptions = {}): void {
   currentTabId = tabId;
   for (const tab of tabsList) {
-    const isTarget = tab.id === `tab-${tabId}`;
-    tab.setAttribute('aria-selected', isTarget ? 'true' : 'false');
-    tab.tabIndex = isTarget ? 0 : -1;
-    if (isTarget) {
-      tab.focus();
-    }
+    updateTabState(tab, tab.id === `tab-${tabId}`, options.focus === true);
   }
   for (const item of PLANNER_TABS) {
     const panel = document.getElementById(`panel-${item.id}`);
@@ -118,6 +126,15 @@ export function selectTab(tabId: string): void {
   }
   if (onTabChangeCb && isEnabled) {
     onTabChangeCb(tabId);
+  }
+}
+
+/** Syncs one tab's ARIA state and roving tabindex, optionally focusing it. */
+function updateTabState(tab: HTMLButtonElement, isTarget: boolean, shouldFocus: boolean): void {
+  tab.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+  tab.tabIndex = isTarget ? 0 : -1;
+  if (isTarget && shouldFocus) {
+    tab.focus();
   }
 }
 
@@ -146,6 +163,6 @@ function handleTabKeydown(e: KeyboardEvent): void {
 
   if (nextTab) {
     e.preventDefault();
-    selectTab(nextTab.id);
+    selectTab(nextTab.id, { focus: true });
   }
 }

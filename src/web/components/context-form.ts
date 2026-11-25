@@ -53,6 +53,33 @@ export function showContextForm(): void {
   }
 }
 
+const SUBMIT_LABEL = 'Generate Personalized Advice';
+const SUBMIT_BUSY_LABEL = 'Generating your plan…';
+
+/**
+ * Switches the submit button between its idle and busy (request in flight) states.
+ * @param busy - True while advice is being generated.
+ */
+export function setContextFormBusy(busy: boolean): void {
+  const button = submitButtonEl;
+  if (!button) {
+    return;
+  }
+  button.classList.toggle('is-busy', busy);
+  if (busy) {
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    setText(button, SUBMIT_BUSY_LABEL);
+    return;
+  }
+  button.removeAttribute('aria-busy');
+  setText(button, SUBMIT_LABEL);
+  const form = document.querySelector<HTMLFormElement>('form.context-form');
+  if (form) {
+    updateSubmitButtonState(form);
+  }
+}
+
 /** Updates the submission button state based on location selection. */
 export function setContextFormLocationSelected(selected: boolean, locationName?: string): void {
   isLocationSelected = selected;
@@ -153,7 +180,7 @@ function createSubmitSection(): HTMLElement {
   submitButtonEl.id = 'submit-advice-btn';
   submitButtonEl.disabled = true;
   submitButtonEl.setAttribute('aria-disabled', 'true');
-  setText(submitButtonEl, 'Generate Personalized Advice');
+  setText(submitButtonEl, SUBMIT_LABEL);
 
   disabledHintEl = createElement('p', 'disabled-hint');
   disabledHintEl.id = 'advice-disabled-hint';

@@ -27,8 +27,7 @@
 /* ── Unified Planner Card ── */
 
 .planner-card {
-  max-width: 1100px;
-  margin: 0 auto var(--space-2xl);
+  margin: 0 0 var(--space-2xl);
   padding: var(--space-xl);
 }
 

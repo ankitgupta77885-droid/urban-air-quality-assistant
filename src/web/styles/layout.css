@@ -25,8 +25,9 @@ section {
   margin-bottom: var(--space-xl);
 }
 section[id],
-div[id='results'] {
-  scroll-margin-top: 80px;
+div[id='results'],
+div[id='success-banner'] {
+  scroll-margin-top: 88px;
 }
 
 /* ── Planner Top Row & Location Pill ── */
