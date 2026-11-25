@@ -25,7 +25,10 @@ describe('Step 3: Hero Component', () => {
     expect(h1?.textContent).not.toContain('severe');
 
     const lead = container.querySelector('.hero-lead');
-    expect(lead?.textContent).toContain('low-emission daily routines');
+    expect(lead?.textContent).toContain('low-emission routines');
+    expect(lead?.textContent).toContain(
+      'Personalized low-emission routines, indoor air tips, and sustainable alternatives for winter smog',
+    );
 
     // Ensure no mock stats or fake AQI numbers exist in hero
     expect(container.textContent).not.toContain('AQI');

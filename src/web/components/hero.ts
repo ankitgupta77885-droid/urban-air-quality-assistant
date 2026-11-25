@@ -25,9 +25,9 @@ export function renderHero(container: HTMLElement): void {
   const lead = createElement('p', 'hero-lead');
   setText(
     lead,
-    'Personalized low-emission daily routines, indoor air tips, and sustainable alternatives ' +
-      'tailored to your family. Understand the real impact of every household choice ' +
-      'without the panic.',
+    'Personalized low-emission routines, indoor air tips, and sustainable alternatives ' +
+      'for winter smog and everyday urban air pollution. Understand the real impact ' +
+      'of every household choice, without the panic.',
   );
   copyCol.appendChild(lead);
   copyCol.appendChild(createHeroActions());

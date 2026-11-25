@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ankit/breathewell/actions/workflows/ci.yml/badge.svg)](https://github.com/ankit/breathewell/actions/workflows/ci.yml)
 
-> **GenAI-powered web assistant** helping young families navigate severe urban air pollution with personalized, actionable advice.
+> **GenAI-powered web assistant** helping families and communities navigate severe urban air pollution with personalized, actionable advice.
 
 ---
 
