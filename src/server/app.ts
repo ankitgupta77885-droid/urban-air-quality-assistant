@@ -32,8 +32,14 @@ export interface AppConfig {
 export function createApp(config: AppConfig): Express {
   const app = express();
 
+  app.set('trust proxy', 1);
+
   applySecurityMiddleware(app, { allowedOrigins: config.allowedOrigins });
   app.use('/api', requestTimeout);
+
+  app.get('/api/health', (_req, res) => {
+    res.json({ status: 'ok' });
+  });
 
   app.use('/api/geocoding', geocodingRouter);
   app.use('/api/aqi', aqiRouter);
