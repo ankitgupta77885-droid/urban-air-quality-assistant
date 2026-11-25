@@ -50,10 +50,7 @@ function createTestDocument(): Document {
       <section id="hero-section" class="hero-section" aria-label="Introduction">
         <div id="hero">
           <div class="hero-content">
-            <p class="hero-eyebrow">
-              Winter smog and urban air pollution assistant for families and communities
-            </p>
-            <h1 class="hero-headline">Breathe easier through winter smog</h1>
+            <h1 class="hero-headline">Breathe easier through urban air pollution</h1>
             <p class="hero-lead">
               Protecting young lungs starts with small, daily adjustments. Get clean-air routines,
               safer travel tips, and practical choices for home.
@@ -351,6 +348,6 @@ describe('Accessibility (axe-core)', () => {
     const document = createTestDocument();
     const h1s = document.querySelectorAll('h1');
     expect(h1s.length).toBe(1);
-    expect(h1s[0]?.textContent).toBe('Breathe easier through winter smog');
+    expect(h1s[0]?.textContent).toBe('Breathe easier through urban air pollution');
   });
 });

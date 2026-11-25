@@ -20,14 +20,11 @@ describe('Step 3: Hero Component', () => {
     renderHero(container);
 
     const eyebrow = container.querySelector('.hero-eyebrow');
-    expect(eyebrow).not.toBeNull();
-    expect(eyebrow?.textContent).toBe(
-      'Winter smog and urban air pollution assistant for families and communities',
-    );
+    expect(eyebrow).toBeNull();
 
     const h1 = container.querySelector('h1.hero-headline');
     expect(h1).not.toBeNull();
-    expect(h1?.textContent).toBe('Breathe easier through winter smog');
+    expect(h1?.textContent).toBe('Breathe easier through urban air pollution');
     expect(h1?.textContent).not.toContain('severe');
 
     const lead = container.querySelector('.hero-lead');

@@ -152,7 +152,7 @@ The layout scales seamlessly from mobile (`360px`) to full desktop (`1440px`).
 
 ### 7.2 Hero Section & Rounded Planner Card
 
-- **Headline (Left):** _"Breathe easier through severe winter smog."_ (`display-hero`).
+- **Headline (Left):** _"Breathe easier through urban air pollution."_ (`display-hero`).
 - **Support Paragraph (Right):** Summary of personalized routines, indoor air hacks, and sustainable travel options with measured impact.
 - **Hero Card Container:**
   - Radius: `24px`, background: frosted pastel gradient + white surface well.

@@ -24,17 +24,6 @@
   gap: var(--space-xs);
 }
 
-.hero-eyebrow {
-  display: inline-block;
-  font-size: var(--font-size-label-md);
-  line-height: var(--line-height-label-md);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-ink-muted);
-  margin: 0;
-}
-
 .hero-headline {
   font-size: clamp(2.5rem, 3.8vw, 3.25rem); /* ~40px to 52px */
   line-height: 1.1;
