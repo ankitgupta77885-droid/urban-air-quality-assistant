@@ -263,7 +263,7 @@ describe('personalizeAdvice', () => {
       aqiData: makeAqiData(),
       context: makeContext(),
       apiKey: 'fake-key',
-      modelName: 'gemini-3.6-flash',
+      modelName: 'gemini-flash-lite-latest',
     });
 
     expect(result.isBasicMode).toBe(false);
@@ -281,7 +281,7 @@ describe('personalizeAdvice', () => {
       aqiData: makeAqiData(),
       context: makeContext(),
       apiKey: '',
-      modelName: 'gemini-3.6-flash',
+      modelName: 'gemini-flash-lite-latest',
     });
 
     expect(result.isBasicMode).toBe(true);
@@ -298,7 +298,7 @@ describe('personalizeAdvice', () => {
       aqiData: makeAqiData(),
       context: makeContext(),
       apiKey: 'fake-api-key-12345',
-      modelName: 'gemini-3.6-flash',
+      modelName: 'gemini-flash-lite-latest',
     });
 
     expect(result.isBasicMode).toBe(true);
@@ -333,7 +333,7 @@ describe('personalizeAdvice', () => {
       aqiData: makeAqiData(),
       context: makeContext(),
       apiKey: 'fake-key',
-      modelName: 'gemini-3.6-flash',
+      modelName: 'gemini-flash-lite-latest',
     });
 
     expect(result.isBasicMode).toBe(true);
@@ -349,7 +349,7 @@ describe('personalizeAdvice', () => {
       aqiData: makeAqiData(),
       context: makeContext(),
       apiKey: 'fake-key',
-      modelName: 'gemini-3.6-flash',
+      modelName: 'gemini-flash-lite-latest',
     });
 
     expect(result.riskSummary).toBe(rulesOutput.riskSummary);

@@ -57,7 +57,7 @@ export async function personalizeAdvice(
  */
 async function callGemini(options: PersonalizeAdviceOptions): Promise<PersonalizedAdvice> {
   const { rulesOutput, aqiData, context, apiKey, modelName } = options;
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey, apiVersion: 'v1beta' });
 
   const prompt = buildPrompt(rulesOutput, aqiData, context);
 

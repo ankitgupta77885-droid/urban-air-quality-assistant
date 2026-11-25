@@ -137,7 +137,7 @@ Edit `.env` and set your Google Gemini API key:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-3.6-flash
+GEMINI_MODEL=gemini-flash-lite-latest
 PORT=3000
 NODE_ENV=development
 ```
@@ -201,7 +201,7 @@ docker build -t breathewell .
 docker run -d \
   -p 7860:7860 \
   -e GEMINI_API_KEY="your_gemini_api_key_here" \
-  -e GEMINI_MODEL="gemini-3.6-flash" \
+  -e GEMINI_MODEL="gemini-flash-lite-latest" \
   --name breathewell \
   breathewell
 ```
@@ -213,7 +213,7 @@ When running in containerized production environments, configure these environme
 | Variable         | Required | Default                          | Description                                                        |
 | ---------------- | -------- | -------------------------------- | ------------------------------------------------------------------ |
 | `GEMINI_API_KEY` | **Yes**  | _None_                           | Google Gemini API key required for personalized advice generation. |
-| `GEMINI_MODEL`   | No       | `gemini-3.6-flash`               | Gemini model name (e.g. `gemini-3.6-flash`).                       |
+| `GEMINI_MODEL`   | No       | `gemini-flash-lite-latest`       | Gemini model name (e.g. `gemini-flash-lite-latest`).               |
 | `PORT`           | No       | `7860` (Docker) / `3000` (Local) | HTTP port for the Express application.                             |
 | `NODE_ENV`       | No       | `production`                     | Production environment flag.                                       |
 
@@ -238,13 +238,13 @@ Reverse proxy environments (such as Kubernetes Ingress, Cloudflare, or AWS ALB) 
 
 All variables are loaded and validated at server startup via Zod (`src/server/config/env.ts`):
 
-| Variable         | Required | Default            | Description                                                    |
-| ---------------- | -------- | ------------------ | -------------------------------------------------------------- |
-| `GEMINI_API_KEY` | **Yes**  | _None_             | Google Gemini API key (see `.env.example`).                    |
-| `GEMINI_MODEL`   | No       | `gemini-3.6-flash` | Gemini model name (e.g. `gemini-3.6-flash`, `gemini-1.5-pro`). |
-| `PORT`           | No       | `3000`             | HTTP port for the Express backend server.                      |
-| `NODE_ENV`       | No       | `development`      | Environment mode (`development`, `production`, `test`).        |
-| `LOG_LEVEL`      | No       | `info`             | Logger severity threshold (`debug`, `info`, `warn`, `error`).  |
+| Variable         | Required | Default                    | Description                                                              |
+| ---------------- | -------- | -------------------------- | ------------------------------------------------------------------------ |
+| `GEMINI_API_KEY` | **Yes**  | _None_                     | Google Gemini API key (see `.env.example`).                              |
+| `GEMINI_MODEL`   | No       | `gemini-flash-lite-latest` | Gemini model name (e.g. `gemini-flash-lite-latest`, `gemini-3.6-flash`). |
+| `PORT`           | No       | `3000`                     | HTTP port for the Express backend server.                                |
+| `NODE_ENV`       | No       | `development`              | Environment mode (`development`, `production`, `test`).                  |
+| `LOG_LEVEL`      | No       | `info`                     | Logger severity threshold (`debug`, `info`, `warn`, `error`).            |
 
 ---
 

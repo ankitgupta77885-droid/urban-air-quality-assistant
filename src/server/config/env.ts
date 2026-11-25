@@ -13,7 +13,7 @@ import { setLogLevel } from '../services/logger.js';
 /** Schema for environment variable validation. */
 const envSchema = z.object({
   GEMINI_API_KEY: z.string().min(1, 'GEMINI_API_KEY is required'),
-  GEMINI_MODEL: z.string().min(1).default('gemini-3.6-flash'),
+  GEMINI_MODEL: z.string().min(1).default('gemini-flash-lite-latest'),
   PORT: z.coerce.number().int().positive().default(DEFAULT_PORT),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
