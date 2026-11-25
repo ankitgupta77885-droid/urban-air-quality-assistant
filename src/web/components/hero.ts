@@ -18,6 +18,10 @@ export function renderHero(container: HTMLElement): void {
   const headlineCol = createElement('div', 'hero-headline-col');
   const copyCol = createElement('div', 'hero-copy-col');
 
+  const eyebrow = createElement('p', 'hero-eyebrow');
+  setText(eyebrow, 'Winter smog and urban air pollution assistant for families and communities');
+  headlineCol.appendChild(eyebrow);
+
   const h1 = createElement('h1', 'hero-headline');
   setText(h1, 'Breathe easier through winter smog');
   headlineCol.appendChild(h1);
