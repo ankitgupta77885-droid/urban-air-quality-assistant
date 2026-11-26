@@ -11,7 +11,7 @@ import type {
   RiskLevel,
   RulesEngineOutput,
   UserContext,
-} from '@shared/types.js';
+} from '../../shared/types.js';
 
 import { buildCommuteActions, buildOutdoorActions } from './activity-actions.js';
 import { buildIndoorHacks, buildSustainableAlternatives } from './lifestyle-actions.js';

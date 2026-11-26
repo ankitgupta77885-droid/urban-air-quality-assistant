@@ -7,10 +7,15 @@
  */
 
 import { GoogleGenAI } from '@google/genai';
-import { GEMINI_TIMEOUT_MS } from '@shared/constants.js';
-import { geminiResponseSchema } from '@shared/schemas.js';
-import type { AqiData, PersonalizedAdvice, RulesEngineOutput, UserContext } from '@shared/types.js';
 
+import { GEMINI_TIMEOUT_MS } from '../../shared/constants.js';
+import { geminiResponseSchema } from '../../shared/schemas.js';
+import type {
+  AqiData,
+  PersonalizedAdvice,
+  RulesEngineOutput,
+  UserContext,
+} from '../../shared/types.js';
 import { GeminiError } from '../errors/app-errors.js';
 
 import { buildPrompt } from './gemini-prompt.js';

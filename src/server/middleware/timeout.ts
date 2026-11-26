@@ -4,8 +4,9 @@
  * Aborts requests that exceed the configured timeout threshold.
  */
 
-import { REQUEST_TIMEOUT_MS } from '@shared/constants.js';
 import type { NextFunction, Request, Response } from 'express';
+
+import { REQUEST_TIMEOUT_MS } from '../../shared/constants.js';
 
 /**
  * Middleware that sets a timeout on each request.

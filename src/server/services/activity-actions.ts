@@ -2,8 +2,13 @@
  * Activity action builders (commute and outdoor activity).
  */
 
-import { ADVICE_CATEGORY_ICONS } from '@shared/constants.js';
-import type { ActionIconKey, RecommendedAction, RiskLevel, UserContext } from '@shared/types.js';
+import { ADVICE_CATEGORY_ICONS } from '../../shared/constants.js';
+import type {
+  ActionIconKey,
+  RecommendedAction,
+  RiskLevel,
+  UserContext,
+} from '../../shared/types.js';
 
 import { isElevatedRisk } from './rules-engine-helpers.js';
 

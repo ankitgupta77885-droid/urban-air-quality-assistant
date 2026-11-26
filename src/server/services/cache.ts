@@ -5,7 +5,7 @@
  * maximum size with LRU-style eviction (oldest first).
  */
 
-import { MAX_CACHE_ENTRIES } from '@shared/constants.js';
+import { MAX_CACHE_ENTRIES } from '../../shared/constants.js';
 
 /** A cached entry with its expiration timestamp. */
 interface CacheEntry<T> {

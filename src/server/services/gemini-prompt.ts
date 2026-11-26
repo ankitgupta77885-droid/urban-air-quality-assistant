@@ -2,7 +2,7 @@
  * Prompt builder for Gemini air quality advice personalization.
  */
 
-import type { AqiData, RulesEngineOutput, UserContext } from '@shared/types.js';
+import type { AqiData, RulesEngineOutput, UserContext } from '../../shared/types.js';
 
 /**
  * Builds the Gemini prompt with system instructions and structured data.

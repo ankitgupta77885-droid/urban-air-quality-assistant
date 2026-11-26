@@ -5,10 +5,10 @@
  * Returns current air quality data for the given coordinates.
  */
 
-import { aqiQuerySchema } from '@shared/schemas.js';
-import type { ApiResponse, AqiData } from '@shared/types.js';
 import { Router } from 'express';
 
+import { aqiQuerySchema } from '../../shared/schemas.js';
+import type { ApiResponse, AqiData } from '../../shared/types.js';
 import { ValidationError } from '../errors/app-errors.js';
 import { fetchAqiData } from '../services/aqi.service.js';
 

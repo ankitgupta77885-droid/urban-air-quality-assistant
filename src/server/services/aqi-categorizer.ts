@@ -4,8 +4,8 @@
  * Maps raw AQI values to their US EPA category, color class, and icon.
  */
 
-import { AQI_BREAKPOINTS } from '@shared/constants.js';
-import type { AqiCategory } from '@shared/types.js';
+import { AQI_BREAKPOINTS } from '../../shared/constants.js';
+import type { AqiCategory } from '../../shared/types.js';
 
 /** Result of categorizing an AQI value. */
 export interface AqiCategoryInfo {

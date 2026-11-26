@@ -5,7 +5,7 @@
  * factors (child age, health conditions, activity level).
  */
 
-import type { RiskLevel, UserContext } from '@shared/types.js';
+import type { RiskLevel, UserContext } from '../../shared/types.js';
 
 /** Score thresholds for risk level classification. */
 const RISK_THRESHOLDS = {

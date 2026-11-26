@@ -9,10 +9,9 @@ import {
   GEOCODING_CACHE_TTL_MS,
   MAX_GEOCODING_RESULTS,
   OUTBOUND_TIMEOUT_MS,
-} from '@shared/constants.js';
-import { openMeteoGeoResponseSchema, type OpenMeteoGeoResult } from '@shared/schemas.js';
-import type { GeocodingResult } from '@shared/types.js';
-
+} from '../../shared/constants.js';
+import { openMeteoGeoResponseSchema, type OpenMeteoGeoResult } from '../../shared/schemas.js';
+import type { GeocodingResult } from '../../shared/types.js';
 import { UpstreamApiError } from '../errors/app-errors.js';
 
 import { TtlCache } from './cache.js';

@@ -4,17 +4,18 @@
  * Sets up helmet (CSP), CORS, rate limiting, and body size limits.
  */
 
-import {
-  BODY_SIZE_LIMIT,
-  CORS_MAX_AGE_SECONDS,
-  RATE_LIMIT_MAX,
-  RATE_LIMIT_WINDOW_MS,
-} from '@shared/constants.js';
 import compression from 'compression';
 import cors, { type CorsOptions } from 'cors';
 import express, { type Express } from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+
+import {
+  BODY_SIZE_LIMIT,
+  CORS_MAX_AGE_SECONDS,
+  RATE_LIMIT_MAX,
+  RATE_LIMIT_WINDOW_MS,
+} from '../../shared/constants.js';
 
 /** Default allowed origins for CORS. */
 const DEFAULT_ALLOWED_ORIGINS: readonly string[] = [

@@ -2,8 +2,13 @@
  * Routine action builders (morning and evening routines).
  */
 
-import { ADVICE_CATEGORY_ICONS } from '@shared/constants.js';
-import type { ActionIconKey, RecommendedAction, RiskLevel, UserContext } from '@shared/types.js';
+import { ADVICE_CATEGORY_ICONS } from '../../shared/constants.js';
+import type {
+  ActionIconKey,
+  RecommendedAction,
+  RiskLevel,
+  UserContext,
+} from '../../shared/types.js';
 
 import { hasHealthCondition, isElevatedRisk } from './rules-engine-helpers.js';
 

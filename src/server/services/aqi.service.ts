@@ -10,10 +10,9 @@ import {
   OUTBOUND_TIMEOUT_MS,
   POLLUTANT_DISPLAY_NAMES,
   POLLUTANT_UNIT,
-} from '@shared/constants.js';
-import { openMeteoAqiResponseSchema, type OpenMeteoAqiCurrent } from '@shared/schemas.js';
-import type { AqiData, PollutantReading } from '@shared/types.js';
-
+} from '../../shared/constants.js';
+import { openMeteoAqiResponseSchema, type OpenMeteoAqiCurrent } from '../../shared/schemas.js';
+import type { AqiData, PollutantReading } from '../../shared/types.js';
 import { UpstreamApiError } from '../errors/app-errors.js';
 
 import { categorizeAqi } from './aqi-categorizer.js';

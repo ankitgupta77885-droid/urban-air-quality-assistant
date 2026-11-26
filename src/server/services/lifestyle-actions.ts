@@ -2,14 +2,14 @@
  * Lifestyle action builders (indoor air hacks and sustainable alternatives).
  */
 
-import { ADVICE_CATEGORY_ICONS } from '@shared/constants.js';
+import { ADVICE_CATEGORY_ICONS } from '../../shared/constants.js';
 import type {
   ActionIconKey,
   AqiData,
   RecommendedAction,
   RiskLevel,
   UserContext,
-} from '@shared/types.js';
+} from '../../shared/types.js';
 
 import { isElevatedRisk } from './rules-engine-helpers.js';
 

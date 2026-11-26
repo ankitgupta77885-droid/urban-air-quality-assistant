@@ -5,10 +5,10 @@
  * Returns matching city results from the Open-Meteo Geocoding API.
  */
 
-import { geocodingQuerySchema } from '@shared/schemas.js';
-import type { ApiResponse, GeocodingResult } from '@shared/types.js';
 import { Router } from 'express';
 
+import { geocodingQuerySchema } from '../../shared/schemas.js';
+import type { ApiResponse, GeocodingResult } from '../../shared/types.js';
 import { ValidationError } from '../errors/app-errors.js';
 import { searchCities } from '../services/geocoding.service.js';
 

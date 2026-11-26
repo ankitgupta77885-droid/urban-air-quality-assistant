@@ -5,10 +5,10 @@
  * Accepts user context and location, returns personalized air quality advice.
  */
 
-import { adviceRequestSchema } from '@shared/schemas.js';
-import type { ApiResponse, PersonalizedAdvice } from '@shared/types.js';
 import { Router, type Request, type Response } from 'express';
 
+import { adviceRequestSchema } from '../../shared/schemas.js';
+import type { ApiResponse, PersonalizedAdvice } from '../../shared/types.js';
 import { ValidationError } from '../errors/app-errors.js';
 import { fetchAqiData } from '../services/aqi.service.js';
 import { personalizeAdvice } from '../services/gemini.service.js';

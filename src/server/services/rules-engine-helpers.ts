@@ -2,7 +2,7 @@
  * Shared helper functions for rules engine and action builders.
  */
 
-import type { HealthCondition, RiskLevel, UserContext } from '@shared/types.js';
+import type { HealthCondition, RiskLevel, UserContext } from '../../shared/types.js';
 
 /**
  * Checks whether the risk level is elevated (high, very-high, or critical).

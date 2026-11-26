@@ -5,9 +5,9 @@
  * typed access to configuration values.
  */
 
-import { DEFAULT_PORT } from '@shared/constants.js';
 import { z } from 'zod';
 
+import { DEFAULT_PORT } from '../../shared/constants.js';
 import { setLogLevel } from '../services/logger.js';
 
 /** Schema for environment variable validation. */
