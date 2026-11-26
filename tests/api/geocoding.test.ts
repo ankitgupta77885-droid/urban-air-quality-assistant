@@ -51,6 +51,9 @@ describe('GET /api/geocoding/search', () => {
 
     expect(res.status).toBe(200);
     expect(body.success).toBe(true);
+    expect(res.headers['cache-control']).toBe(
+      'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+    );
     expect(body.data).toHaveLength(1);
     expect(body.data?.[0]?.name).toBe('Delhi');
   });

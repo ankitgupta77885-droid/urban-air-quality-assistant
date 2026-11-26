@@ -25,6 +25,7 @@ import {
   buildFallbackAdvice,
   buildPrompt,
   cleanJsonResponse,
+  clearGeminiCache,
   parseGeminiResponse,
   personalizeAdvice,
   rejectAfterTimeout,
@@ -34,6 +35,7 @@ beforeEach(() => {
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'error').mockImplementation(() => {});
   mockGenerateContent.mockReset();
+  clearGeminiCache();
 });
 
 afterEach(() => {
@@ -271,6 +273,47 @@ describe('personalizeAdvice', () => {
     expect(result.riskSummary).toBe('Tailored advice for your family.');
     expect(result.actions).toHaveLength(1);
     expect(result.actions[0]?.title).toBe('Ventilate carefully');
+  });
+
+  it('should serve cached AI advice on repeat requests without calling Gemini again', async () => {
+    const validJson = JSON.stringify({
+      riskLevel: 'moderate',
+      riskSummary: 'Cached tailored advice.',
+      actions: [
+        {
+          category: 'morning-routine',
+          title: 'Ventilate carefully',
+          description: 'Open windows briefly at noon.',
+          impact: 'Reduces stale air.',
+          benefit: 'High',
+          icon: 'sun',
+        },
+      ],
+    });
+    mockGenerateContent.mockResolvedValueOnce({ text: validJson });
+
+    const options = {
+      rulesOutput: makeRulesOutput(),
+      aqiData: makeAqiData(),
+      context: makeContext(),
+      apiKey: 'fake-key',
+      modelName: 'gemini-flash-lite-latest',
+    };
+
+    const first = await personalizeAdvice(options);
+    const second = await personalizeAdvice(options);
+
+    expect(first.riskSummary).toBe('Cached tailored advice.');
+    expect(second).toEqual(first);
+    expect(mockGenerateContent).toHaveBeenCalledTimes(1);
+
+    mockGenerateContent.mockResolvedValueOnce({ text: validJson });
+    const third = await personalizeAdvice({
+      ...options,
+      context: { ...makeContext(), homeType: 'house' },
+    });
+    expect(third.personalization).toBe('ai');
+    expect(mockGenerateContent).toHaveBeenCalledTimes(2);
   });
 
   it('should retry once when the initial call fails and succeed on retry', async () => {

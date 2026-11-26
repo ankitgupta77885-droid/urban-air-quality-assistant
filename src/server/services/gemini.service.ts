@@ -8,7 +8,7 @@
 
 import { GoogleGenAI } from '@google/genai';
 
-import { GEMINI_TIMEOUT_MS } from '../../shared/constants.js';
+import { AQI_CACHE_TTL_MS, GEMINI_TIMEOUT_MS } from '../../shared/constants.js';
 import { geminiResponseSchema } from '../../shared/schemas.js';
 import type {
   AqiData,
@@ -18,36 +18,43 @@ import type {
 } from '../../shared/types.js';
 import { GeminiError } from '../errors/app-errors.js';
 
+import { TtlCache } from './cache.js';
 import { buildPrompt } from './gemini-prompt.js';
 import { createLogger } from './logger.js';
 
 const logger = createLogger('gemini');
+const adviceCache = new TtlCache<PersonalizedAdvice>(AQI_CACHE_TTL_MS);
+const genAiClients = new Map<string, GoogleGenAI>();
+const GEMINI_REQUEST_CONFIG = { responseMimeType: 'application/json', temperature: 0.4 } as const;
 
 /** Options for personalizing advice via the Gemini service. */
 export interface PersonalizeAdviceOptions {
-  /** Structured output from the deterministic rules engine. */
   readonly rulesOutput: RulesEngineOutput;
-  /** Current air quality data. */
   readonly aqiData: AqiData;
-  /** User's household and lifestyle context. */
   readonly context: UserContext;
-  /** Gemini API key. */
   readonly apiKey: string;
-  /** Gemini model identifier from environment. */
   readonly modelName: string;
 }
 
 /**
  * Personalizes rules-engine advice using the Gemini API.
- * Falls back to raw rules-engine output on any failure.
+ * Returns cached AI advice on repeat requests and falls back to rules-engine output on failure.
  * @param options - Advice personalization parameters.
  * @returns Personalized advice, with isBasicMode flag indicating fallback.
  */
 export async function personalizeAdvice(
   options: PersonalizeAdviceOptions,
 ): Promise<PersonalizedAdvice> {
+  const cacheKey = buildAdviceCacheKey(options);
+  const cached = adviceCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   try {
-    return await callGemini(options);
+    const advice = await callGemini(options);
+    adviceCache.set(cacheKey, advice);
+    return advice;
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     logger.warn('Gemini personalization failed, using basic mode:', message);
@@ -55,35 +62,41 @@ export async function personalizeAdvice(
   }
 }
 
-/**
- * Calls generateContent with a single retry on transient error or 503 spike.
- * @param ai - Google GenAI instance.
- * @param model - Target Gemini model.
- * @param contents - Prepared prompt text.
- * @returns Generated content response.
- */
+/** Builds a deterministic cache key for personalized AI advice. */
+function buildAdviceCacheKey({ modelName, aqiData, context }: PersonalizeAdviceOptions): string {
+  return `${modelName}:${aqiData.aqi}:${aqiData.timestamp}:${JSON.stringify(context)}`;
+}
+
+/** Returns a cached GoogleGenAI client instance for the given API key. */
+function getGenAiClient(apiKey: string): GoogleGenAI {
+  const existing = genAiClients.get(apiKey);
+  if (existing) {
+    return existing;
+  }
+  const client = new GoogleGenAI({ apiKey, apiVersion: 'v1beta' });
+  genAiClients.set(apiKey, client);
+  return client;
+}
+
+/** Calls generateContent with JSON output config and a single retry on transient failure. */
 async function generateWithRetry(
   ai: GoogleGenAI,
   model: string,
   contents: string,
 ): Promise<{ text?: string | null }> {
+  const request = { model, contents, config: GEMINI_REQUEST_CONFIG };
   try {
-    return await ai.models.generateContent({ model, contents });
+    return await ai.models.generateContent(request);
   } catch (err: unknown) {
     logger.warn(`Initial call to ${model} failed, retrying once:`, err);
-    return await ai.models.generateContent({ model, contents });
+    return await ai.models.generateContent(request);
   }
 }
 
-/**
- * Calls the Gemini API to personalize advice.
- * @param options - Advice personalization parameters.
- * @returns Validated personalized advice from Gemini.
- */
+/** Calls the Gemini API to personalize advice. */
 async function callGemini(options: PersonalizeAdviceOptions): Promise<PersonalizedAdvice> {
   const { rulesOutput, aqiData, context, apiKey, modelName } = options;
-  const ai = new GoogleGenAI({ apiKey, apiVersion: 'v1beta' });
-
+  const ai = getGenAiClient(apiKey);
   const prompt = buildPrompt(rulesOutput, aqiData, context);
 
   const result = await Promise.race([
@@ -91,22 +104,11 @@ async function callGemini(options: PersonalizeAdviceOptions): Promise<Personaliz
     rejectAfterTimeout(GEMINI_TIMEOUT_MS),
   ]);
 
-  const responseText = result.text ?? '';
-  const parsed = parseGeminiResponse(responseText);
-
-  return {
-    ...parsed,
-    isBasicMode: false,
-    personalization: 'ai',
-  };
+  const parsed = parseGeminiResponse(result.text ?? '');
+  return { ...parsed, isBasicMode: false, personalization: 'ai' };
 }
 
-/**
- * Parses and validates the Gemini response text against the Zod schema.
- * @param responseText - Raw text response from Gemini.
- * @returns Validated response data.
- * @throws GeminiError if parsing or validation fails.
- */
+/** Parses and validates the Gemini response text against the Zod schema. */
 function parseGeminiResponse(responseText: string): {
   riskLevel: PersonalizedAdvice['riskLevel'];
   riskSummary: string;
@@ -122,7 +124,6 @@ function parseGeminiResponse(responseText: string): {
   }
 
   const result = geminiResponseSchema.safeParse(jsonData);
-
   if (!result.success) {
     const issues = result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
     throw new GeminiError(`Gemini response validation failed: ${issues}`);
@@ -131,32 +132,21 @@ function parseGeminiResponse(responseText: string): {
   return result.data;
 }
 
-/**
- * Strips markdown code fences and extra whitespace from the response.
- * @param text - Raw response text.
- * @returns Cleaned JSON string.
- */
+/** Strips markdown code fences and extra whitespace from the response. */
 function cleanJsonResponse(text: string): string {
   let cleaned = text.trim();
-
   if (cleaned.startsWith('```json')) {
     cleaned = cleaned.slice(7);
   } else if (cleaned.startsWith('```')) {
     cleaned = cleaned.slice(3);
   }
-
   if (cleaned.endsWith('```')) {
     cleaned = cleaned.slice(0, -3);
   }
-
   return cleaned.trim();
 }
 
-/**
- * Creates a promise that rejects after the given timeout.
- * @param ms - Timeout in milliseconds.
- * @returns A promise that always rejects with a GeminiError.
- */
+/** Creates a promise that rejects with a GeminiError after the given timeout. */
 export function rejectAfterTimeout(ms: number): Promise<never> {
   return new Promise((_resolve, reject) => {
     setTimeout(() => {
@@ -165,11 +155,7 @@ export function rejectAfterTimeout(ms: number): Promise<never> {
   });
 }
 
-/**
- * Converts rules-engine output to fallback personalized advice.
- * @param rulesOutput - Original rules engine output.
- * @returns Advice in PersonalizedAdvice format with isBasicMode=true.
- */
+/** Converts rules-engine output to fallback personalized advice. */
 function buildFallbackAdvice(rulesOutput: RulesEngineOutput): PersonalizedAdvice {
   return {
     riskLevel: rulesOutput.riskLevel,
@@ -185,6 +171,12 @@ function buildFallbackAdvice(rulesOutput: RulesEngineOutput): PersonalizedAdvice
     isBasicMode: true,
     personalization: 'basic',
   };
+}
+
+/** Clears cached Gemini advice responses and clients (for testing). */
+export function clearGeminiCache(): void {
+  adviceCache.clear();
+  genAiClients.clear();
 }
 
 // Re-export for testing

@@ -24,6 +24,7 @@ aqiRouter.get(
   asyncRoute(async (req, res) => {
     const { lat, lon } = parseWithSchema(aqiQuerySchema, req.query);
     const aqiData = await fetchAqiData(lat, lon);
+    res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
     sendApiSuccess(res, aqiData);
   }),
 );

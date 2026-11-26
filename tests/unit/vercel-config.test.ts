@@ -74,4 +74,18 @@ describe('vercel.json', () => {
     expect(globalHeader('X-Frame-Options')).toBe('DENY');
     expect(globalHeader('Referrer-Policy')).toBe('no-referrer');
   });
+
+  it('sets immutable CDN cache headers for bundled assets and fonts', () => {
+    const assetsRule = config.headers.find((entry) => entry.source === '/assets/(.*)');
+    const fontsRule = config.headers.find((entry) => entry.source === '/fonts/(.*)');
+
+    expect(assetsRule?.headers).toContainEqual({
+      key: 'Cache-Control',
+      value: 'public, max-age=31536000, immutable',
+    });
+    expect(fontsRule?.headers).toContainEqual({
+      key: 'Cache-Control',
+      value: 'public, max-age=31536000, immutable',
+    });
+  });
 });

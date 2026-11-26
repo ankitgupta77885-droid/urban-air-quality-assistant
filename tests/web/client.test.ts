@@ -13,7 +13,12 @@ import { ApiClientError } from '@shared/errors.js';
 import type { UserContext } from '@shared/types.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchAdvice, fetchAqi, searchCities } from '../../src/web/api/client.js';
+import {
+  clearApiClientCache,
+  fetchAdvice,
+  fetchAqi,
+  searchCities,
+} from '../../src/web/api/client.js';
 
 describe('Web API Client', () => {
   const mockFetch = vi.fn();
@@ -29,6 +34,7 @@ describe('Web API Client', () => {
 
   beforeEach(() => {
     mockFetch.mockReset();
+    clearApiClientCache();
     vi.stubGlobal('fetch', mockFetch);
   });
 
@@ -58,6 +64,31 @@ describe('Web API Client', () => {
       const results = await searchCities('Berlin');
       expect(results).toHaveLength(1);
       expect(results[0]?.name).toBe('Berlin');
+    });
+
+    it('returns cached geocoding results for repeated identical queries', async () => {
+      mockFetch.mockResolvedValueOnce({
+        json: async () =>
+          Promise.resolve({
+            success: true,
+            data: [
+              {
+                id: 1,
+                name: 'Berlin',
+                country: 'Germany',
+                countryCode: 'DE',
+                latitude: 52.52,
+                longitude: 13.405,
+              },
+            ],
+          }),
+      });
+
+      const first = await searchCities('Berlin');
+      const second = await searchCities(' berlin ');
+
+      expect(first).toEqual(second);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
 
     it('throws ApiClientError when API returns error envelope', async () => {
@@ -117,6 +148,10 @@ describe('Web API Client', () => {
       const aqiData = await fetchAqi(28.6, 77.2);
       expect(aqiData.aqi).toBe(45);
       expect(aqiData.category).toBe('Good');
+
+      const cachedAqi = await fetchAqi(28.601, 77.201);
+      expect(cachedAqi).toEqual(aqiData);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
 
     it('throws ApiClientError when API returns error envelope', async () => {

@@ -47,6 +47,9 @@ describe('GET /api/aqi', () => {
 
     expect(res.status).toBe(200);
     expect(body.success).toBe(true);
+    expect(res.headers['cache-control']).toBe(
+      'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+    );
     expect(body.data?.aqi).toBe(85);
     expect(body.data?.category).toBe('Moderate');
   });

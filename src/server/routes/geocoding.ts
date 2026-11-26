@@ -24,6 +24,10 @@ geocodingRouter.get(
   asyncRoute(async (req, res) => {
     const { q } = parseWithSchema(geocodingQuerySchema, req.query);
     const results = await searchCities(q);
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+    );
     sendApiSuccess(res, results);
   }),
 );
