@@ -4,6 +4,8 @@
  * All icons are marked aria-hidden="true" and created safely via createElementNS.
  */
 
+import { ADVICE_CATEGORY_ICONS } from '@shared/constants.js';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /**
@@ -148,27 +150,22 @@ const ACTION_ICON_PATHS: Record<string, string | string[]> = {
   ],
 };
 
-const CATEGORY_MAP: Record<string, string> = {
-  'morning-routine': 'sun',
-  commute: 'car',
-  'outdoor-activity': 'walk',
-  'evening-routine': 'moon',
-  'indoor-air-hack': 'home',
-  'sustainable-alternative': 'leaf',
-};
+const CATEGORY_MAP = new Map<string, string>(Object.entries(ADVICE_CATEGORY_ICONS));
+
+/** Creates a category or action SVG icon using shared category-to-icon mapping. */
+function createMappedIcon(key: string, className: string): SVGSVGElement {
+  const norm = key.toLowerCase().trim();
+  const resolved = CATEGORY_MAP.get(norm) ?? norm;
+  const path = ACTION_ICON_PATHS[resolved] ?? DEFAULT_ICON_PATH;
+  return createSvgIcon('0 0 24 24', path, className);
+}
 
 /** Creates an action icon from an allowed key enum, never emoji. */
 export function createActionIcon(iconKey: string): SVGSVGElement {
-  const norm = iconKey.toLowerCase().trim();
-  const resolved = CATEGORY_MAP[norm] ?? norm;
-  const path = ACTION_ICON_PATHS[resolved] ?? DEFAULT_ICON_PATH;
-  return createSvgIcon('0 0 24 24', path, 'icon icon-action');
+  return createMappedIcon(iconKey, 'icon icon-action');
 }
 
 /** Creates an advice category SVG icon. */
 export function createCategoryIcon(category: string): SVGSVGElement {
-  const norm = category.toLowerCase().trim();
-  const resolved = CATEGORY_MAP[norm] ?? norm;
-  const path = ACTION_ICON_PATHS[resolved] ?? DEFAULT_ICON_PATH;
-  return createSvgIcon('0 0 24 24', path, 'icon icon-category');
+  return createMappedIcon(category, 'icon icon-category');
 }

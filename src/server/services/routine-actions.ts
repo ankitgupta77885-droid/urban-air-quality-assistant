@@ -22,7 +22,7 @@ export function buildMorningActions(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['morning-routine'] ?? 'sun';
+  const icon = ADVICE_CATEGORY_ICONS['morning-routine'];
   const actions: RecommendedAction[] = [getVentilationAction(isElevatedRisk(riskLevel), icon)];
 
   if (context.childAgeGroup === 'infant' || context.childAgeGroup === 'toddler') {
@@ -79,7 +79,7 @@ export function buildEveningActions(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['evening-routine'] ?? 'moon';
+  const icon = ADVICE_CATEGORY_ICONS['evening-routine'];
   const actions: RecommendedAction[] = [];
 
   if (hasHealthCondition(context, 'asthma') || hasHealthCondition(context, 'respiratory')) {

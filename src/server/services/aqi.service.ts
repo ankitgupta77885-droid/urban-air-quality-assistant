@@ -7,6 +7,7 @@
 import {
   AIR_QUALITY_API_URL,
   AQI_CACHE_TTL_MS,
+  POLLUTANT_DECIMAL_PLACES,
   POLLUTANT_DISPLAY_NAMES,
   POLLUTANT_UNIT,
 } from '../../shared/constants.js';
@@ -100,6 +101,16 @@ function mapAqiResponse(current: OpenMeteoAqiCurrent): AqiData {
 }
 
 /**
+ * Rounds a number to a fixed count of decimal places.
+ * @param value - Number to round.
+ * @param places - Decimal places to keep.
+ */
+function roundTo(value: number, places: number): number {
+  const factor = 10 ** places;
+  return Math.round(value * factor) / factor;
+}
+
+/**
  * Extracts pollutant readings from the API response.
  * @param current - Raw current data.
  * @returns Array of pollutant readings.
@@ -108,7 +119,7 @@ function buildPollutantReadings(current: OpenMeteoAqiCurrent): PollutantReading[
   return POLLUTANT_VARS.map((name) => ({
     name,
     displayName: POLLUTANT_DISPLAY_NAMES[name] ?? name,
-    value: Math.round(current[name] * 10) / 10,
+    value: roundTo(current[name], POLLUTANT_DECIMAL_PLACES),
     unit: POLLUTANT_UNIT,
   }));
 }

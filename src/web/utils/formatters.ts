@@ -4,7 +4,8 @@
  * Provides display-friendly labels for AQI, pollutants, and categories.
  */
 
-import { ADVICE_CATEGORY_LABELS, AQI_BREAKPOINTS } from '@shared/constants.js';
+import { findAqiBreakpoint } from '@shared/aqi.js';
+import { ADVICE_CATEGORY_LABELS } from '@shared/constants.js';
 import type { AqiCategory } from '@shared/types.js';
 
 /**
@@ -17,10 +18,8 @@ export function getAqiDisplay(aqi: number): {
   colorClass: string;
   icon: string;
 } {
-  const bp = AQI_BREAKPOINTS.find((b) => aqi >= b.min && aqi <= b.max);
-  return bp
-    ? { category: bp.category, colorClass: bp.colorClass, icon: bp.icon }
-    : { category: 'Hazardous', colorClass: 'aqi-hazardous', icon: '🟤' };
+  const { category, colorClass, icon } = findAqiBreakpoint(aqi);
+  return { category, colorClass, icon };
 }
 
 /**

@@ -270,7 +270,7 @@ npm run check
 Or run individual gates:
 
 ```bash
-# Run all 312 unit, integration, web, and accessibility tests
+# Run all 339 unit, integration, web, and accessibility tests
 npm test
 
 # Run tests with strict V8 code coverage enforcement
@@ -290,14 +290,14 @@ npm run format:check
 
 The test suite runs with V8 coverage against strict configured thresholds in `vitest.config.ts`:
 
-| Area                                           | Statements | Branches   | Functions  | Lines      | Threshold Status      |
-| ---------------------------------------------- | ---------- | ---------- | ---------- | ---------- | --------------------- |
-| **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**   | **100%**   | Exceeds 90% threshold |
-| **Server Services (`src/server/services/**`)** | **98.43%** | **90.34%** | **100%**   | **98.43%** | Exceeds 90% threshold |
-| **Global Overall Codebase**                    | **94.61%** | **84.08%** | **95.87%** | **94.61%** | Exceeds 80% threshold |
+| Area                                           | Statements | Branches   | Functions | Lines      | Threshold Status      |
+| ---------------------------------------------- | ---------- | ---------- | --------- | ---------- | --------------------- |
+| **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**  | **100%**   | Exceeds 90% threshold |
+| **Server Services (`src/server/services/**`)** | **98.34%** | **91.84%** | **100%**  | **98.34%** | Exceeds 90% threshold |
+| **Global Overall Codebase**                    | **94.63%** | **84.83%** | **95.9%** | **94.63%** | Exceeds 80% threshold |
 
-- **Total Test Suites**: 33 passed (100%)
-- **Total Tests**: 312 passed (0 failed)
+- **Total Test Suites**: 35 passed (100%)
+- **Total Tests**: 339 passed (0 failed)
 - **External Mocking**: All external network requests (Open-Meteo, Gemini GenAI SDK) are strictly mocked; tests execute offline with zero live network calls.
 
 ---
@@ -306,9 +306,9 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 
 | Metric / Dimension                    | Before Refactor                         | After Refactor                           | Improvement Impact                                            |
 | ------------------------------------- | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
-| **Test Count**                        | 211 tests                               | **312 tests**                            | +101 comprehensive tests across edge cases                    |
-| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.61%**                               | Strict 80% CI threshold enforced                              |
-| **Server Services Coverage**          | Untracked (< 75%)                       | **98.43% Lines / 90.34% Branches**       | Strict 90% CI threshold enforced                              |
+| **Test Count**                        | 211 tests                               | **339 tests**                            | +128 comprehensive tests across edge cases                    |
+| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.63%**                               | Strict 80% CI threshold enforced                              |
+| **Server Services Coverage**          | Untracked (< 75%)                       | **98.34% Lines / 91.84% Branches**       | Strict 90% CI threshold enforced                              |
 | **Shared Module Coverage**            | Untracked                               | **100% (all metrics)**                   | 100% verification of constants & schemas                      |
 | **Max Cyclomatic Complexity**         | 27 (`getPollutantStatusBadge`)          | **<= 10**                                | Reduced to lookup tables; ESLint complexity: 10 enforced      |
 | **Files > 200 Lines (`src/`)**        | 6 files > 200 lines                     | **0 files**                              | Split into modular components; ESLint max-lines: 200 enforced |

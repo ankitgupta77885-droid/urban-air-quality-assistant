@@ -5,6 +5,13 @@
  * factors (child age, health conditions, activity level).
  */
 
+import {
+  ACTIVITY_RISK_MODIFIERS,
+  AGE_RISK_MODIFIERS,
+  findAqiBreakpoint,
+  HEALTH_RISK_MODIFIERS,
+  MAX_RISK_SCORE,
+} from '../../shared/aqi.js';
 import type { RiskLevel, UserContext } from '../../shared/types.js';
 
 /** Score thresholds for risk level classification. */
@@ -24,7 +31,7 @@ const RISK_THRESHOLDS = {
 export function computeRiskLevel(aqi: number, context: UserContext): RiskLevel {
   const baseScore = getAqiBaseScore(aqi);
   const contextModifier = getContextModifier(context);
-  const totalScore = Math.min(baseScore + contextModifier, 10);
+  const totalScore = Math.min(baseScore + contextModifier, MAX_RISK_SCORE);
 
   return scoreToRiskLevel(totalScore);
 }
@@ -34,22 +41,7 @@ export function computeRiskLevel(aqi: number, context: UserContext): RiskLevel {
  * @param aqi - AQI value (0–500).
  */
 function getAqiBaseScore(aqi: number): number {
-  if (aqi <= 50) {
-    return 1;
-  }
-  if (aqi <= 100) {
-    return 3;
-  }
-  if (aqi <= 150) {
-    return 5;
-  }
-  if (aqi <= 200) {
-    return 7;
-  }
-  if (aqi <= 300) {
-    return 9;
-  }
-  return 10;
+  return findAqiBreakpoint(aqi).baseRiskScore;
 }
 
 /**
@@ -57,27 +49,11 @@ function getAqiBaseScore(aqi: number): number {
  * @param context - User's household and lifestyle context.
  */
 function getContextModifier(context: UserContext): number {
-  let modifier = 0;
-
-  modifier += getAgeModifier(context.childAgeGroup);
-  modifier += getHealthModifier(context.healthConditions);
-  modifier += getActivityModifier(context.activityLevel);
-
-  return modifier;
-}
-
-/**
- * Returns the risk modifier for the child's age group.
- * @param ageGroup - Child age group.
- */
-function getAgeModifier(ageGroup: UserContext['childAgeGroup']): number {
-  const modifiers: Record<UserContext['childAgeGroup'], number> = {
-    infant: 2,
-    toddler: 1.5,
-    preschool: 1,
-    'school-age': 0.5,
-  };
-  return modifiers[ageGroup];
+  return (
+    AGE_RISK_MODIFIERS[context.childAgeGroup] +
+    getHealthModifier(context.healthConditions) +
+    ACTIVITY_RISK_MODIFIERS[context.activityLevel]
+  );
 }
 
 /**
@@ -89,34 +65,7 @@ function getHealthModifier(conditions: readonly UserContext['healthConditions'][
     return 0;
   }
 
-  let modifier = 0;
-  if (conditions.includes('asthma')) {
-    modifier += 1.5;
-  }
-  if (conditions.includes('respiratory')) {
-    modifier += 1;
-  }
-  if (conditions.includes('cardiovascular')) {
-    modifier += 1;
-  }
-  if (conditions.includes('allergies')) {
-    modifier += 0.5;
-  }
-
-  return modifier;
-}
-
-/**
- * Returns the risk modifier for activity level.
- * @param level - Activity level.
- */
-function getActivityModifier(level: UserContext['activityLevel']): number {
-  const modifiers: Record<UserContext['activityLevel'], number> = {
-    high: 1,
-    moderate: 0.5,
-    low: 0,
-  };
-  return modifiers[level];
+  return conditions.reduce((total, condition) => total + HEALTH_RISK_MODIFIERS[condition], 0);
 }
 
 /**

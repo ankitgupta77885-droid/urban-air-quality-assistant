@@ -2,7 +2,7 @@
  * Lifestyle action builders (indoor air hacks and sustainable alternatives).
  */
 
-import { ADVICE_CATEGORY_ICONS } from '../../shared/constants.js';
+import { ADVICE_CATEGORY_ICONS, PM25_ELEVATED_THRESHOLD } from '../../shared/constants.js';
 import type {
   ActionIconKey,
   AqiData,
@@ -25,14 +25,16 @@ export function buildIndoorHacks(
   aqiData: AqiData,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['indoor-air-hack'] ?? 'home';
+  const icon = ADVICE_CATEGORY_ICONS['indoor-air-hack'];
   const actions: RecommendedAction[] = [];
 
   if (context.homeType === 'apartment' || context.homeType === 'studio') {
     actions.push(getApartmentSealAction(icon));
   }
 
-  const hasPm25 = aqiData.pollutants.some((p) => p.name === 'pm2_5' && p.value > 35);
+  const hasPm25 = aqiData.pollutants.some(
+    (p) => p.name === 'pm2_5' && p.value > PM25_ELEVATED_THRESHOLD,
+  );
   if (hasPm25 || isElevatedRisk(riskLevel)) {
     actions.push(getDiyFilterAction(icon));
   }
@@ -115,7 +117,7 @@ export function buildSustainableAlternatives(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['sustainable-alternative'] ?? 'leaf';
+  const icon = ADVICE_CATEGORY_ICONS['sustainable-alternative'];
   const actions: RecommendedAction[] = [];
 
   if (context.commuteMode === 'car') {

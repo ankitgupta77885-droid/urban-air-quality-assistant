@@ -22,7 +22,7 @@ export function buildCommuteActions(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['commute'] ?? 'car';
+  const icon = ADVICE_CATEGORY_ICONS['commute'];
   const actions: RecommendedAction[] = [];
   const elevated = isElevatedRisk(riskLevel);
 
@@ -103,7 +103,7 @@ export function buildOutdoorActions(
   riskLevel: RiskLevel,
   context: UserContext,
 ): RecommendedAction[] {
-  const icon = ADVICE_CATEGORY_ICONS['outdoor-activity'] ?? 'walk';
+  const icon = ADVICE_CATEGORY_ICONS['outdoor-activity'];
 
   if (riskLevel === 'critical' || riskLevel === 'very-high') {
     return [getCriticalOutdoorAction(icon)];

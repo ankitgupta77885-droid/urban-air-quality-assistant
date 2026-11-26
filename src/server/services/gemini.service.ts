@@ -8,7 +8,11 @@
 
 import { GoogleGenAI } from '@google/genai';
 
-import { AQI_CACHE_TTL_MS, GEMINI_TIMEOUT_MS } from '../../shared/constants.js';
+import {
+  AQI_CACHE_TTL_MS,
+  ERROR_PREVIEW_MAX_LENGTH,
+  GEMINI_TIMEOUT_MS,
+} from '../../shared/constants.js';
 import { geminiResponseSchema } from '../../shared/schemas.js';
 import type {
   AqiData,
@@ -120,7 +124,9 @@ function parseGeminiResponse(responseText: string): {
   try {
     jsonData = JSON.parse(cleaned);
   } catch {
-    throw new GeminiError(`Failed to parse Gemini response as JSON: ${cleaned.slice(0, 200)}`);
+    throw new GeminiError(
+      `Failed to parse Gemini response as JSON: ${cleaned.slice(0, ERROR_PREVIEW_MAX_LENGTH)}`,
+    );
   }
 
   const result = geminiResponseSchema.safeParse(jsonData);

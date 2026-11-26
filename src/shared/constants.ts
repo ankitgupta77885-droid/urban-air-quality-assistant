@@ -7,48 +7,21 @@
  */
 /* v8 ignore stop */
 
-import type { ActionIconKey, AqiCategory } from './types.js';
+import type { ActionIconKey, AdviceCategory } from './types.js';
+
+export { AQI_BREAKPOINTS, HAZARDOUS_BREAKPOINT, type AqiBreakpoint } from './aqi.js';
 
 /** Application display name. */
 export const APP_NAME = 'BreatheWell';
 
-/* ── AQI Breakpoints (US EPA standard) ── */
+/** PM2.5 concentration (µg/m³) above which indoor-air advice is escalated. */
+export const PM25_ELEVATED_THRESHOLD = 35 as const;
 
-/** AQI breakpoint range definition. */
-export interface AqiBreakpoint {
-  /** Minimum AQI value (inclusive). */
-  readonly min: number;
-  /** Maximum AQI value (inclusive). */
-  readonly max: number;
-  /** Human-readable category label. */
-  readonly category: AqiCategory;
-  /** CSS-safe color class name. */
-  readonly colorClass: string;
-  /** Accessible icon/emoji for the category. */
-  readonly icon: string;
-}
+/** Decimal places kept when rounding pollutant concentrations. */
+export const POLLUTANT_DECIMAL_PLACES = 1 as const;
 
-/** US EPA AQI breakpoints for categorization. */
-export const AQI_BREAKPOINTS: readonly AqiBreakpoint[] = [
-  { min: 0, max: 50, category: 'Good', colorClass: 'aqi-good', icon: '🟢' },
-  { min: 51, max: 100, category: 'Moderate', colorClass: 'aqi-moderate', icon: '🟡' },
-  {
-    min: 101,
-    max: 150,
-    category: 'Unhealthy for Sensitive Groups',
-    colorClass: 'aqi-usg',
-    icon: '🟠',
-  },
-  { min: 151, max: 200, category: 'Unhealthy', colorClass: 'aqi-unhealthy', icon: '🔴' },
-  {
-    min: 201,
-    max: 300,
-    category: 'Very Unhealthy',
-    colorClass: 'aqi-very-unhealthy',
-    icon: '🟣',
-  },
-  { min: 301, max: 500, category: 'Hazardous', colorClass: 'aqi-hazardous', icon: '🟤' },
-] as const;
+/** Characters of a malformed AI response kept in error messages. */
+export const ERROR_PREVIEW_MAX_LENGTH = 200 as const;
 
 /* ── Pollutant Display Names ── */
 
@@ -77,8 +50,8 @@ export const ADVICE_CATEGORY_LABELS: Readonly<Record<string, string>> = {
   'sustainable-alternative': 'Sustainable Alternative',
 } as const;
 
-/** Allowed icon keys for advice categories. */
-export const ADVICE_CATEGORY_ICONS: Readonly<Record<string, ActionIconKey>> = {
+/** Icon key for each advice category (exhaustive, so lookups never miss). */
+export const ADVICE_CATEGORY_ICONS: Readonly<Record<AdviceCategory, ActionIconKey>> = {
   'morning-routine': 'sun',
   commute: 'car',
   'outdoor-activity': 'walk',
