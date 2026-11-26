@@ -83,29 +83,26 @@ interface TabPanelElements {
   clean: HTMLElement;
 }
 
+/** Creates a single accessible tabpanel element. */
+function createTabPanel(id: string, labelledBy: string, hidden: boolean): HTMLElement {
+  const panel = createElement('div', 'advice-panel');
+  panel.id = id;
+  panel.setAttribute('role', 'tabpanel');
+  panel.setAttribute('aria-labelledby', labelledBy);
+  panel.tabIndex = 0;
+  if (hidden) {
+    panel.hidden = true;
+  }
+  return panel;
+}
+
 /** Creates the three accessible tabpanel DOM elements. */
 function createTabPanels(): TabPanelElements {
-  const daily = createElement('div', 'advice-panel');
-  daily.id = 'panel-daily-routines';
-  daily.setAttribute('role', 'tabpanel');
-  daily.setAttribute('aria-labelledby', 'tab-daily-routines');
-  daily.tabIndex = 0;
-
-  const indoor = createElement('div', 'advice-panel');
-  indoor.id = 'panel-indoor-air';
-  indoor.setAttribute('role', 'tabpanel');
-  indoor.setAttribute('aria-labelledby', 'tab-indoor-air');
-  indoor.tabIndex = 0;
-  indoor.hidden = true;
-
-  const clean = createElement('div', 'advice-panel');
-  clean.id = 'panel-clean-alternatives';
-  clean.setAttribute('role', 'tabpanel');
-  clean.setAttribute('aria-labelledby', 'tab-clean-alternatives');
-  clean.tabIndex = 0;
-  clean.hidden = true;
-
-  return { daily, indoor, clean };
+  return {
+    daily: createTabPanel('panel-daily-routines', 'tab-daily-routines', false),
+    indoor: createTabPanel('panel-indoor-air', 'tab-indoor-air', true),
+    clean: createTabPanel('panel-clean-alternatives', 'tab-clean-alternatives', true),
+  };
 }
 
 /** Populates tabpanels with action cards based on category. */

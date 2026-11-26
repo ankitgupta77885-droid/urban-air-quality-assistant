@@ -1,9 +1,9 @@
 /** Context form component for capturing household lifestyle data. */
-import { userContextSchema } from '@shared/schemas.js';
 import type { UserContext } from '@shared/types.js';
 
 import { createElement, getElement, setText } from '../utils/dom.js';
 
+import { parseContextFormData, setupHealthConditionsExclusive } from './context-form-helpers.js';
 import {
   CHILD_AGE_OPTIONS,
   COMMUTE_MODE_OPTIONS,
@@ -18,6 +18,9 @@ import {
 } from './form-fields.js';
 
 type ContextCallback = (context: UserContext) => void;
+
+const SUBMIT_LABEL = 'Generate Personalized Advice';
+const SUBMIT_BUSY_LABEL = 'Generating your plan…';
 
 let submitButtonEl: HTMLButtonElement | null = null;
 let disabledHintEl: HTMLElement | null = null;
@@ -35,10 +38,14 @@ export function initContextForm(onSubmit: ContextCallback): void {
     if (submitButtonEl?.disabled) {
       return;
     }
-    const context = extractAndValidateContext(form);
-    if (context) {
-      onSubmit(context);
+    const result = parseContextFormData(form);
+    if (!result.success) {
+      if (disabledHintEl) {
+        setText(disabledHintEl, result.error);
+      }
+      return;
     }
+    onSubmit(result.data);
   });
 
   container.appendChild(form);
@@ -52,9 +59,6 @@ export function showContextForm(): void {
     el.hidden = false;
   }
 }
-
-const SUBMIT_LABEL = 'Generate Personalized Advice';
-const SUBMIT_BUSY_LABEL = 'Generating your plan…';
 
 /**
  * Switches the submit button between its idle and busy (request in flight) states.
@@ -105,13 +109,14 @@ function updateSubmitButtonState(form: HTMLFormElement): void {
       disabledHintEl,
       selectedLocationName ? `Location: ${selectedLocationName}` : 'Ready to generate your plan.',
     );
-  } else {
-    submitButtonEl.setAttribute('aria-disabled', 'true');
-    const msg = !isLocationSelected
-      ? 'Select a city or use your location above to generate your plan.'
-      : 'Select a child age group to generate your plan.';
-    setText(disabledHintEl, msg);
+    return;
   }
+
+  submitButtonEl.setAttribute('aria-disabled', 'true');
+  const msg = !isLocationSelected
+    ? 'Select a city or use your location above to generate your plan.'
+    : 'Select a child age group to generate your plan.';
+  setText(disabledHintEl, msg);
 }
 
 /** Builds the full form element with 4-column compact grid and collapsible fields. */
@@ -147,31 +152,6 @@ function buildForm(): HTMLFormElement {
   return form;
 }
 
-/** Configures exclusive selection behavior for the "None" health condition chip. */
-function setupHealthConditionsExclusive(form: HTMLFormElement): void {
-  const none = form.querySelector<HTMLInputElement>('#healthConditions-none');
-  const others = Array.from(
-    form.querySelectorAll<HTMLInputElement>('input[name="healthConditions"]:not([value="none"])'),
-  );
-  if (!none) {
-    return;
-  }
-  none.addEventListener('change', () => {
-    if (none.checked) {
-      others.forEach((o) => {
-        o.checked = false;
-      });
-    }
-  });
-  others.forEach((o) => {
-    o.addEventListener('change', () => {
-      if (o.checked) {
-        none.checked = false;
-      }
-    });
-  });
-}
-
 /** Creates the submit button and disabled hint explanation. */
 function createSubmitSection(): HTMLElement {
   const wrapper = createElement('div', 'submit-section');
@@ -189,27 +169,4 @@ function createSubmitSection(): HTMLElement {
 
   wrapper.append(submitButtonEl, disabledHintEl);
   return wrapper;
-}
-
-/** Extracts and validates form data with userContextSchema. */
-function extractAndValidateContext(form: HTMLFormElement): UserContext | null {
-  const d = new FormData(form);
-  const parsed = userContextSchema.safeParse({
-    childAgeGroup: d.get('childAgeGroup'),
-    healthConditions: d.getAll('healthConditions'),
-    homeType: d.get('homeType'),
-    commuteMode: d.get('commuteMode'),
-    activityLevel: d.get('activityLevel') || 'moderate',
-    heatingSource: d.get('heatingSource') || 'electric',
-  });
-  if (!parsed.success) {
-    if (disabledHintEl) {
-      setText(
-        disabledHintEl,
-        parsed.error.issues[0]?.message ?? 'Complete required household questions.',
-      );
-    }
-    return null;
-  }
-  return parsed.data;
 }

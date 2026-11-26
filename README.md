@@ -1,6 +1,6 @@
 # BreatheWell
 
-[![CI](https://github.com/ankitgupta77885-droid/urban-air-quality-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/ankitgupta77885-droid/urban-air-quality-assistant/actions/workflows/ci.yml)
+[![CI](https://github.com/ankitgupta5579/breathewell/actions/workflows/ci.yml/badge.svg)](https://github.com/ankitgupta5579/breathewell/actions/workflows/ci.yml)
 
 > **GenAI-powered web assistant** helping families and communities navigate severe winter smog and urban air pollution with personalized, actionable advice.
 
@@ -120,8 +120,8 @@ The assistant employs a strict hybrid decision-making architecture:
 ### Installation
 
 ```bash
-git clone <repo-url>
-cd urban-air-quality-assistant
+git clone https://github.com/ankitgupta5579/breathewell.git
+cd breathewell
 npm install
 ```
 
@@ -180,7 +180,7 @@ BreatheWell is containerized with a production multi-stage Docker build and is r
 
 ### Live Application
 
-- **Live URL**: [https://breathewell.example.com](https://breathewell.example.com) _(deployed application placeholder)_
+- **Live URL**: [https://breathewell-assistant.vercel.app](https://breathewell-assistant.vercel.app)
 
 ### Deploy on Vercel (free Hobby plan)
 
@@ -270,7 +270,7 @@ npm run check
 Or run individual gates:
 
 ```bash
-# Run all 307 unit, integration, web, and accessibility tests
+# Run all 309 unit, integration, web, and accessibility tests
 npm test
 
 # Run tests with strict V8 code coverage enforcement
@@ -293,11 +293,11 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 | Area                                           | Statements | Branches   | Functions  | Lines      | Threshold Status      |
 | ---------------------------------------------- | ---------- | ---------- | ---------- | ---------- | --------------------- |
 | **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**   | **100%**   | Exceeds 90% threshold |
-| **Server Services (`src/server/services/**`)** | **98.51%** | **90.32%** | **100%**   | **98.51%** | Exceeds 90% threshold |
-| **Global Overall Codebase**                    | **94.90%** | **84.37%** | **95.60%** | **94.90%** | Exceeds 80% threshold |
+| **Server Services (`src/server/services/**`)** | **98.42%** | **90%**    | **100%**   | **98.42%** | Meets 90% threshold   |
+| **Global Overall Codebase**                    | **94.77%** | **83.85%** | **95.77%** | **94.77%** | Exceeds 80% threshold |
 
-- **Total Test Suites**: 32 passed (100%)
-- **Total Tests**: 307 passed (0 failed)
+- **Total Test Suites**: 33 passed (100%)
+- **Total Tests**: 309 passed (0 failed)
 - **External Mocking**: All external network requests (Open-Meteo, Gemini GenAI SDK) are strictly mocked; tests execute offline with zero live network calls.
 
 ---
@@ -306,9 +306,9 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 
 | Metric / Dimension                    | Before Refactor                         | After Refactor                           | Improvement Impact                                            |
 | ------------------------------------- | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
-| **Test Count**                        | 211 tests                               | **307 tests**                            | +96 comprehensive tests across edge cases                     |
-| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.90%**                               | Strict 80% CI threshold enforced                              |
-| **Server Services Coverage**          | Untracked (< 75%)                       | **98.51% Lines / 90.32% Branches**       | Strict 90% CI threshold enforced                              |
+| **Test Count**                        | 211 tests                               | **309 tests**                            | +98 comprehensive tests across edge cases                     |
+| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.77%**                               | Strict 80% CI threshold enforced                              |
+| **Server Services Coverage**          | Untracked (< 75%)                       | **98.42% Lines / 90% Branches**          | Strict 90% CI threshold enforced                              |
 | **Shared Module Coverage**            | Untracked                               | **100% (all metrics)**                   | 100% verification of constants & schemas                      |
 | **Max Cyclomatic Complexity**         | 27 (`getPollutantStatusBadge`)          | **<= 10**                                | Reduced to lookup tables; ESLint complexity: 10 enforced      |
 | **Files > 200 Lines (`src/`)**        | 6 files > 200 lines                     | **0 files**                              | Split into modular components; ESLint max-lines: 200 enforced |

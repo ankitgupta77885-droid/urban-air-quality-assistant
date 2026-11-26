@@ -8,9 +8,9 @@
 import { Router } from 'express';
 
 import { aqiQuerySchema } from '../../shared/schemas.js';
-import type { ApiResponse, AqiData } from '../../shared/types.js';
-import { ValidationError } from '../errors/app-errors.js';
 import { fetchAqiData } from '../services/aqi.service.js';
+
+import { asyncRoute, parseWithSchema, sendApiSuccess } from './route-helpers.js';
 
 /** AQI router instance. */
 export const aqiRouter = Router();
@@ -19,25 +19,11 @@ export const aqiRouter = Router();
  * GET /api/aqi
  * Fetches current AQI data for the given coordinates.
  */
-aqiRouter.get('/', (req, res, next) => {
-  void (async (): Promise<void> => {
-    try {
-      const parsed = aqiQuerySchema.safeParse(req.query);
-
-      if (!parsed.success) {
-        throw new ValidationError(parsed.error.issues.map((i) => i.message).join('; '));
-      }
-
-      const aqiData = await fetchAqiData(parsed.data.lat, parsed.data.lon);
-
-      const response: ApiResponse<AqiData> = {
-        success: true,
-        data: aqiData,
-      };
-
-      res.json(response);
-    } catch (error) {
-      next(error);
-    }
-  })();
-});
+aqiRouter.get(
+  '/',
+  asyncRoute(async (req, res) => {
+    const { lat, lon } = parseWithSchema(aqiQuerySchema, req.query);
+    const aqiData = await fetchAqiData(lat, lon);
+    sendApiSuccess(res, aqiData);
+  }),
+);

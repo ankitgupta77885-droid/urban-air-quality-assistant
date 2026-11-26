@@ -8,11 +8,11 @@
 import { Router, type Request, type Response } from 'express';
 
 import { adviceRequestSchema } from '../../shared/schemas.js';
-import type { ApiResponse, PersonalizedAdvice } from '../../shared/types.js';
-import { ValidationError } from '../errors/app-errors.js';
 import { fetchAqiData } from '../services/aqi.service.js';
 import { personalizeAdvice } from '../services/gemini.service.js';
 import { generateAdvice } from '../services/rules-engine.js';
+
+import { asyncRoute, parseWithSchema, sendApiSuccess } from './route-helpers.js';
 
 /** Environment variables needed at runtime. */
 interface AdviceEnv {
@@ -28,15 +28,12 @@ interface AdviceEnv {
 export function createAdviceRouter(env: AdviceEnv): Router {
   const router = Router();
 
-  router.post('/', (req, res, next) => {
-    void (async (): Promise<void> => {
-      try {
-        await handleAdviceRequest(req, res, env);
-      } catch (error) {
-        next(error);
-      }
-    })();
-  });
+  router.post(
+    '/',
+    asyncRoute(async (req, res) => {
+      await handleAdviceRequest(req, res, env);
+    }),
+  );
 
   return router;
 }
@@ -48,13 +45,7 @@ export function createAdviceRouter(env: AdviceEnv): Router {
  * @param env - Environment configuration.
  */
 async function handleAdviceRequest(req: Request, res: Response, env: AdviceEnv): Promise<void> {
-  const parsed = adviceRequestSchema.safeParse(req.body);
-
-  if (!parsed.success) {
-    throw new ValidationError(parsed.error.issues.map((i) => i.message).join('; '));
-  }
-
-  const { latitude, longitude, context } = parsed.data;
+  const { latitude, longitude, context } = parseWithSchema(adviceRequestSchema, req.body);
   const aqiData = await fetchAqiData(latitude, longitude);
   const rulesOutput = generateAdvice(aqiData, context);
   const personalizedAdvice = await personalizeAdvice({
@@ -65,9 +56,5 @@ async function handleAdviceRequest(req: Request, res: Response, env: AdviceEnv):
     modelName: env.modelName,
   });
 
-  const response: ApiResponse<PersonalizedAdvice> = {
-    success: true,
-    data: personalizedAdvice,
-  };
-  res.json(response);
+  sendApiSuccess(res, personalizedAdvice);
 }

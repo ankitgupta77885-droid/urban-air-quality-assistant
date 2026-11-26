@@ -7,7 +7,6 @@
 import {
   AIR_QUALITY_API_URL,
   AQI_CACHE_TTL_MS,
-  OUTBOUND_TIMEOUT_MS,
   POLLUTANT_DISPLAY_NAMES,
   POLLUTANT_UNIT,
 } from '../../shared/constants.js';
@@ -17,6 +16,7 @@ import { UpstreamApiError } from '../errors/app-errors.js';
 
 import { categorizeAqi } from './aqi-categorizer.js';
 import { TtlCache } from './cache.js';
+import { fetchValidatedJson } from './http-client.js';
 import { createLogger } from './logger.js';
 
 const logger = createLogger('aqi');
@@ -51,21 +51,17 @@ export async function fetchAqiData(latitude: number, longitude: number): Promise
   }
 
   logger.info('Fetching AQI data for:', cacheKey);
-  const response = await fetch(buildAqiUrl(latitude, longitude), {
-    signal: AbortSignal.timeout(OUTBOUND_TIMEOUT_MS),
-  });
+  const payload = await fetchValidatedJson(
+    buildAqiUrl(latitude, longitude),
+    openMeteoAqiResponseSchema,
+    'Air Quality API',
+  );
 
-  if (!response.ok) {
-    throw new UpstreamApiError(`Air Quality API returned status ${response.status}`);
-  }
-
-  const rawJson: unknown = await response.json();
-  const parsed = openMeteoAqiResponseSchema.safeParse(rawJson);
-  if (!parsed.success || !parsed.data.current) {
+  if (!payload.current) {
     throw new UpstreamApiError('Air Quality API returned invalid data');
   }
 
-  const aqiData = mapAqiResponse(parsed.data.current);
+  const aqiData = mapAqiResponse(payload.current);
   aqiCache.set(cacheKey, aqiData);
   return aqiData;
 }

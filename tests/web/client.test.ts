@@ -80,6 +80,17 @@ describe('Web API Client', () => {
       await expect(searchCities('Invalid')).rejects.toThrow(ApiClientError);
     });
 
+    it('throws ApiClientError when server returns non-JSON body', async () => {
+      mockFetch.mockResolvedValueOnce({
+        status: 500,
+        json: async () => Promise.reject(new SyntaxError('Unexpected token A')),
+      });
+
+      await expect(searchCities('BadGateway')).rejects.toThrow(
+        'Server returned an invalid response (HTTP 500)',
+      );
+    });
+
     it('propagates network failure', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network offline'));
 

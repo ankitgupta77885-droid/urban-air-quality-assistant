@@ -11,10 +11,26 @@ import {
   aqiApiResponseSchema,
   geocodingApiResponseSchema,
 } from '@shared/schemas.js';
-import type { AqiData, GeocodingResult, PersonalizedAdvice, UserContext } from '@shared/types.js';
+import type {
+  ApiResponse,
+  AqiData,
+  GeocodingResult,
+  PersonalizedAdvice,
+  UserContext,
+} from '@shared/types.js';
+import type { z } from 'zod';
 
 /** Active abort controllers keyed by request type. */
 const controllers = new Map<string, AbortController>();
+
+interface ApiRequestOptions<T> {
+  readonly signalKey: string;
+  readonly url: string;
+  readonly schema: z.ZodType<ApiResponse<T>>;
+  readonly invalidMessage: string;
+  readonly fallbackError: string;
+  readonly init?: Omit<RequestInit, 'signal'>;
+}
 
 /**
  * Cancels any in-flight request of the given type and returns a new AbortSignal.
@@ -31,29 +47,48 @@ function getFreshSignal(key: string): AbortSignal {
   return controller.signal;
 }
 
+/** Parses response body as JSON, wrapping malformed non-JSON server replies in ApiClientError. */
+async function parseResponseJson(res: Response): Promise<unknown> {
+  try {
+    return (await res.json()) as unknown;
+  } catch {
+    const status = typeof res.status === 'number' ? res.status : 500;
+    throw new ApiClientError(`Server returned an invalid response (HTTP ${status})`, status);
+  }
+}
+
+/** Shared typed fetch wrapper that validates API envelopes and handles errors uniformly. */
+async function requestApiData<T>(options: ApiRequestOptions<T>): Promise<T> {
+  const signal = getFreshSignal(options.signalKey);
+  const res = await fetch(options.url, { ...options.init, signal });
+  const rawJson = await parseResponseJson(res);
+  const parsed = options.schema.safeParse(rawJson);
+
+  if (!parsed.success) {
+    throw new ApiClientError(options.invalidMessage);
+  }
+
+  const envelope = parsed.data;
+  if (!envelope.success || envelope.data === undefined) {
+    throw new ApiClientError(envelope.error ?? options.fallbackError);
+  }
+
+  return envelope.data;
+}
+
 /**
  * Searches for cities matching the given query.
  * @param query - City name search string.
  * @returns Array of geocoding results.
  */
 export async function searchCities(query: string): Promise<GeocodingResult[]> {
-  const signal = getFreshSignal('geocoding');
-  const url = `/api/geocoding/search?q=${encodeURIComponent(query)}`;
-
-  const res = await fetch(url, { signal });
-  const rawJson: unknown = await res.json();
-  const parsed = geocodingApiResponseSchema.safeParse(rawJson);
-
-  if (!parsed.success) {
-    throw new ApiClientError('Invalid response received from location service');
-  }
-
-  const data = parsed.data;
-  if (!data.success || !data.data) {
-    throw new ApiClientError(data.error ?? 'Failed to search cities');
-  }
-
-  return data.data;
+  return requestApiData({
+    signalKey: 'geocoding',
+    url: `/api/geocoding/search?q=${encodeURIComponent(query)}`,
+    schema: geocodingApiResponseSchema,
+    invalidMessage: 'Invalid response received from location service',
+    fallbackError: 'Failed to search cities',
+  });
 }
 
 /**
@@ -63,23 +98,13 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
  * @returns Current AQI data.
  */
 export async function fetchAqi(lat: number, lon: number): Promise<AqiData> {
-  const signal = getFreshSignal('aqi');
-  const url = `/api/aqi?lat=${lat}&lon=${lon}`;
-
-  const res = await fetch(url, { signal });
-  const rawJson: unknown = await res.json();
-  const parsed = aqiApiResponseSchema.safeParse(rawJson);
-
-  if (!parsed.success) {
-    throw new ApiClientError('Invalid response received from air quality service');
-  }
-
-  const data = parsed.data;
-  if (!data.success || !data.data) {
-    throw new ApiClientError(data.error ?? 'Failed to fetch AQI data');
-  }
-
-  return data.data;
+  return requestApiData({
+    signalKey: 'aqi',
+    url: `/api/aqi?lat=${lat}&lon=${lon}`,
+    schema: aqiApiResponseSchema,
+    invalidMessage: 'Invalid response received from air quality service',
+    fallbackError: 'Failed to fetch AQI data',
+  });
 }
 
 /**
@@ -94,26 +119,16 @@ export async function fetchAdvice(
   lon: number,
   context: UserContext,
 ): Promise<PersonalizedAdvice> {
-  const signal = getFreshSignal('advice');
-
-  const res = await fetch('/api/advice', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ latitude: lat, longitude: lon, context }),
-    signal,
+  return requestApiData({
+    signalKey: 'advice',
+    url: '/api/advice',
+    schema: adviceApiResponseSchema,
+    invalidMessage: 'Invalid response received from advice service',
+    fallbackError: 'Failed to fetch advice',
+    init: {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ latitude: lat, longitude: lon, context }),
+    },
   });
-
-  const rawJson: unknown = await res.json();
-  const parsed = adviceApiResponseSchema.safeParse(rawJson);
-
-  if (!parsed.success) {
-    throw new ApiClientError('Invalid response received from advice service');
-  }
-
-  const data = parsed.data;
-  if (!data.success || !data.data) {
-    throw new ApiClientError(data.error ?? 'Failed to fetch advice');
-  }
-
-  return data.data;
 }

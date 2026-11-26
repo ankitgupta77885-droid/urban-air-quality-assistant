@@ -8,13 +8,12 @@ import {
   GEOCODING_API_URL,
   GEOCODING_CACHE_TTL_MS,
   MAX_GEOCODING_RESULTS,
-  OUTBOUND_TIMEOUT_MS,
 } from '../../shared/constants.js';
 import { openMeteoGeoResponseSchema, type OpenMeteoGeoResult } from '../../shared/schemas.js';
 import type { GeocodingResult } from '../../shared/types.js';
-import { UpstreamApiError } from '../errors/app-errors.js';
 
 import { TtlCache } from './cache.js';
+import { fetchValidatedJson } from './http-client.js';
 import { createLogger } from './logger.js';
 
 const logger = createLogger('geocoding');
@@ -38,21 +37,13 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
   }
 
   logger.info('Fetching geocoding results');
-  const response = await fetch(buildGeocodingUrl(query), {
-    signal: AbortSignal.timeout(OUTBOUND_TIMEOUT_MS),
-  });
+  const payload = await fetchValidatedJson(
+    buildGeocodingUrl(query),
+    openMeteoGeoResponseSchema,
+    'Geocoding API',
+  );
 
-  if (!response.ok) {
-    throw new UpstreamApiError(`Geocoding API returned status ${response.status}`);
-  }
-
-  const rawJson: unknown = await response.json();
-  const parsed = openMeteoGeoResponseSchema.safeParse(rawJson);
-  if (!parsed.success) {
-    throw new UpstreamApiError('Geocoding API returned invalid data');
-  }
-
-  const results = mapGeoResults(parsed.data.results ?? []);
+  const results = mapGeoResults(payload.results ?? []);
   geocodingCache.set(cacheKey, results);
   return results;
 }
