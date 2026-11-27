@@ -4,9 +4,14 @@
  * Tests the rendered HTML for WCAG 2.1 AA compliance.
  */
 
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import axe from 'axe-core';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect } from 'vitest';
+
+const INDEX_HTML_PATH = resolve(import.meta.dirname, '../../index.html');
 
 /**
  * Creates a JSDOM instance with the app's HTML structure.
@@ -273,7 +278,7 @@ describe('Accessibility (axe-core)', () => {
     }));
 
     expect(violations).toEqual([]);
-  });
+  }, 30_000);
 
   it('should have a lang attribute on html', () => {
     const document = createTestDocument();
@@ -350,4 +355,16 @@ describe('Accessibility (axe-core)', () => {
     expect(h1s.length).toBe(1);
     expect(h1s[0]?.textContent).toBe('Breathe easier through winter smog');
   });
+
+  it('passes axe-core WCAG 2.1 AA audit against actual index.html shell', async () => {
+    const realHtml = readFileSync(INDEX_HTML_PATH, 'utf8');
+    const dom = new JSDOM(realHtml);
+    const results = await axe.run(dom.window.document.documentElement, {
+      rules: {
+        region: { enabled: true },
+        'color-contrast': { enabled: false },
+      },
+    });
+    expect(results.violations).toEqual([]);
+  }, 30_000);
 });

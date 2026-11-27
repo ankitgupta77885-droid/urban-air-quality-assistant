@@ -5,7 +5,13 @@
  * and an optional "Retry" action button.
  */
 
-import { clearChildren, createElement, getElement, setText } from '../utils/dom.js';
+import {
+  clearChildren,
+  clearElementById,
+  createElement,
+  getElement,
+  setText,
+} from '../utils/dom.js';
 
 import { createButton } from './button.js';
 import { createAqiStatusIcon, createCloseIcon } from './icons.js';
@@ -56,8 +62,5 @@ export function showError(message: string, onRetry?: () => void): void {
 
 /** Clears any displayed error. */
 export function clearError(): void {
-  const container = document.getElementById('error-banner');
-  if (container) {
-    clearChildren(container);
-  }
+  clearElementById('error-banner');
 }

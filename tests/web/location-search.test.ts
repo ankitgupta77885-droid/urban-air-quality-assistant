@@ -68,11 +68,9 @@ describe('initLocationSearch', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    document.body.innerHTML = '<div id="location-search"></div>';
-    const root = document.getElementById('location-search');
-    if (!root) {
-      throw new Error('missing location-search container');
-    }
+    const root = document.createElement('div');
+    root.id = 'location-search';
+    document.body.replaceChildren(root);
     container = root;
     mockSearchCities.mockReset();
     mockHandleGeolocation.mockReset();

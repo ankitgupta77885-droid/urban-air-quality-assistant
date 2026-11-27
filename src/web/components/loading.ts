@@ -4,7 +4,7 @@
  * Renders an animated loading spinner paired with polite aria-live status text.
  */
 
-import { clearChildren, createElement, setText } from '../utils/dom.js';
+import { clearChildren, clearElementById, createElement, setText } from '../utils/dom.js';
 
 /**
  * Shows the loading indicator with an accessible message.
@@ -32,8 +32,5 @@ export function showLoading(message: string): void {
 
 /** Hides the loading indicator. */
 export function hideLoading(): void {
-  const container = document.getElementById('loading');
-  if (container) {
-    clearChildren(container);
-  }
+  clearElementById('loading');
 }

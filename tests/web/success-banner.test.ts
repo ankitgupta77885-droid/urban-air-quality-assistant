@@ -15,7 +15,9 @@ const HTML_PATH = resolve(import.meta.dirname, '../../index.html');
 
 describe('Success banner', () => {
   beforeEach(() => {
-    document.body.innerHTML = '<div id="success-banner"></div>';
+    const banner = document.createElement('div');
+    banner.id = 'success-banner';
+    document.body.replaceChildren(banner);
   });
 
   it('renders the message as a polite status with a decorative check icon', () => {
@@ -52,7 +54,7 @@ describe('Success banner', () => {
     clearSuccess();
     expect(document.querySelector('.success-wrapper')).toBeNull();
 
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
     expect(() => {
       clearSuccess();
     }).not.toThrow();

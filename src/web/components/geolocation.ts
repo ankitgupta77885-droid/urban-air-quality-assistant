@@ -16,7 +16,9 @@ import { createLocationPinIcon } from './icons.js';
 /** Callback when a location is selected. */
 type LocationCallback = (result: GeocodingResult) => void;
 
-let resetTimerId: ReturnType<typeof setTimeout> | null = null;
+const state: { resetTimerId: ReturnType<typeof setTimeout> | null } = {
+  resetTimerId: null,
+};
 
 /**
  * Handles browser geolocation request with UI feedback.
@@ -49,16 +51,16 @@ export async function handleGeolocation(
 
 /** Cancels any pending geolocation button label reset timer. */
 function cancelPendingReset(): void {
-  if (resetTimerId !== null) {
-    clearTimeout(resetTimerId);
-    resetTimerId = null;
+  if (state.resetTimerId !== null) {
+    clearTimeout(state.resetTimerId);
+    state.resetTimerId = null;
   }
 }
 
 /** Schedules restoring the default geolocation button label and pin icon. */
 function scheduleButtonReset(btn: HTMLButtonElement): void {
-  resetTimerId = setTimeout(() => {
-    resetTimerId = null;
+  state.resetTimerId = setTimeout(() => {
+    state.resetTimerId = null;
     clearChildren(btn);
     btn.append(createLocationPinIcon(), document.createTextNode(' Use my location'));
   }, GEOLOCATION_RESET_DELAY_MS);

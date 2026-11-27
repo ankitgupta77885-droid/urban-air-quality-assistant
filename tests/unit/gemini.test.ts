@@ -5,6 +5,7 @@
  * and the personalizeAdvice function with mocked API calls.
  */
 
+import { GEMINI_TIMEOUT_MS } from '@shared/constants.js';
 import type { AqiData, RulesEngineOutput, UserContext } from '@shared/types.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -27,11 +28,7 @@ import {
   cleanJsonResponse,
   parseGeminiResponse,
 } from '../../src/server/services/gemini-response.js';
-import {
-  clearGeminiCache,
-  personalizeAdvice,
-  rejectAfterTimeout,
-} from '../../src/server/services/gemini.service.js';
+import { clearGeminiCache, personalizeAdvice } from '../../src/server/services/gemini.service.js';
 
 beforeEach(() => {
   vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -471,12 +468,25 @@ describe('personalizeAdvice', () => {
     expect(result.actions).toHaveLength(rulesOutput.actions.length);
   });
 
-  it('should reject with GeminiError when rejectAfterTimeout is triggered', async () => {
+  it('falls back to basic mode cleanly when the Gemini request exceeds GEMINI_TIMEOUT_MS', async () => {
     vi.useFakeTimers();
     try {
-      const promise = rejectAfterTimeout(100);
-      vi.advanceTimersByTime(100);
-      await expect(promise).rejects.toThrow('Gemini API timed out after 100ms');
+      mockGenerateContent.mockImplementation(() => new Promise(() => {}));
+      const rulesOutput = makeRulesOutput();
+      const pending = personalizeAdvice({
+        rulesOutput,
+        aqiData: makeAqiData(),
+        context: makeContext(),
+        apiKey: 'fake-key',
+        modelName: 'gemini-flash-lite-latest',
+      });
+
+      await vi.advanceTimersByTimeAsync(GEMINI_TIMEOUT_MS + 10);
+      const result = await pending;
+
+      expect(result.isBasicMode).toBe(true);
+      expect(result.personalization).toBe('basic');
+      expect(result.riskSummary).toBe(rulesOutput.riskSummary);
     } finally {
       vi.useRealTimers();
     }

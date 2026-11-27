@@ -1,11 +1,9 @@
-/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * AQI breakpoint lookup and risk-scoring tables shared across server and web.
  *
  * Keeping one implementation guarantees the risk calculator, API response,
  * and UI agree on which category an AQI value belongs to.
  */
-/* v8 ignore stop */
 
 import type { AqiCategory, HealthCondition, UserContext } from './types.js';
 
@@ -108,6 +106,26 @@ export const ACTIVITY_RISK_MODIFIERS: Readonly<Record<UserContext['activityLevel
  */
 export function findAqiBreakpoint(aqi: number): AqiBreakpoint {
   return AQI_BREAKPOINTS.find((bp) => aqi <= bp.max) ?? HAZARDOUS_BREAKPOINT;
+}
+
+/** Category presentation metadata derived from a US EPA AQI value. */
+export interface AqiCategoryInfo {
+  /** Human-readable category label. */
+  readonly category: AqiCategory;
+  /** CSS class name for styling. */
+  readonly colorClass: string;
+  /** Accessible icon identifier for the category. */
+  readonly icon: string;
+}
+
+/**
+ * Categorizes an AQI value into its US EPA category with styling info.
+ * @param aqi - Raw AQI value (0–500+).
+ * @returns Category label, CSS color class, and icon.
+ */
+export function categorizeAqi(aqi: number): AqiCategoryInfo {
+  const { category, colorClass, icon } = findAqiBreakpoint(aqi);
+  return { category, colorClass, icon };
 }
 
 /**

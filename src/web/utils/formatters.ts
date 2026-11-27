@@ -4,22 +4,17 @@
  * Provides display-friendly labels for AQI, locations, timestamps, and categories.
  */
 
-import { findAqiBreakpoint } from '@shared/aqi.js';
+import { type AqiCategoryInfo, categorizeAqi } from '@shared/aqi.js';
 import { ADVICE_CATEGORY_LABELS } from '@shared/constants.js';
-import type { AqiCategory, GeocodingResult } from '@shared/types.js';
+import type { GeocodingResult } from '@shared/types.js';
 
 /**
  * Returns the AQI category info for a given AQI value.
  * @param aqi - Raw AQI value.
  * @returns Object with category, colorClass, and icon.
  */
-export function getAqiDisplay(aqi: number): {
-  category: AqiCategory;
-  colorClass: string;
-  icon: string;
-} {
-  const { category, colorClass, icon } = findAqiBreakpoint(aqi);
-  return { category, colorClass, icon };
+export function getAqiDisplay(aqi: number): AqiCategoryInfo {
+  return categorizeAqi(aqi);
 }
 
 const CATEGORY_LABELS: Readonly<Record<string, string>> = ADVICE_CATEGORY_LABELS;

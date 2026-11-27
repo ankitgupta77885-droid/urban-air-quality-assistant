@@ -11,13 +11,14 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 
 import {
+  ADVICE_RATE_LIMIT_MAX,
   BODY_SIZE_LIMIT,
   CORS_MAX_AGE_SECONDS,
   RATE_LIMIT_MAX,
   RATE_LIMIT_WINDOW_MS,
 } from '../../shared/constants.js';
 
-/** Default allowed origins for CORS. */
+/** Default allowed localhost origins for local development and automated tests. */
 const DEFAULT_ALLOWED_ORIGINS: readonly string[] = [
   'http://localhost:5173',
   'http://localhost:3000',
@@ -32,19 +33,26 @@ export interface SecurityOptions {
 
 /**
  * Checks whether an origin is allowed by the CORS policy.
+ * Localhost development origins are allowed outside production unless explicitly configured.
  * @param origin - Request origin header value or undefined.
  * @param customOrigins - App-specific allowed origins.
+ * @param isProduction - Whether production origin strictness is enforced.
  * @returns True if origin is allowed, false otherwise.
  */
 export function isAllowedOrigin(
   origin: string | undefined,
   customOrigins: readonly string[] = [],
+  isProduction = process.env['NODE_ENV'] === 'production',
 ): boolean {
   if (!origin) {
     return true;
   }
 
-  return DEFAULT_ALLOWED_ORIGINS.includes(origin) || customOrigins.includes(origin);
+  if (customOrigins.includes(origin)) {
+    return true;
+  }
+
+  return !isProduction && DEFAULT_ALLOWED_ORIGINS.includes(origin);
 }
 
 /**
@@ -54,16 +62,14 @@ export function isAllowedOrigin(
  */
 export function applySecurityMiddleware(app: Express, options: SecurityOptions = {}): void {
   applyHelmet(app);
+  applyPermissionsPolicy(app);
   applyCors(app, options.allowedOrigins ?? []);
   applyRateLimit(app);
   applyBodyParsing(app);
   applyCompression(app);
 }
 
-/**
- * Configures helmet with a strict Content-Security-Policy.
- * @param app - Express application instance.
- */
+/** Configures helmet with strict Content-Security-Policy, HSTS preload, and DENY framing. */
 function applyHelmet(app: Express): void {
   app.use(
     helmet({
@@ -81,9 +87,20 @@ function applyHelmet(app: Express): void {
           formAction: ["'self'"],
         },
       },
+      frameguard: { action: 'deny' },
+      referrerPolicy: { policy: 'no-referrer' },
+      hsts: { maxAge: 63_072_000, includeSubDomains: true, preload: true },
       crossOriginEmbedderPolicy: false,
     }),
   );
+}
+
+/** Restricts browser device features cleanly while permitting same-origin geolocation. */
+function applyPermissionsPolicy(app: Express): void {
+  app.use((_req, res, next) => {
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
+    next();
+  });
 }
 
 /**
@@ -108,10 +125,15 @@ function applyCors(app: Express, allowedOrigins: readonly string[]): void {
 }
 
 /**
- * Configures rate limiting.
+ * Configures global API rate limiting plus stricter quota protection on `/api/advice`.
  * @param app - Express application instance.
  */
 function applyRateLimit(app: Express): void {
+  const rateLimitMessage = {
+    success: false,
+    error: 'Too many requests, please try again later.',
+  };
+
   app.use(
     '/api',
     rateLimit({
@@ -119,7 +141,18 @@ function applyRateLimit(app: Express): void {
       limit: RATE_LIMIT_MAX,
       standardHeaders: true,
       legacyHeaders: false,
-      message: { success: false, error: 'Too many requests, please try again later.' },
+      message: rateLimitMessage,
+    }),
+  );
+
+  app.use(
+    '/api/advice',
+    rateLimit({
+      windowMs: RATE_LIMIT_WINDOW_MS,
+      limit: ADVICE_RATE_LIMIT_MAX,
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: rateLimitMessage,
     }),
   );
 }

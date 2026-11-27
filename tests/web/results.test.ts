@@ -67,11 +67,24 @@ const MOCK_ADVICE: PersonalizedAdvice = {
 };
 
 function setupDOM(): void {
-  document.body.innerHTML = `
-    <div id="planner-tabs-container"></div>
-    <section id="aqi-section" hidden><div id="aqi-display"></div></section>
-    <section id="advice-section" hidden><div id="advice-plan"></div></section>
-  `;
+  const tabsContainer = document.createElement('div');
+  tabsContainer.id = 'planner-tabs-container';
+
+  const aqiSection = document.createElement('section');
+  aqiSection.id = 'aqi-section';
+  aqiSection.hidden = true;
+  const aqiDisplay = document.createElement('div');
+  aqiDisplay.id = 'aqi-display';
+  aqiSection.appendChild(aqiDisplay);
+
+  const adviceSection = document.createElement('section');
+  adviceSection.id = 'advice-section';
+  adviceSection.hidden = true;
+  const advicePlan = document.createElement('div');
+  advicePlan.id = 'advice-plan';
+  adviceSection.appendChild(advicePlan);
+
+  document.body.replaceChildren(tabsContainer, aqiSection, adviceSection);
 }
 
 describe('Step 4: Real-Time AQI Display and Pollutants Grid', () => {

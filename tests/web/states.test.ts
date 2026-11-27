@@ -70,7 +70,10 @@ describe('Step 5: Empty State', () => {
 
 describe('Step 5: Loading State', () => {
   beforeEach(() => {
-    document.body.innerHTML = '<div id="loading" aria-live="polite"></div>';
+    const loading = document.createElement('div');
+    loading.id = 'loading';
+    loading.setAttribute('aria-live', 'polite');
+    document.body.replaceChildren(loading);
   });
 
   it('should render accessible spinner and status message', () => {
@@ -97,7 +100,11 @@ describe('Step 5: Loading State', () => {
 
 describe('Step 5: Error Banner with Retry', () => {
   beforeEach(() => {
-    document.body.innerHTML = '<div id="error-banner" role="alert" aria-live="assertive"></div>';
+    const errorBanner = document.createElement('div');
+    errorBanner.id = 'error-banner';
+    errorBanner.setAttribute('role', 'alert');
+    errorBanner.setAttribute('aria-live', 'assertive');
+    document.body.replaceChildren(errorBanner);
   });
 
   it('should render error message with SVG alert icon and no emoji', () => {
@@ -145,7 +152,10 @@ describe('Step 5: Error Banner with Retry', () => {
 
 describe('Step 5: Trust Strip Timestamp', () => {
   beforeEach(() => {
-    document.body.innerHTML = '<div id="trust-text">Data from Open-Meteo</div>';
+    const trustText = document.createElement('div');
+    trustText.id = 'trust-text';
+    trustText.textContent = 'Data from Open-Meteo';
+    document.body.replaceChildren(trustText);
   });
 
   it('should render base source text initially', () => {

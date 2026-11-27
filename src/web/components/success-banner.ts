@@ -5,7 +5,13 @@
  * technology, and an optional link that jumps to the generated content.
  */
 
-import { clearChildren, createElement, getElement, setText } from '../utils/dom.js';
+import {
+  clearChildren,
+  clearElementById,
+  createElement,
+  getElement,
+  setText,
+} from '../utils/dom.js';
 
 import { createCheckIcon } from './icons.js';
 
@@ -50,8 +56,5 @@ export function showSuccess(message: string, link?: SuccessLink): void {
 
 /** Clears any displayed success banner. */
 export function clearSuccess(): void {
-  const container = document.getElementById('success-banner');
-  if (container) {
-    clearChildren(container);
-  }
+  clearElementById('success-banner');
 }

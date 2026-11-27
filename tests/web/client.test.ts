@@ -103,6 +103,24 @@ describe('Web API Client', () => {
       await expect(searchCities('Unknown')).rejects.toThrow(ApiClientError);
     });
 
+    it('preserves HTTP error status and error code from API error envelopes', async () => {
+      mockFetch.mockResolvedValueOnce({
+        status: 429,
+        json: async () =>
+          Promise.resolve({
+            success: false,
+            error: 'Rate limited',
+            code: 'RATE_LIMITED',
+          }),
+      });
+
+      await expect(searchCities('Throttled')).rejects.toMatchObject({
+        message: 'Rate limited',
+        statusCode: 429,
+        code: 'RATE_LIMITED',
+      });
+    });
+
     it('throws ApiClientError on invalid response shape', async () => {
       mockFetch.mockResolvedValue({
         json: async () => Promise.resolve({ notAnApiResponse: true }),

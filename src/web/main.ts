@@ -14,10 +14,9 @@ import {
   setContextFormBusy,
   setContextFormLocationSelected,
 } from './components/context-form.js';
-import { renderDisclaimer } from './components/disclaimer.js';
 import { clearEmptyState, renderEmptyState } from './components/empty-state.js';
 import { clearError, showError } from './components/error-banner.js';
-import { updateTrustTimestamp } from './components/footer.js';
+import { renderFooter, updateTrustTimestamp } from './components/footer.js';
 import { renderHero } from './components/hero.js';
 import { renderHowItWorks } from './components/how-it-works.js';
 import { hideLoading, showLoading } from './components/loading.js';
@@ -32,7 +31,9 @@ import { scrollToElementById } from './utils/scroll.js';
 
 const PLAN_READY_MESSAGE = 'Your personalized plan is generated.';
 
-let selectedLocation: GeocodingResult | null = null;
+const appState: { selectedLocation: GeocodingResult | null } = {
+  selectedLocation: null,
+};
 
 /** Runs an async UI request with unified loading, AbortError suppression, and error retry handling. */
 async function runAsyncUiAction(
@@ -60,7 +61,7 @@ async function runAsyncUiAction(
 
 /** Handles location selection from search or geolocation. */
 async function onLocationSelected(result: GeocodingResult): Promise<void> {
-  selectedLocation = result;
+  appState.selectedLocation = result;
   const locationLabel = formatLocationLabel(result);
   setContextFormLocationSelected(true, locationLabel);
   mountIfPresent('results', clearEmptyState);
@@ -89,7 +90,7 @@ function showLocationPill(locationLabel: string, aqi: number, category: string):
 
 /** Handles context form submission. */
 async function onContextSubmit(context: UserContext): Promise<void> {
-  const location = selectedLocation;
+  const location = appState.selectedLocation;
   if (!location) {
     showError('Please select a city or location first.');
     return;
@@ -118,12 +119,13 @@ async function onContextSubmit(context: UserContext): Promise<void> {
 
 /** Initializes the application layout and components. */
 export function initApp(): void {
-  selectedLocation = null;
+  appState.selectedLocation = null;
   mountIfPresent('app-header', renderNavbar);
   mountIfPresent('hero', renderHero);
   mountIfPresent('planner-tabs-container', initPlannerTabs);
   mountIfPresent('results', renderEmptyState);
   mountIfPresent('how-it-works', renderHowItWorks);
+  mountIfPresent('app-footer', renderFooter);
 
   initLocationSearch((result) => {
     void onLocationSelected(result);
@@ -131,15 +133,13 @@ export function initApp(): void {
   initContextForm((context) => {
     void onContextSubmit(context);
   });
-  renderDisclaimer();
 }
 
 /** Auto-bootstraps when all required mount containers are present in the document. */
 if (
-  typeof document !== 'undefined' &&
   document.getElementById('location-search') &&
   document.getElementById('context-form') &&
-  document.getElementById('disclaimer')
+  document.getElementById('app-footer')
 ) {
   initApp();
 }

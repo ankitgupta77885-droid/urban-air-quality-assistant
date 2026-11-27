@@ -98,6 +98,17 @@ export function clearChildren(el: HTMLElement): void {
 }
 
 /**
+ * Clears all child nodes from an element matching the given ID if present.
+ * @param id - Target container ID.
+ */
+export function clearElementById(id: string): void {
+  const container = document.getElementById(id);
+  if (container) {
+    clearChildren(container);
+  }
+}
+
+/**
  * Focuses an input element by ID if present in the document.
  * @param id - Target input element ID.
  */

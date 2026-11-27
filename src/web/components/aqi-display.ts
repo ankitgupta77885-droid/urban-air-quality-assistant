@@ -10,6 +10,7 @@ import type { AqiCategory, AqiData, PollutantReading } from '@shared/types.js';
 import { clearChildren, createElement, getElement, setText, showElement } from '../utils/dom.js';
 import { formatLocalTime, getAqiDisplay } from '../utils/formatters.js';
 
+import { createCard } from './card.js';
 import { createAqiStatusIcon } from './icons.js';
 
 const AQI_DESCRIPTIONS: Readonly<Record<AqiCategory, string>> = {
@@ -53,8 +54,11 @@ export function renderAqiDisplay(data: AqiData): void {
   clearChildren(container);
 
   const { category, colorClass } = getAqiDisplay(data.aqi);
-  const card = createElement('div', 'aqi-card', colorClass, 'card', 'card-surface');
-  card.setAttribute('aria-label', `Air Quality Index: ${data.aqi}, ${category}`);
+  const card = createCard({
+    padding: 'xl',
+    className: `aqi-card ${colorClass}`,
+    ariaLabel: `Air Quality Index: ${data.aqi}, ${category}`,
+  });
 
   card.appendChild(buildAqiHeader(data.aqi, category));
 

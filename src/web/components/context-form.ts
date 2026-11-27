@@ -23,11 +23,21 @@ type ContextCallback = (context: UserContext) => void;
 const SUBMIT_LABEL = 'Generate Personalized Advice';
 const SUBMIT_BUSY_LABEL = 'Generating your plan…';
 
-let formEl: HTMLFormElement | null = null;
-let submitButtonEl: HTMLButtonElement | null = null;
-let disabledHintEl: HTMLElement | null = null;
-let isLocationSelected = false;
-let selectedLocationName = '';
+interface ContextFormState {
+  formEl: HTMLFormElement | null;
+  submitButtonEl: HTMLButtonElement | null;
+  disabledHintEl: HTMLElement | null;
+  isLocationSelected: boolean;
+  selectedLocationName: string;
+}
+
+const formState: ContextFormState = {
+  formEl: null,
+  submitButtonEl: null,
+  disabledHintEl: null,
+  isLocationSelected: false,
+  selectedLocationName: '',
+};
 
 /** Initializes the context form component. */
 export function initContextForm(onSubmit: ContextCallback): void {
@@ -35,16 +45,16 @@ export function initContextForm(onSubmit: ContextCallback): void {
   container.replaceChildren();
 
   const form = buildForm();
-  formEl = form;
+  formState.formEl = form;
   form.addEventListener('submit', (e: Event) => {
     e.preventDefault();
-    if (submitButtonEl?.disabled) {
+    if (formState.submitButtonEl?.disabled) {
       return;
     }
     const result = parseContextFormData(form);
     if (!result.success) {
-      if (disabledHintEl) {
-        setText(disabledHintEl, result.error);
+      if (formState.disabledHintEl) {
+        setText(formState.disabledHintEl, result.error);
       }
       return;
     }
@@ -60,7 +70,7 @@ export function initContextForm(onSubmit: ContextCallback): void {
  * @param busy - True while advice is being generated.
  */
 export function setContextFormBusy(busy: boolean): void {
-  const button = submitButtonEl;
+  const button = formState.submitButtonEl;
   if (!button) {
     return;
   }
@@ -73,43 +83,45 @@ export function setContextFormBusy(busy: boolean): void {
   }
   button.removeAttribute('aria-busy');
   setButtonText(button, SUBMIT_LABEL);
-  if (formEl) {
-    updateSubmitButtonState(formEl);
+  if (formState.formEl) {
+    updateSubmitButtonState(formState.formEl);
   }
 }
 
 /** Updates the submission button state based on location selection. */
 export function setContextFormLocationSelected(selected: boolean, locationName?: string): void {
-  isLocationSelected = selected;
-  selectedLocationName = locationName ?? '';
-  if (formEl) {
-    updateSubmitButtonState(formEl);
+  formState.isLocationSelected = selected;
+  formState.selectedLocationName = locationName ?? '';
+  if (formState.formEl) {
+    updateSubmitButtonState(formState.formEl);
   }
 }
 
 /** Evaluates form state and updates submit button disabled state and reason. */
 function updateSubmitButtonState(form: HTMLFormElement): void {
-  if (!submitButtonEl || !disabledHintEl) {
+  if (!formState.submitButtonEl || !formState.disabledHintEl) {
     return;
   }
   const hasAge = Boolean(form.querySelector<HTMLSelectElement>('#childAgeGroup')?.value);
-  const canSubmit = isLocationSelected && hasAge;
-  submitButtonEl.disabled = !canSubmit;
+  const canSubmit = formState.isLocationSelected && hasAge;
+  formState.submitButtonEl.disabled = !canSubmit;
 
   if (canSubmit) {
-    submitButtonEl.removeAttribute('aria-disabled');
+    formState.submitButtonEl.removeAttribute('aria-disabled');
     setText(
-      disabledHintEl,
-      selectedLocationName ? `Location: ${selectedLocationName}` : 'Ready to generate your plan.',
+      formState.disabledHintEl,
+      formState.selectedLocationName
+        ? `Location: ${formState.selectedLocationName}`
+        : 'Ready to generate your plan.',
     );
     return;
   }
 
-  submitButtonEl.setAttribute('aria-disabled', 'true');
-  const msg = !isLocationSelected
+  formState.submitButtonEl.setAttribute('aria-disabled', 'true');
+  const msg = !formState.isLocationSelected
     ? 'Select a city or use your location above to generate your plan.'
     : 'Select a child age group to generate your plan.';
-  setText(disabledHintEl, msg);
+  setText(formState.disabledHintEl, msg);
 }
 
 /** Builds the full form element with 4-column compact grid and collapsible fields. */
@@ -148,7 +160,7 @@ function buildForm(): HTMLFormElement {
 /** Creates the submit button and disabled hint explanation. */
 function createSubmitSection(): HTMLElement {
   const wrapper = createElement('div', 'submit-section');
-  submitButtonEl = createButton({
+  formState.submitButtonEl = createButton({
     id: 'submit-advice-btn',
     type: 'submit',
     text: SUBMIT_LABEL,
@@ -157,13 +169,16 @@ function createSubmitSection(): HTMLElement {
     className: 'submit-btn',
     disabled: true,
   });
-  submitButtonEl.setAttribute('aria-disabled', 'true');
+  formState.submitButtonEl.setAttribute('aria-disabled', 'true');
 
-  disabledHintEl = createElement('p', 'disabled-hint');
-  disabledHintEl.id = 'advice-disabled-hint';
-  disabledHintEl.setAttribute('role', 'status');
-  setText(disabledHintEl, 'Select a city or use your location above to generate your plan.');
+  formState.disabledHintEl = createElement('p', 'disabled-hint');
+  formState.disabledHintEl.id = 'advice-disabled-hint';
+  formState.disabledHintEl.setAttribute('role', 'status');
+  setText(
+    formState.disabledHintEl,
+    'Select a city or use your location above to generate your plan.',
+  );
 
-  wrapper.append(submitButtonEl, disabledHintEl);
+  wrapper.append(formState.submitButtonEl, formState.disabledHintEl);
   return wrapper;
 }

@@ -59,10 +59,25 @@ describe('loadEnvConfig', () => {
 
   it('defaults ALLOWED_ORIGINS to empty array when unset', () => {
     delete process.env.ALLOWED_ORIGINS;
+    delete process.env.VERCEL_URL;
+    delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
     vi.spyOn(process, 'loadEnvFile').mockImplementation(() => {});
 
     const config = loadEnvConfig();
     expect(config.ALLOWED_ORIGINS).toEqual([]);
+  });
+
+  it('includes normalized Vercel deployment origins when VERCEL environment variables are set', () => {
+    delete process.env.ALLOWED_ORIGINS;
+    process.env.VERCEL_URL = 'breathewell-preview.vercel.app';
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = 'https://breathewell-assistant.vercel.app';
+    vi.spyOn(process, 'loadEnvFile').mockImplementation(() => {});
+
+    const config = loadEnvConfig();
+    expect(config.ALLOWED_ORIGINS).toEqual([
+      'https://breathewell-preview.vercel.app',
+      'https://breathewell-assistant.vercel.app',
+    ]);
   });
 
   it('updates logger level from LOG_LEVEL config', () => {

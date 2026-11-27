@@ -27,7 +27,9 @@ function offsetOfId(html: string, id: string): number {
 
 describe('Busy submit button', () => {
   beforeEach(() => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    const formContainer = document.createElement('div');
+    formContainer.id = 'context-form';
+    document.body.replaceChildren(formContainer);
     initContextForm(vi.fn());
     setContextFormLocationSelected(true, 'London, United Kingdom');
   });
@@ -53,7 +55,7 @@ describe('Busy submit button', () => {
   });
 
   it('does nothing when the form has not been rendered', () => {
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
     expect(() => {
       setContextFormBusy(true);
     }).not.toThrow();

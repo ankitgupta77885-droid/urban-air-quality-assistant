@@ -11,7 +11,9 @@ import { formatLocalTime } from '../utils/formatters.js';
 
 import { renderDisclaimer } from './disclaimer.js';
 
-let trustTextElement: HTMLElement | null = null;
+const state: { trustTextElement: HTMLElement | null } = {
+  trustTextElement: null,
+};
 
 /**
  * Renders the application footer shell.
@@ -42,7 +44,7 @@ export function renderFooter(container: HTMLElement): void {
  * @param isoTimestamp - ISO timestamp string from the real Open-Meteo response.
  */
 export function updateTrustTimestamp(isoTimestamp?: string): void {
-  const el = trustTextElement ?? document.getElementById('trust-text');
+  const el = state.trustTextElement ?? document.getElementById('trust-text');
   if (!el) {
     return;
   }
@@ -60,8 +62,9 @@ function createTrustStrip(): HTMLElement {
   strip.setAttribute('aria-label', 'Data provenance');
 
   const text = createElement('span', 'trust-text');
+  text.id = 'trust-text';
   setText(text, 'Data from Open-Meteo');
-  trustTextElement = text;
+  state.trustTextElement = text;
 
   strip.appendChild(text);
   return strip;

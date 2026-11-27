@@ -10,12 +10,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initPlannerTabs, selectTab } from '../../src/web/components/planner-tabs.js';
 import { scrollToElementById } from '../../src/web/utils/scroll.js';
 
-const PANELS_HTML = `
-  <div id="tabs"></div>
-  <div id="panel-daily-routines"></div>
-  <div id="panel-indoor-air" hidden></div>
-  <div id="panel-clean-alternatives" hidden></div>
-`;
+const PANEL_IDS = ['daily-routines', 'indoor-air', 'clean-alternatives'] as const;
+
+/** Replaces document.body cleanly with an initialized tabs container and hidden panels. */
+function mountPanelsFixture(): void {
+  const tabs = document.createElement('div');
+  tabs.id = 'tabs';
+  const panels = PANEL_IDS.map((id, index) => {
+    const panel = document.createElement('div');
+    panel.id = `panel-${id}`;
+    if (index > 0) {
+      panel.hidden = true;
+    }
+    return panel;
+  });
+  document.body.replaceChildren(tabs, ...panels);
+}
 
 /** Replaces window.matchMedia with a stub for the reduced-motion query. */
 function stubReducedMotion(matches: boolean): void {
@@ -24,7 +34,7 @@ function stubReducedMotion(matches: boolean): void {
 
 describe('Planner tab focus', () => {
   beforeEach(() => {
-    document.body.innerHTML = PANELS_HTML;
+    mountPanelsFixture();
     const container = document.getElementById('tabs');
     if (container) {
       initPlannerTabs(container);
@@ -56,7 +66,9 @@ describe('scrollToElementById', () => {
   const scrollIntoView = vi.fn();
 
   beforeEach(() => {
-    document.body.innerHTML = '<div id="success-banner"></div>';
+    const banner = document.createElement('div');
+    banner.id = 'success-banner';
+    document.body.replaceChildren(banner);
     Element.prototype.scrollIntoView = scrollIntoView;
   });
 

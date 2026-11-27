@@ -7,6 +7,7 @@ import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createApp } from '../../src/server/app.js';
+import { isAllowedOrigin } from '../../src/server/middleware/security.js';
 
 const mockSearchCities = vi.fn();
 
@@ -116,5 +117,25 @@ describe('Security Middleware - CORS allowlist', () => {
     expect(res.status).toBe(413);
     expect(body.success).toBe(false);
     expect(body.error).toBe('Request payload too large.');
+  });
+
+  it('enforces X-Frame-Options DENY, Permissions-Policy, and HSTS preload headers', async () => {
+    const res = await request(app).get('/api/geocoding/search?q=London');
+
+    expect(res.headers['x-frame-options']).toBe('DENY');
+    expect(res.headers['permissions-policy']).toBe('camera=(), microphone=(), geolocation=(self)');
+    expect(res.headers['strict-transport-security']).toContain('preload');
+  });
+
+  it('blocks localhost origins by default in production mode unless explicitly allowed', () => {
+    expect(isAllowedOrigin('http://localhost:5173', [], true)).toBe(false);
+    expect(
+      isAllowedOrigin(
+        'https://breathewell-assistant.vercel.app',
+        ['https://breathewell-assistant.vercel.app'],
+        true,
+      ),
+    ).toBe(true);
+    expect(isAllowedOrigin('http://localhost:5173', [], false)).toBe(true);
   });
 });

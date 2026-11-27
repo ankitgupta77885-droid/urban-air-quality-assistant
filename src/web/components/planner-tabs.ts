@@ -23,11 +23,21 @@ export const PLANNER_TABS: readonly TabItem[] = [
 
 type TabChangeCallback = (tabId: string) => void;
 
-let tabsList: HTMLButtonElement[] = [];
-let hintEl: HTMLElement | null = null;
-let isEnabled = false;
-let currentTabId = 'daily-routines';
-let onTabChangeCb: TabChangeCallback | null = null;
+interface PlannerTabsState {
+  tabsList: HTMLButtonElement[];
+  hintEl: HTMLElement | null;
+  isEnabled: boolean;
+  currentTabId: string;
+  onTabChangeCb: TabChangeCallback | null;
+}
+
+const tabsState: PlannerTabsState = {
+  tabsList: [],
+  hintEl: null,
+  isEnabled: false,
+  currentTabId: 'daily-routines',
+  onTabChangeCb: null,
+};
 
 /**
  * Initializes the planner tabs inside the header.
@@ -36,10 +46,10 @@ let onTabChangeCb: TabChangeCallback | null = null;
  */
 export function initPlannerTabs(container: HTMLElement, onTabChange?: TabChangeCallback): void {
   container.replaceChildren();
-  onTabChangeCb = onTabChange ?? null;
-  tabsList = [];
-  isEnabled = false;
-  currentTabId = 'daily-routines';
+  tabsState.onTabChangeCb = onTabChange ?? null;
+  tabsState.tabsList = [];
+  tabsState.isEnabled = false;
+  tabsState.currentTabId = 'daily-routines';
 
   const wrapper = createElement('div', 'planner-tabs-wrapper');
   const tablist = createElement('div', 'planner-tablist');
@@ -48,33 +58,33 @@ export function initPlannerTabs(container: HTMLElement, onTabChange?: TabChangeC
 
   PLANNER_TABS.forEach((tabData, i) => {
     const tab = createTabButton(tabData, i === 0);
-    tabsList.push(tab);
+    tabsState.tabsList.push(tab);
     tablist.appendChild(tab);
   });
 
   tablist.addEventListener('keydown', handleTabKeydown);
 
-  hintEl = createElement('span', 'tabs-disabled-hint');
-  hintEl.id = 'tabs-disabled-hint';
-  hintEl.setAttribute('role', 'status');
-  setText(hintEl, 'Generate a plan to see these');
+  tabsState.hintEl = createElement('span', 'tabs-disabled-hint');
+  tabsState.hintEl.id = 'tabs-disabled-hint';
+  tabsState.hintEl.setAttribute('role', 'status');
+  setText(tabsState.hintEl, 'Generate a plan to see these');
 
-  wrapper.append(tablist, hintEl);
+  wrapper.append(tablist, tabsState.hintEl);
   container.appendChild(wrapper);
 }
 
 /** Toggles whether the tabs are enabled (after plan generation) or disabled. */
 export function setPlannerTabsEnabled(enabled: boolean): void {
-  isEnabled = enabled;
-  for (const tab of tabsList) {
+  tabsState.isEnabled = enabled;
+  for (const tab of tabsState.tabsList) {
     if (enabled) {
       tab.removeAttribute('aria-disabled');
     } else {
       tab.setAttribute('aria-disabled', 'true');
     }
   }
-  if (hintEl) {
-    hintEl.hidden = enabled;
+  if (tabsState.hintEl) {
+    tabsState.hintEl.hidden = enabled;
   }
 }
 
@@ -91,7 +101,7 @@ function createTabButton(tabData: TabItem, isSelected: boolean): HTMLButtonEleme
   setText(tab, tabData.label);
 
   tab.addEventListener('click', () => {
-    if (isEnabled) {
+    if (tabsState.isEnabled) {
       selectTab(tabData.id);
     }
   });
@@ -114,8 +124,8 @@ export interface SelectTabOptions {
  * @param options - Optional behavior flags; focus is not moved by default.
  */
 export function selectTab(tabId: string, options: SelectTabOptions = {}): void {
-  currentTabId = tabId;
-  for (const tab of tabsList) {
+  tabsState.currentTabId = tabId;
+  for (const tab of tabsState.tabsList) {
     updateTabState(tab, tab.id === `tab-${tabId}`, options.focus === true);
   }
   for (const item of PLANNER_TABS) {
@@ -124,8 +134,8 @@ export function selectTab(tabId: string, options: SelectTabOptions = {}): void {
       panel.hidden = item.id !== tabId;
     }
   }
-  if (onTabChangeCb && isEnabled) {
-    onTabChangeCb(tabId);
+  if (tabsState.onTabChangeCb && tabsState.isEnabled) {
+    tabsState.onTabChangeCb(tabId);
   }
 }
 
@@ -153,12 +163,12 @@ const TAB_KEY_ACTIONS: Readonly<Record<string, TabKeyAction>> = {
 /** Handles arrow key roving between tabs using a data-driven key action map. */
 function handleTabKeydown(e: KeyboardEvent): void {
   const action = TAB_KEY_ACTIONS[e.key];
-  if (!action || tabsList.length === 0) {
+  if (!action || tabsState.tabsList.length === 0) {
     return;
   }
 
-  const curIdx = tabsList.findIndex((t) => t.id === `tab-${currentTabId}`);
-  const newIdx = action(curIdx, tabsList.length);
+  const curIdx = tabsState.tabsList.findIndex((t) => t.id === `tab-${tabsState.currentTabId}`);
+  const newIdx = action(curIdx, tabsState.tabsList.length);
   const nextTab = PLANNER_TABS[newIdx];
 
   if (nextTab) {

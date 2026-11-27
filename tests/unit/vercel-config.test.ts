@@ -73,6 +73,8 @@ describe('vercel.json', () => {
     expect(globalHeader('X-Content-Type-Options')).toBe('nosniff');
     expect(globalHeader('X-Frame-Options')).toBe('DENY');
     expect(globalHeader('Referrer-Policy')).toBe('no-referrer');
+    expect(globalHeader('Strict-Transport-Security')).toContain('preload');
+    expect(globalHeader('Permissions-Policy')).toBe('camera=(), microphone=(), geolocation=(self)');
   });
 
   it('sets immutable CDN cache headers for bundled assets and fonts', () => {

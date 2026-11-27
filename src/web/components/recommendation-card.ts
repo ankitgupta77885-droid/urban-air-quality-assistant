@@ -10,6 +10,7 @@ import type { PersonalizedAction } from '@shared/types.js';
 import { createElement, setText } from '../utils/dom.js';
 import { getCategoryLabel } from '../utils/formatters.js';
 
+import { createCard } from './card.js';
 import { createActionIcon, createCategoryIcon } from './icons.js';
 import { createPill } from './pill.js';
 
@@ -18,7 +19,7 @@ import { createPill } from './pill.js';
  * @param action - Action data to render.
  */
 export function createRecommendationCard(action: PersonalizedAction): HTMLElement {
-  const card = createElement('div', 'action-card', 'card', 'card-surface');
+  const card = createCard({ padding: 'xl', className: 'action-card' });
 
   const header = buildCardHeader(action);
   const titleRow = buildTitleRow(action);

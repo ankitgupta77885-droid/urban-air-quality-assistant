@@ -166,8 +166,13 @@ describe('Layout Shell: Navbar and Footer', () => {
   });
 
   it('mounts components only when container exists and handles custom classes/focus', () => {
-    document.body.innerHTML =
-      '<div id="mount-target"></div><input id="city-search" /><section id="aqi-section"></section>';
+    const mountTarget = document.createElement('div');
+    mountTarget.id = 'mount-target';
+    const searchInput = document.createElement('input');
+    searchInput.id = 'city-search';
+    const aqiSectionEl = document.createElement('section');
+    aqiSectionEl.id = 'aqi-section';
+    document.body.replaceChildren(mountTarget, searchInput, aqiSectionEl);
     Object.defineProperty(window, 'matchMedia', {
       value: vi.fn().mockReturnValue({ matches: true }),
       writable: true,
@@ -183,17 +188,15 @@ describe('Layout Shell: Navbar and Footer', () => {
     mountIfPresent('missing-target', rendered);
     expect(rendered).toHaveBeenCalledTimes(1);
 
-    const search = document.getElementById('city-search') as HTMLInputElement;
-    const focusSpy = vi.spyOn(search, 'focus');
+    const focusSpy = vi.spyOn(searchInput, 'focus');
     focusInput('city-search');
     expect(focusSpy).toHaveBeenCalledTimes(1);
     focusInput('missing-input');
 
     const header = document.createElement('header');
     renderNavbar(header);
-    const aqiSection = document.getElementById('aqi-section') as HTMLElement;
     const scrollSpy = vi.fn();
-    aqiSection.scrollIntoView = scrollSpy;
+    aqiSectionEl.scrollIntoView = scrollSpy;
     const airQualityLink = header.querySelector<HTMLAnchorElement>('a[href="#planner"]');
     airQualityLink?.click();
     expect(scrollSpy).toHaveBeenCalledTimes(1);

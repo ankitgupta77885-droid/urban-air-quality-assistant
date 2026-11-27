@@ -1,11 +1,9 @@
-/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Generic in-memory TTL cache.
  *
  * Stores key-value pairs with automatic expiration and maximum-size
  * LRU eviction (least recently accessed entries evicted first).
  */
-/* v8 ignore stop */
 
 import { MAX_CACHE_ENTRIES } from './constants.js';
 

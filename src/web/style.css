@@ -6,6 +6,7 @@
 @import './tokens.css';
 @import './styles/base.css';
 @import './styles/layout.css';
+@import './styles/cards.css';
 @import './styles/context-form.css';
 @import './styles/navbar.css';
 @import './styles/hero.css';
@@ -13,7 +14,6 @@
 @import './styles/chips.css';
 @import './styles/results.css';
 @import './styles/advice.css';
-@import './styles/cards.css';
 @import './styles/actions.css';
 @import './styles/footer.css';
 @import './styles/states.css';

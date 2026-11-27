@@ -56,26 +56,46 @@ const MOCK_ADVICE: PersonalizedAdvice = {
   personalization: 'ai',
 };
 
+function makeBox(tag: keyof HTMLElementTagNameMap, id: string, hidden = false): HTMLElement {
+  const el = document.createElement(tag);
+  el.id = id;
+  if (hidden) {
+    el.hidden = true;
+  }
+  return el;
+}
+
 function setupAppDom(): void {
-  document.body.innerHTML = `
-    <header id="app-header"></header>
-    <div id="hero"></div>
-    <div id="planner-tabs-container"></div>
-    <div id="location-search"></div>
-    <div id="location-pill-container"></div>
-    <div id="context-form"></div>
-    <div id="error-banner" role="alert"></div>
-    <div id="loading" aria-live="polite"></div>
-    <div id="success-banner"></div>
-    <div id="results"></div>
-    <section id="aqi-section" hidden><div id="aqi-display"></div></section>
-    <section id="advice-section" hidden><div id="advice-plan"></div></section>
-    <section id="how-it-works"></section>
-    <footer>
-      <div id="disclaimer"></div>
-      <span id="trust-text">Data from Open-Meteo</span>
-    </footer>
-  `;
+  const errorBanner = makeBox('div', 'error-banner');
+  errorBanner.setAttribute('role', 'alert');
+
+  const loading = makeBox('div', 'loading');
+  loading.setAttribute('aria-live', 'polite');
+
+  const aqiSection = makeBox('section', 'aqi-section', true);
+  aqiSection.appendChild(makeBox('div', 'aqi-display'));
+
+  const adviceSection = makeBox('section', 'advice-section', true);
+  adviceSection.appendChild(makeBox('div', 'advice-plan'));
+
+  const footer = makeBox('footer', 'app-footer');
+
+  document.body.replaceChildren(
+    makeBox('header', 'app-header'),
+    makeBox('div', 'hero'),
+    makeBox('div', 'planner-tabs-container'),
+    makeBox('div', 'location-search'),
+    makeBox('div', 'location-pill-container'),
+    makeBox('div', 'context-form'),
+    errorBanner,
+    loading,
+    makeBox('div', 'success-banner'),
+    makeBox('div', 'results'),
+    aqiSection,
+    adviceSection,
+    makeBox('section', 'how-it-works'),
+    footer,
+  );
 }
 
 async function flushMicrotasks(): Promise<void> {

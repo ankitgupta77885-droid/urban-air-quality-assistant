@@ -136,11 +136,6 @@ function createTimeoutGuard(ms: number): { promise: Promise<never>; cancel: () =
   };
 }
 
-/** Creates a promise that rejects with a GeminiError after the given timeout. */
-export function rejectAfterTimeout(ms: number): Promise<never> {
-  return createTimeoutGuard(ms).promise;
-}
-
 /** Clears cached Gemini advice responses and clients (for testing). */
 export function clearGeminiCache(): void {
   adviceCache.clear();

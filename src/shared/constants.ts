@@ -1,11 +1,9 @@
-/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Shared constants for BreatheWell.
  *
  * All magic numbers, breakpoints, labels, and configuration constants
  * live here as named exports.
  */
-/* v8 ignore stop */
 
 import type { ActionIconKey, AdviceCategory } from './types.js';
 
@@ -134,6 +132,9 @@ export const GEMINI_TIMEOUT_MS = 20_000;
 
 /** Rate limit: max requests per window. */
 export const RATE_LIMIT_MAX = 60;
+
+/** Stricter rate limit for AI advice generation endpoint per window. */
+export const ADVICE_RATE_LIMIT_MAX = 20;
 
 /** Rate limit: window size in milliseconds (1 minute). */
 export const RATE_LIMIT_WINDOW_MS = 60_000;

@@ -52,9 +52,15 @@ describe('Step 3: Hero Component', () => {
   });
 });
 
+function mountContextFormContainer(): void {
+  const formContainer = document.createElement('div');
+  formContainer.id = 'context-form';
+  document.body.replaceChildren(formContainer);
+}
+
 describe('Step 3: Unified Planner and Context Form', () => {
   it('should initialize with submit button disabled and clear text explanation', () => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    mountContextFormContainer();
     initContextForm(vi.fn());
 
     const submitBtn = document.getElementById('submit-advice-btn') as HTMLButtonElement | null;
@@ -67,7 +73,7 @@ describe('Step 3: Unified Planner and Context Form', () => {
   });
 
   it('should toggle "More details" with aria-expanded and aria-controls', () => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    mountContextFormContainer();
     initContextForm(vi.fn());
 
     const toggleBtn = document.getElementById('more-details-toggle') as HTMLButtonElement;
@@ -94,7 +100,7 @@ describe('Step 3: Unified Planner and Context Form', () => {
   });
 
   it('should not preselect household answers and start child age group on placeholder', () => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    mountContextFormContainer();
     initContextForm(vi.fn());
 
     const ageSelect = document.getElementById('childAgeGroup') as HTMLSelectElement;
@@ -112,7 +118,7 @@ describe('Step 3: Unified Planner and Context Form', () => {
   });
 
   it('should enable submit button only when BOTH location and child age group are chosen', () => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    mountContextFormContainer();
     initContextForm(vi.fn());
 
     const submitBtn = document.getElementById('submit-advice-btn') as HTMLButtonElement;
@@ -154,7 +160,7 @@ describe('Step 3: Unified Planner and Context Form', () => {
   });
 
   it('should not submit form when button is disabled', () => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    mountContextFormContainer();
     const onSubmit = vi.fn<(context: UserContext) => void>();
     initContextForm(onSubmit);
 
@@ -165,7 +171,7 @@ describe('Step 3: Unified Planner and Context Form', () => {
   });
 
   it('should submit valid context data when button is enabled and valid inputs provided', () => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    mountContextFormContainer();
     const onSubmit = vi.fn<(context: UserContext) => void>();
     initContextForm(onSubmit);
 
@@ -196,7 +202,7 @@ describe('Step 3: Unified Planner and Context Form', () => {
   });
 
   it('displays validation guidance in the hint when incomplete form fields are submitted', () => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    mountContextFormContainer();
     const onSubmit = vi.fn<(context: UserContext) => void>();
     initContextForm(onSubmit);
 
@@ -223,24 +229,24 @@ describe('Step 3: Unified Planner and Context Form', () => {
   });
 
   it('should focus the city search input when navbar Check Your Area is clicked', () => {
-    document.body.innerHTML = `
-      <header id="header"></header>
-      <input type="text" id="city-search" />
-    `;
-    const header = document.getElementById('header') as HTMLElement;
+    const header = document.createElement('header');
+    header.id = 'header';
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.id = 'city-search';
+    document.body.replaceChildren(header, searchInput);
     renderNavbar(header);
 
-    const searchInput = document.getElementById('city-search') as HTMLInputElement;
     const focusSpy = vi.spyOn(searchInput, 'focus');
 
-    const cta = header.querySelector('a.nav-cta') as HTMLAnchorElement;
-    cta.click();
+    const cta = header.querySelector<HTMLAnchorElement>('a.nav-cta');
+    cta?.click();
 
     expect(focusSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should enforce exclusive "None" behavior on health condition chips', () => {
-    document.body.innerHTML = '<div id="context-form"></div>';
+    mountContextFormContainer();
     initContextForm(vi.fn());
 
     const noneChip = document.getElementById('healthConditions-none') as HTMLInputElement;

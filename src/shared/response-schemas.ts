@@ -1,10 +1,8 @@
-/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Shared Zod schemas for Open-Meteo upstream payloads and API responses.
  *
  * Re-exported through `./schemas.js` to keep modules concise and modular.
  */
-/* v8 ignore stop */
 
 import { z } from 'zod';
 
@@ -14,7 +12,7 @@ import { personalizedActionSchema, riskLevelSchema } from './request-schemas.js'
 
 /** Schema for Open-Meteo Air Quality current payload. */
 export const openMeteoAqiCurrentSchema = z.object({
-  time: z.string(),
+  time: z.string().max(64),
   us_aqi: z.number(),
   pm2_5: z.number(),
   pm10: z.number(),
@@ -32,16 +30,16 @@ export const openMeteoAqiResponseSchema = z.object({
 /** Shared geographic fields across upstream and internal geocoding payloads. */
 const geoLocationFieldsSchema = z.object({
   id: z.number(),
-  name: z.string(),
-  admin1: z.string().optional(),
-  country: z.string(),
+  name: z.string().max(200),
+  admin1: z.string().max(200).optional(),
+  country: z.string().max(200),
   latitude: z.number(),
   longitude: z.number(),
 });
 
 /** Schema for a single Open-Meteo Geocoding result. */
 export const openMeteoGeoResultSchema = geoLocationFieldsSchema.extend({
-  country_code: z.string(),
+  country_code: z.string().max(10),
 });
 
 /** Schema for Open-Meteo Geocoding response. */

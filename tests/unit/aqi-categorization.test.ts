@@ -5,9 +5,8 @@
  * including boundary values and out-of-range inputs.
  */
 
+import { categorizeAqi } from '@shared/aqi.js';
 import { describe, it, expect } from 'vitest';
-
-import { categorizeAqi } from '../../src/server/services/aqi-categorizer.js';
 
 describe('categorizeAqi', () => {
   describe('standard breakpoints', () => {

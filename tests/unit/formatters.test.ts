@@ -4,11 +4,10 @@
  * Tests AQI label formatting, pollutant display names, and other formatters.
  */
 
-import { formatCoordinateCacheKey } from '@shared/aqi.js';
+import { categorizeAqi, formatCoordinateCacheKey } from '@shared/aqi.js';
 import { AQI_BREAKPOINTS, POLLUTANT_DISPLAY_NAMES, POLLUTANT_KEYS } from '@shared/constants.js';
 import { describe, it, expect } from 'vitest';
 
-import { categorizeAqi } from '../../src/server/services/aqi-categorizer.js';
 import {
   formatLocalTime,
   formatLocationLabel,

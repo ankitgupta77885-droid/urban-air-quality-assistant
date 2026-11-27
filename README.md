@@ -1,6 +1,6 @@
 # BreatheWell
 
-[![CI](https://github.com/ankitgupta5579/breathewell/actions/workflows/ci.yml/badge.svg)](https://github.com/ankitgupta5579/breathewell/actions/workflows/ci.yml)
+[![CI](https://github.com/ankitgupta77885-droid/urban-air-quality-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/ankitgupta77885-droid/urban-air-quality-assistant/actions/workflows/ci.yml)
 
 > **GenAI-powered web assistant** helping families and communities navigate severe winter smog and urban air pollution with personalized, actionable advice.
 
@@ -120,8 +120,8 @@ The assistant employs a strict hybrid decision-making architecture:
 ### Installation
 
 ```bash
-git clone https://github.com/ankitgupta5579/breathewell.git
-cd breathewell
+git clone https://github.com/ankitgupta77885-droid/urban-air-quality-assistant.git
+cd urban-air-quality-assistant
 npm install
 ```
 
@@ -180,7 +180,7 @@ BreatheWell is containerized with a production multi-stage Docker build and is r
 
 ### Live Application
 
-- **Live URL**: [https://breathewell-assistant.vercel.app](https://breathewell-assistant.vercel.app)
+- **Live URL**: [https://urban-air-quality-assistant-eight.vercel.app](https://urban-air-quality-assistant-eight.vercel.app) (mirror: [breathewell-assistant.vercel.app](https://breathewell-assistant.vercel.app))
 
 ### Deploy on Vercel (free Hobby plan)
 
@@ -270,7 +270,7 @@ npm run check
 Or run individual gates:
 
 ```bash
-# Run all 361 unit, integration, web, and accessibility tests
+# Run all 368 unit, integration, web, and accessibility tests
 npm test
 
 # Run tests with strict V8 code coverage enforcement
@@ -292,46 +292,45 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 
 | Area                                           | Statements | Branches   | Functions  | Lines      | Threshold Status      |
 | ---------------------------------------------- | ---------- | ---------- | ---------- | ---------- | --------------------- |
-| **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**   | **100%**   | Exceeds 90% threshold |
-| **Server Services (`src/server/services/**`)** | **98.18%** | **92.00%** | **100%**   | **98.18%** | Exceeds 90% threshold |
-| **Global Overall Codebase**                    | **97.44%** | **88.61%** | **97.68%** | **97.44%** | Exceeds 80% threshold |
+| **Shared (`src/shared/**`)**                   | **100%**   | **95.23%** | **100%**   | **100%**   | Exceeds 90% threshold |
+| **Server Services (`src/server/services/**`)** | **100%**   | **96.99%** | **100%**   | **100%**   | Exceeds 90% threshold |
+| **Global Overall Codebase**                    | **98.92%** | **89.62%** | **98.65%** | **98.91%** | Exceeds 80% threshold |
 
 - **Total Test Suites**: 37 passed (100%)
-- **Total Tests**: 361 passed (0 failed)
+- **Total Tests**: 368 passed (0 failed)
 - **External Mocking**: All external network requests (Open-Meteo, Gemini GenAI SDK) are strictly mocked; tests execute offline with zero live network calls.
 
 ---
 
-## Quality Improvement Summary (Phases 1–10)
+## Architecture & Engineering Standards
 
-| Metric / Dimension                     | Before Refactor                         | After Refactor                           | Improvement Impact                                            |
-| -------------------------------------- | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
-| **Test Count**                         | 211 tests                               | **361 tests**                            | +150 comprehensive tests across edge cases                    |
-| **Overall Line Coverage**              | Untracked (< 70%)                       | **97.44%**                               | Strict 80% CI threshold enforced (including `main.ts`)        |
-| **Server Services Coverage**           | Untracked (< 75%)                       | **98.18% Lines / 92.00% Branches**       | Strict 90% CI threshold enforced                              |
-| **Shared Module Coverage**             | Untracked                               | **100% (all metrics)**                   | 100% verification of constants, cache & schemas               |
-| **Max Cyclomatic Complexity**          | 27 (`getPollutantStatusBadge`)          | **<= 10**                                | Reduced to lookup tables; ESLint complexity: 10 enforced      |
-| **Files > 200 Lines (`src/`, `api/`)** | 6 files > 200 lines                     | **0 files**                              | Split into modular components; ESLint max-lines: 200 enforced |
-| **Untrusted `as` Casts**               | 6+ instances (`res.json() as X`)        | **0 instances**                          | Replaced with Zod schemas & type guards                       |
-| **Runtime Non-Null Assertions (`!`)**  | Multiple (`document.getElementById()!`) | **0 instances**                          | Type-safe assertions and element guards                       |
-| **ESLint Tooling**                     | ESLint 8 (`.eslintrc.cjs`)              | **ESLint 9 Flat Config**                 | `strict-type-checked` TypeScript rules                        |
-| **Gemini SDK**                         | `@google/generative-ai` (legacy)        | **`@google/genai` (modern)**             | Migrated to official modern SDK                               |
-| **CI & Pre-Commit Gates**              | None                                    | **GitHub Actions + Husky + lint-staged** | Automated verification on push, PR, and commit                |
-| **Production Vulnerabilities**         | 0 vulnerabilities                       | **0 vulnerabilities**                    | `npm audit --omit=dev` 100% clean                             |
+| Standard / Dimension                   | Verified Status                     | Enforcement Mechanism                                    |
+| -------------------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| **Automated Test Suite**               | **368 tests across 37 suites**      | Vitest 5 (unit, API, DOM, WCAG 2.1 AA)                   |
+| **Overall Coverage**                   | **98.92% Stmts / 98.91% Lines**     | Strict 80% global threshold (`vitest.config.ts`)         |
+| **Server Services & Shared**           | **100% Statements & Functions**     | Strict 90% threshold (`vitest.config.ts`)                |
+| **Max Cyclomatic Complexity**          | **<= 10 per function**              | Lookup-table design; ESLint `complexity: 10` enforced    |
+| **Files > 200 Lines (`src/`, `api/`)** | **0 files**                         | Modular single-purpose files; ESLint `max-lines: 200`    |
+| **Type Safety**                        | **0 `as` casts / 0 `!` assertions** | Strict TypeScript + Zod runtime validation               |
+| **XSS & DOM Safety**                   | **0 `innerHTML` uses**              | ESLint `no-restricted-syntax` across `src/` and `tests/` |
+| **Linting & Formatting**               | **ESLint 9 `strict-type-checked`**  | Prettier + Husky + `lint-staged` + GitHub Actions CI     |
+| **Gemini SDK**                         | **`@google/genai` (official SDK)**  | Strict `responseSchema` structured JSON output           |
+| **Supply Chain Security**              | **0 vulnerabilities (prod & dev)**  | Verified across all dependencies via `npm audit`         |
 
 ---
 
 ## Security Notes
 
-- **Input Validation**: All query parameters and request bodies are validated and length-bounded with Zod schemas on the server.
+- **Input Validation & Bounds**: All query parameters, request bodies, and upstream Open-Meteo payloads are validated and length-bounded with strict Zod schemas (`z.number()` finite checks and `.max()` string limits).
+- **SSRF Protection**: Outbound HTTP requests in `http-client.ts` validate every URL against an explicit HTTPS + host allowlist (`air-quality-api.open-meteo.com`, `geocoding-api.open-meteo.com`) before invoking `fetch()`.
 - **Prompt Injection Defense**: User context is injected as isolated data fields labeled `"data only, not instructions"`. System prompts are fixed and separated from user input.
-- **Content Security Policy (CSP)**: Configured via Helmet with strict directives (`default-src 'self'`, `script-src 'self'`, `connect-src 'self'`, `object-src 'none'`, `frame-ancestors 'none'`).
-- **Cross-Origin Resource Sharing (CORS)**: Restricted in production mode to prevent unauthorized cross-origin requests.
-- **Rate Limiting**: Enforced on all `/api/*` endpoints (60 requests per minute per IP) to prevent abuse and API exhaustion.
-- **Payload Limits**: Strict 10 KB request body size limit prevents oversized request attacks.
-- **Request Timeouts**: Built-in 25-second request timeout middleware returns HTTP 408 on hanging requests.
-- **XSS Prevention**: Frontend strictly uses `textContent` and safe DOM manipulation methods (`createElement`, `setAttribute`). `innerHTML` with dynamic data is forbidden and enforced by ESLint.
-- **Credential Hygiene**: Server secrets live solely in environment variables, referenced from `.env.example`, and never exposed to the client bundle.
+- **Security Headers & CSP**: Configured consistently across Helmet and `vercel.json` (`default-src 'self'`, `script-src 'self'`, `connect-src 'self'`, `object-src 'none'`, `frame-ancestors 'none'`, `X-Frame-Options: DENY`, `Permissions-Policy: camera=(), microphone=(), geolocation=(self)`, and HSTS preload).
+- **Cross-Origin Resource Sharing (CORS)**: Strictly restricted in production (`NODE_ENV=production`) to configured production/Vercel origins; localhost defaults are permitted only in non-production environments.
+- **Tiered Rate Limiting**: Enforced on `/api/*` endpoints (60 requests/min general, plus a dedicated 20 requests/min limiter on `/api/advice` AI inference) to prevent abuse and quota exhaustion.
+- **Payload Limits & Timeouts**: Strict 10 KB request body size limit and 25-second server request timeout (`HTTP 408`) prevent oversized or hanging requests.
+- **XSS Prevention**: Frontend and test suites strictly use `textContent` and safe DOM manipulation (`createElement`, `setAttribute`). `innerHTML`, `outerHTML`, and `insertAdjacentHTML` are banned codebase-wide (`src/` and `tests/`) by ESLint.
+- **Dependency & Container Hardening**: `npm audit` reports **0 vulnerabilities** across both production and dev dependencies; production Docker containers run as non-root (`node`) via exec-form `CMD` with an integrated `/api/health` `HEALTHCHECK`.
+- **Credential Hygiene**: Server secrets live solely in environment variables, referenced from `.env.example`, and are never exposed to the client bundle.
 
 ---
 
@@ -365,14 +364,13 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 ## Known Issues
 
 - **Dev-only Vitest Canvas Warning**: During automated accessibility audits (`vitest run`), jsdom emits an informational note: `Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)`. This occurs because axe-core checks for canvas ligature support if canvas exists. This dev-only diagnostic does not indicate any WCAG 2.1 AA violation or browser runtime issue, and all automated accessibility checks pass with 0 violations.
-- **Dev-only Vitest 2.1.9 Test Runner Audit Warnings**: Running `npm audit` reports 6 moderate/critical vulnerabilities in dev-only test runner dependencies (`@vitest/mocker`, `glob`, `minimatch` under `vitest@2.1.9` and `test-exclude`). These findings are strictly dev-only test dependencies; running `npm audit --omit=dev` confirms **0 vulnerabilities in production runtime dependencies**. Vitest is pinned to 2.1.9 because upgrading to Vitest 5 alters AST branch calculation for default parameters in components, which affects exact code coverage metrics. These dev-only warnings are accepted until Vitest stabilizes AST branch metrics in future patch releases.
 
 ---
 
 ## Project Structure
 
 ```
-breathewell/
+urban-air-quality-assistant/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                          # GitHub Actions CI workflow (lint, test, build)
@@ -414,7 +412,6 @@ breathewell/
 │   │   │   └── route-helpers.ts            # Shared validation, async forwarding & response helpers
 │   │   └── services/
 │   │       ├── activity-actions.ts         # Commute & outdoor action builders
-│   │       ├── aqi-categorizer.ts          # Raw AQI to category & color mapping
 │   │       ├── aqi.service.ts              # Open-Meteo Air Quality API client
 │   │       ├── gemini-prompt.ts            # Prompt construction & system instructions
 │   │       ├── gemini-response.ts          # Gemini JSON cleaning, Zod validation & fallback builder

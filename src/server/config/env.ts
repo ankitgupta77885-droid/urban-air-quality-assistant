@@ -33,6 +33,16 @@ const envSchema = z.object({
 /** Validated environment configuration type. */
 export type EnvConfig = z.infer<typeof envSchema>;
 
+/** Normalizes an optional Vercel hostname into an https:// origin URL. */
+function toHttpsOrigin(host: string | undefined): string | null {
+  const trimmed = host?.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const cleanHost = trimmed.replace(/^https?:\/\//, '');
+  return cleanHost ? `https://${cleanHost}` : null;
+}
+
 /**
  * Validates and returns the environment configuration.
  * Throws a descriptive error if required variables are missing.
@@ -52,6 +62,14 @@ export function loadEnvConfig(): EnvConfig {
     throw new Error(`Environment validation failed:\n${issues.join('\n')}`);
   }
 
+  const vercelOrigins = [
+    toHttpsOrigin(process.env['VERCEL_URL']),
+    toHttpsOrigin(process.env['VERCEL_PROJECT_PRODUCTION_URL']),
+  ].filter((origin): origin is string => origin !== null);
+
   setLogLevel(result.data.LOG_LEVEL);
-  return result.data;
+  return {
+    ...result.data,
+    ALLOWED_ORIGINS: Array.from(new Set([...result.data.ALLOWED_ORIGINS, ...vercelOrigins])),
+  };
 }

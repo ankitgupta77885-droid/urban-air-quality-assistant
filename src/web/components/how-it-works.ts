@@ -9,6 +9,7 @@
 
 import { createElement, setText } from '../utils/dom.js';
 
+import { createCard } from './card.js';
 import { createActionIcon } from './icons.js';
 
 interface StepItem {
@@ -81,7 +82,7 @@ function buildStepsGrid(): HTMLElement {
 
 /** Builds an individual step card element. */
 function buildStepCard(step: StepItem): HTMLElement {
-  const card = createElement('div', 'how-it-works-card', 'card', 'card-surface');
+  const card = createCard({ padding: 'xl', className: 'how-it-works-card' });
 
   const topRow = createElement('div', 'how-it-works-card-top');
   const stepBadge = createElement('span', 'how-it-works-step');

@@ -35,30 +35,25 @@ export function getLogLevel(): LogLevel {
  * @param namespace - Logger namespace for identifying the source module.
  */
 export function createLogger(namespace: string): Record<LogLevel, (...args: unknown[]) => void> {
-  const shouldLog = (level: LogLevel): boolean => LOG_LEVELS[level] >= LOG_LEVELS[currentLevel];
+  const log = (level: LogLevel, ...args: unknown[]): void => {
+    if (LOG_LEVELS[level] >= LOG_LEVELS[currentLevel]) {
+      /* eslint-disable-next-line no-console -- Logger utility is the single authorized console sink */
+      console[level](`[${namespace}]`, ...args);
+    }
+  };
 
   return {
-    /* eslint-disable no-console -- Logger utility is the single authorized console wrapper */
-    debug: (...args: unknown[]) => {
-      if (shouldLog('debug')) {
-        console.debug(`[${namespace}]`, ...args);
-      }
+    debug: (...args) => {
+      log('debug', ...args);
     },
-    info: (...args: unknown[]) => {
-      if (shouldLog('info')) {
-        console.info(`[${namespace}]`, ...args);
-      }
+    info: (...args) => {
+      log('info', ...args);
     },
-    warn: (...args: unknown[]) => {
-      if (shouldLog('warn')) {
-        console.warn(`[${namespace}]`, ...args);
-      }
+    warn: (...args) => {
+      log('warn', ...args);
     },
-    error: (...args: unknown[]) => {
-      if (shouldLog('error')) {
-        console.error(`[${namespace}]`, ...args);
-      }
+    error: (...args) => {
+      log('error', ...args);
     },
-    /* eslint-enable no-console */
   };
 }

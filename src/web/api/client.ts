@@ -70,7 +70,12 @@ async function requestApiData<T>(
 
   const envelope = parsed.data;
   if (!envelope.success || envelope.data === undefined) {
-    throw new ApiClientError(envelope.error ?? options.fallbackError);
+    const status = typeof res.status === 'number' && res.status >= 400 ? res.status : 500;
+    throw new ApiClientError(
+      envelope.error ?? options.fallbackError,
+      status,
+      envelope.code ?? 'API_CLIENT_ERROR',
+    );
   }
 
   return envelope.data;

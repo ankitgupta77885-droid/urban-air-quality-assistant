@@ -7,6 +7,7 @@
 
 import { UpstreamApiError } from '@server/errors/app-errors.js';
 import { clearAqiCache, fetchAqiData } from '@server/services/aqi.service.js';
+import { assertAllowedUpstreamUrl } from '@server/services/http-client.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('fetchAqiData', () => {
@@ -95,5 +96,29 @@ describe('fetchAqiData', () => {
     mockFetch.mockRejectedValueOnce(timeoutError);
 
     await expect(fetchAqiData(28.61, 77.2)).rejects.toThrow(timeoutError);
+  });
+
+  it('throws UpstreamApiError when upstream response body is malformed JSON', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => Promise.reject(new SyntaxError('Unexpected token')),
+    });
+
+    await expect(fetchAqiData(28.61, 77.2)).rejects.toThrow(
+      'Air Quality API returned malformed JSON',
+    );
+  });
+
+  it('enforces HTTPS and upstream host allowlist against SSRF', () => {
+    expect(() =>
+      assertAllowedUpstreamUrl('https://air-quality-api.open-meteo.com/v1/air-quality'),
+    ).not.toThrow();
+    expect(() =>
+      assertAllowedUpstreamUrl('http://air-quality-api.open-meteo.com/v1/air-quality'),
+    ).toThrow(UpstreamApiError);
+    expect(() => assertAllowedUpstreamUrl('https://169.254.169.254/latest/meta-data')).toThrow(
+      UpstreamApiError,
+    );
+    expect(() => assertAllowedUpstreamUrl('not-a-valid-url')).toThrow(UpstreamApiError);
   });
 });

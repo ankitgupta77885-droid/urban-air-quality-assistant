@@ -86,7 +86,6 @@ export default tseslint.config(
   {
     files: ['tests/**/*.ts', '*.config.ts'],
     rules: {
-      'no-restricted-syntax': 'off',
       'max-lines': ['error', { max: 600, skipBlankLines: true, skipComments: true }],
       'max-lines-per-function': 'off',
       'max-depth': 'off',

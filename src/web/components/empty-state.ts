@@ -7,6 +7,7 @@
 
 import { clearChildren, createElement, setText } from '../utils/dom.js';
 
+import { createCard } from './card.js';
 import { createLocationPinIcon } from './icons.js';
 
 /**
@@ -16,8 +17,7 @@ import { createLocationPinIcon } from './icons.js';
 export function renderEmptyState(container: HTMLElement): void {
   clearChildren(container);
 
-  const wrapper = createElement('div', 'empty-state', 'card', 'card-surface');
-  wrapper.setAttribute('role', 'status');
+  const wrapper = createCard({ padding: 'xl', className: 'empty-state', role: 'status' });
 
   const iconWrapper = createElement('span', 'empty-state-icon');
   iconWrapper.setAttribute('aria-hidden', 'true');

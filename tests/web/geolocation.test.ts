@@ -15,7 +15,7 @@ describe('handleGeolocation', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
 
     btn = document.createElement('button');
     btn.textContent = 'Use my location';

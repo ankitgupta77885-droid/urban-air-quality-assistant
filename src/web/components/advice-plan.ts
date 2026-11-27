@@ -9,6 +9,7 @@ import type { PersonalizedAction, PersonalizedAdvice } from '@shared/types.js';
 
 import { clearChildren, createElement, getElement, setText, showElement } from '../utils/dom.js';
 
+import { createCard } from './card.js';
 import { createAqiStatusIcon } from './icons.js';
 import { createMedicalGuidanceNote } from './medical-guidance.js';
 import { selectTab } from './planner-tabs.js';
@@ -59,7 +60,7 @@ function renderBasicNotice(): HTMLElement {
 
 /** Renders the risk assessment summary card. */
 function renderRiskCard(riskLevel: string, summary: string): HTMLElement {
-  const card = createElement('div', 'risk-summary', `risk-${riskLevel}`, 'card', 'card-surface');
+  const card = createCard({ padding: 'xl', className: `risk-summary risk-${riskLevel}` });
   const header = createElement('div', 'risk-header');
 
   const title = createElement('h3', 'risk-title');

@@ -1,11 +1,9 @@
-/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Shared Zod request, context, and Gemini validation schemas.
  *
  * Re-exported through `./schemas.js` to keep each schema module focused
  * and concise while preserving a single public import surface.
  */
-/* v8 ignore stop */
 
 import { z } from 'zod';
 
