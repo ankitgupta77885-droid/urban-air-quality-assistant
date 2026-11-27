@@ -4,6 +4,7 @@
 
 import { createElement, setText } from '../utils/dom.js';
 
+import { createButton, setButtonText } from './button.js';
 import { ACTIVITY_LEVEL_OPTIONS, HEATING_SOURCE_OPTIONS } from './context-form-options.js';
 import { createCheckIcon } from './icons.js';
 
@@ -157,18 +158,21 @@ export function createMoreDetailsSection(): { toggleBtn: HTMLButtonElement; cont
     buildSelect('heatingSource', 'Primary heating source', HEATING_SOURCE_OPTIONS),
   );
 
-  const toggleBtn = createElement('button', 'btn', 'btn-secondary', 'btn-pill', 'more-details-btn');
-  toggleBtn.type = 'button';
-  toggleBtn.id = 'more-details-toggle';
+  const toggleBtn = createButton({
+    id: 'more-details-toggle',
+    text: 'More details',
+    variant: 'secondary',
+    pill: true,
+    className: 'more-details-btn',
+  });
   toggleBtn.setAttribute('aria-expanded', 'false');
   toggleBtn.setAttribute('aria-controls', 'more-details-section');
-  setText(toggleBtn, 'More details');
 
   toggleBtn.addEventListener('click', () => {
     const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
     toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
     content.hidden = isExpanded;
-    setText(toggleBtn, isExpanded ? 'More details' : 'Fewer details');
+    setButtonText(toggleBtn, isExpanded ? 'More details' : 'Fewer details');
   });
 
   return { toggleBtn, content };

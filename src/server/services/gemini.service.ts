@@ -8,7 +8,11 @@
 import { GoogleGenAI } from '@google/genai';
 
 import { TtlCache } from '../../shared/cache.js';
-import { AQI_CACHE_TTL_MS, GEMINI_TIMEOUT_MS } from '../../shared/constants.js';
+import {
+  AQI_CACHE_TTL_MS,
+  GEMINI_TIMEOUT_MS,
+  PM25_ELEVATED_THRESHOLD,
+} from '../../shared/constants.js';
 import type {
   AqiData,
   PersonalizedAdvice,
@@ -63,7 +67,14 @@ export async function personalizeAdvice(
 
 /** Builds a deterministic cache key for personalized AI advice. */
 function buildAdviceCacheKey({ modelName, aqiData, context }: PersonalizeAdviceOptions): string {
-  return `${modelName}:${aqiData.aqi}:${aqiData.timestamp}:${JSON.stringify(context)}`;
+  const normalizedContext = {
+    ...context,
+    healthConditions: [...context.healthConditions].sort(),
+  };
+  const elevatedPm25 = aqiData.pollutants.some(
+    (p) => p.name === 'pm2_5' && p.value > PM25_ELEVATED_THRESHOLD,
+  );
+  return `${modelName}:${aqiData.aqi}:${aqiData.dominantPollutant}:${elevatedPm25}:${aqiData.timestamp}:${JSON.stringify(normalizedContext)}`;
 }
 
 /** Returns a cached GoogleGenAI client instance for the given API key. */

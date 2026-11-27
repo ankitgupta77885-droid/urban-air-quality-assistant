@@ -4,12 +4,14 @@
  * Fetches current AQI and pollutant data with in-memory TTL caching.
  */
 
+import { formatCoordinateCacheKey } from '../../shared/aqi.js';
 import { TtlCache } from '../../shared/cache.js';
 import {
   AIR_QUALITY_API_URL,
   AQI_CACHE_TTL_MS,
   POLLUTANT_DECIMAL_PLACES,
   POLLUTANT_DISPLAY_NAMES,
+  POLLUTANT_KEYS,
   POLLUTANT_UNIT,
 } from '../../shared/constants.js';
 import { openMeteoAqiResponseSchema, type OpenMeteoAqiCurrent } from '../../shared/schemas.js';
@@ -25,16 +27,6 @@ const logger = createLogger('aqi');
 /** Cache for AQI data keyed by "lat,lon" (rounded to 2 decimals). */
 const aqiCache = new TtlCache<AqiData>(AQI_CACHE_TTL_MS);
 
-/** Pollutant variables to request from the API. */
-const POLLUTANT_VARS = [
-  'pm2_5',
-  'pm10',
-  'nitrogen_dioxide',
-  'ozone',
-  'sulphur_dioxide',
-  'carbon_monoxide',
-] as const;
-
 /**
  * Fetches current air quality data for the given coordinates.
  * Results are cached by rounded coordinates.
@@ -43,7 +35,7 @@ const POLLUTANT_VARS = [
  * @returns Current AQI data with pollutant readings.
  */
 export async function fetchAqiData(latitude: number, longitude: number): Promise<AqiData> {
-  const cacheKey = buildCacheKey(latitude, longitude);
+  const cacheKey = formatCoordinateCacheKey(latitude, longitude);
   const cached = aqiCache.get(cacheKey);
 
   if (cached) {
@@ -76,7 +68,7 @@ function buildAqiUrl(lat: number, lon: number): string {
   const url = new URL(AIR_QUALITY_API_URL);
   url.searchParams.set('latitude', String(lat));
   url.searchParams.set('longitude', String(lon));
-  url.searchParams.set('current', ['us_aqi', ...POLLUTANT_VARS].join(','));
+  url.searchParams.set('current', ['us_aqi', ...POLLUTANT_KEYS].join(','));
   return url.toString();
 }
 
@@ -116,9 +108,9 @@ function roundTo(value: number, places: number): number {
  * @returns Array of pollutant readings.
  */
 function buildPollutantReadings(current: OpenMeteoAqiCurrent): PollutantReading[] {
-  return POLLUTANT_VARS.map((name) => ({
+  return POLLUTANT_KEYS.map((name) => ({
     name,
-    displayName: POLLUTANT_DISPLAY_NAMES[name] ?? name,
+    displayName: POLLUTANT_DISPLAY_NAMES[name],
     value: roundTo(current[name], POLLUTANT_DECIMAL_PLACES),
     unit: POLLUTANT_UNIT,
   }));
@@ -141,15 +133,6 @@ function findDominantPollutant(pollutants: readonly PollutantReading[]): string 
   }
 
   return dominant;
-}
-
-/**
- * Builds a cache key from coordinates, rounded to 2 decimal places.
- * @param lat - Latitude.
- * @param lon - Longitude.
- */
-function buildCacheKey(lat: number, lon: number): string {
-  return `${lat.toFixed(2)},${lon.toFixed(2)}`;
 }
 
 /** Clears the AQI cache (for testing). */

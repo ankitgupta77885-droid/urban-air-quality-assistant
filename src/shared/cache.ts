@@ -61,10 +61,15 @@ export class TtlCache<T> {
 
   /**
    * Stores a value in the cache with the configured TTL.
+   * No-ops when maxEntries is zero or negative so capacity limits are strictly respected.
    * @param key - Cache key.
    * @param value - Value to cache.
    */
   set(key: string, value: T): void {
+    if (this.maxEntries <= 0) {
+      return;
+    }
+
     if (this.store.has(key)) {
       this.store.delete(key);
     } else if (this.store.size >= this.maxEntries) {

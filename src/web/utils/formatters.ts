@@ -22,13 +22,15 @@ export function getAqiDisplay(aqi: number): {
   return { category, colorClass, icon };
 }
 
+const CATEGORY_LABELS: Readonly<Record<string, string>> = ADVICE_CATEGORY_LABELS;
+
 /**
  * Returns a human-readable label for an advice category key.
  * @param category - Advice category key.
  * @returns Display label string.
  */
 export function getCategoryLabel(category: string): string {
-  return ADVICE_CATEGORY_LABELS[category] ?? category;
+  return CATEGORY_LABELS[category] ?? category;
 }
 
 /**

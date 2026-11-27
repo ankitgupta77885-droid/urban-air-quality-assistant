@@ -156,12 +156,13 @@ describe('TtlCache', () => {
       expect(cache.get('key2')).toBe('value2');
     });
 
-    it('should handle zero-capacity safely without throwing during eviction', () => {
+    it('should refuse to store entries when capacity is zero', () => {
       const cache = new TtlCache<string>(60_000, 0);
       expect(() => {
         cache.set('a', '1');
       }).not.toThrow();
-      expect(cache.get('a')).toBe('1');
+      expect(cache.size).toBe(0);
+      expect(cache.get('a')).toBeUndefined();
     });
   });
 

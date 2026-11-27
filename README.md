@@ -248,13 +248,13 @@ Reverse proxy environments (such as Kubernetes Ingress, Cloudflare, or AWS ALB) 
 
 All variables are loaded and validated at server startup via Zod (`src/server/config/env.ts`):
 
-| Variable         | Required | Default                    | Description                                                              |
-| ---------------- | -------- | -------------------------- | ------------------------------------------------------------------------ |
-| `GEMINI_API_KEY` | **Yes**  | _None_                     | Google Gemini API key (see `.env.example`).                              |
-| `GEMINI_MODEL`   | No       | `gemini-flash-lite-latest` | Gemini model name (e.g. `gemini-flash-lite-latest`, `gemini-3.6-flash`). |
-| `PORT`           | No       | `3000`                     | HTTP port for the Express backend server.                                |
-| `NODE_ENV`       | No       | `development`              | Environment mode (`development`, `production`, `test`).                  |
-| `LOG_LEVEL`      | No       | `info`                     | Logger severity threshold (`debug`, `info`, `warn`, `error`).            |
+| Variable         | Required | Default                    | Description                                                   |
+| ---------------- | -------- | -------------------------- | ------------------------------------------------------------- |
+| `GEMINI_API_KEY` | **Yes**  | _None_                     | Google Gemini API key (see `.env.example`).                   |
+| `GEMINI_MODEL`   | No       | `gemini-flash-lite-latest` | Gemini model name (defaults to `gemini-flash-lite-latest`).   |
+| `PORT`           | No       | `3000`                     | HTTP port for the Express backend server.                     |
+| `NODE_ENV`       | No       | `development`              | Environment mode (`development`, `production`, `test`).       |
+| `LOG_LEVEL`      | No       | `info`                     | Logger severity threshold (`debug`, `info`, `warn`, `error`). |
 
 ---
 
@@ -270,7 +270,7 @@ npm run check
 Or run individual gates:
 
 ```bash
-# Run all 351 unit, integration, web, and accessibility tests
+# Run all 361 unit, integration, web, and accessibility tests
 npm test
 
 # Run tests with strict V8 code coverage enforcement
@@ -293,11 +293,11 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 | Area                                           | Statements | Branches   | Functions  | Lines      | Threshold Status      |
 | ---------------------------------------------- | ---------- | ---------- | ---------- | ---------- | --------------------- |
 | **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**   | **100%**   | Exceeds 90% threshold |
-| **Server Services (`src/server/services/**`)** | **98.18%** | **91.59%** | **100%**   | **98.18%** | Exceeds 90% threshold |
-| **Global Overall Codebase**                    | **96.54%** | **86.89%** | **96.59%** | **96.54%** | Exceeds 80% threshold |
+| **Server Services (`src/server/services/**`)** | **98.18%** | **92.00%** | **100%**   | **98.18%** | Exceeds 90% threshold |
+| **Global Overall Codebase**                    | **97.44%** | **88.61%** | **97.68%** | **97.44%** | Exceeds 80% threshold |
 
-- **Total Test Suites**: 36 passed (100%)
-- **Total Tests**: 351 passed (0 failed)
+- **Total Test Suites**: 37 passed (100%)
+- **Total Tests**: 361 passed (0 failed)
 - **External Mocking**: All external network requests (Open-Meteo, Gemini GenAI SDK) are strictly mocked; tests execute offline with zero live network calls.
 
 ---
@@ -306,9 +306,9 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 
 | Metric / Dimension                     | Before Refactor                         | After Refactor                           | Improvement Impact                                            |
 | -------------------------------------- | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
-| **Test Count**                         | 211 tests                               | **351 tests**                            | +140 comprehensive tests across edge cases                    |
-| **Overall Line Coverage**              | Untracked (< 70%)                       | **96.54%**                               | Strict 80% CI threshold enforced                              |
-| **Server Services Coverage**           | Untracked (< 75%)                       | **98.18% Lines / 91.59% Branches**       | Strict 90% CI threshold enforced                              |
+| **Test Count**                         | 211 tests                               | **361 tests**                            | +150 comprehensive tests across edge cases                    |
+| **Overall Line Coverage**              | Untracked (< 70%)                       | **97.44%**                               | Strict 80% CI threshold enforced (including `main.ts`)        |
+| **Server Services Coverage**           | Untracked (< 75%)                       | **98.18% Lines / 92.00% Branches**       | Strict 90% CI threshold enforced                              |
 | **Shared Module Coverage**             | Untracked                               | **100% (all metrics)**                   | 100% verification of constants, cache & schemas               |
 | **Max Cyclomatic Complexity**          | 27 (`getPollutantStatusBadge`)          | **<= 10**                                | Reduced to lookup tables; ESLint complexity: 10 enforced      |
 | **Files > 200 Lines (`src/`, `api/`)** | 6 files > 200 lines                     | **0 files**                              | Split into modular components; ESLint max-lines: 200 enforced |
@@ -343,7 +343,7 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
   - Live regions (`aria-live="polite"` for loading states, `aria-live="assertive"` for error alerts).
   - Explicit labels on all form inputs and interactive elements.
   - Accessible names and roles on autocomplete results (`role="listbox"`, `role="option"`).
-- **Color Independence**: AQI categories and risk levels always pair color codes with readable text and emoji icons.
+- **Color Independence**: AQI categories and risk levels always pair color codes with readable text and inline SVG icons (`aria-hidden="true"`), with zero emoji in rendered UI controls.
 - **Skip Navigation**: "Skip to main content" link for keyboard users.
 - **Motion Sensitivity**: Respects `prefers-reduced-motion` media queries by disabling transitions and animations.
 - **Responsive Layout**: Fluid CSS design tested across viewports down to 320px width.
@@ -507,6 +507,7 @@ breathewell/
         ├── geolocation.test.ts             # Browser geolocation component tests
         ├── loading-feedback.test.ts        # Busy submit state & aria-busy tests
         ├── location-search.test.ts         # Location search component tests
+        ├── main.test.ts                    # Main frontend controller integration tests
         ├── planner.test.ts                 # Planner form component tests
         ├── primitives.test.ts              # UI primitives, DOM & navbar tests
         ├── responsive.test.ts              # Responsive layout tests

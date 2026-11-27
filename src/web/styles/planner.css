@@ -45,7 +45,7 @@
 
 .planner-tab:hover:not([aria-disabled='true']) {
   color: var(--color-ink);
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--color-hover-tint);
 }
 
 .planner-tab[aria-selected='true'] {
@@ -53,7 +53,7 @@
   color: var(--color-ink);
   font-weight: var(--font-weight-semibold);
   border-color: var(--color-border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-tab-active);
 }
 
 .planner-tab[aria-disabled='true'] {
@@ -121,7 +121,7 @@
 
 .search-input:focus {
   border-color: var(--color-ink);
-  box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.08);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .geo-btn {
@@ -156,9 +156,9 @@
 }
 
 .search-hint {
-  font-size: 0.85rem;
+  font-size: var(--font-size-label-md);
   color: var(--color-text-muted);
-  margin-top: 0.25rem;
+  margin-top: var(--space-xs);
 }
 
 .search-results {

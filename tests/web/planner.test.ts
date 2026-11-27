@@ -195,6 +195,33 @@ describe('Step 3: Unified Planner and Context Form', () => {
     expect(submittedContext?.commuteMode).toBe('car');
   });
 
+  it('displays validation guidance in the hint when incomplete form fields are submitted', () => {
+    document.body.innerHTML = '<div id="context-form"></div>';
+    const onSubmit = vi.fn<(context: UserContext) => void>();
+    initContextForm(onSubmit);
+
+    setContextFormLocationSelected(true, 'Delhi');
+    const ageSelect = document.getElementById('childAgeGroup') as HTMLSelectElement;
+    ageSelect.value = 'infant';
+    ageSelect.dispatchEvent(new Event('change'));
+
+    const form = document.querySelector('form.context-form') as HTMLFormElement;
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+
+    expect(onSubmit).not.toHaveBeenCalled();
+    const hint = document.getElementById('advice-disabled-hint');
+    expect(hint?.textContent).toBeTruthy();
+  });
+
+  it('handles missing healthConditions-none checkbox safely when configuring exclusivity', async () => {
+    const { setupHealthConditionsExclusive } =
+      await import('../../src/web/components/context-form-helpers.js');
+    const emptyForm = document.createElement('form');
+    expect(() => {
+      setupHealthConditionsExclusive(emptyForm);
+    }).not.toThrow();
+  });
+
   it('should focus the city search input when navbar Check Your Area is clicked', () => {
     document.body.innerHTML = `
       <header id="header"></header>

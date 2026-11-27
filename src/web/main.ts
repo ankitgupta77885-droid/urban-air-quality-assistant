@@ -117,7 +117,8 @@ async function onContextSubmit(context: UserContext): Promise<void> {
 }
 
 /** Initializes the application layout and components. */
-function init(): void {
+export function initApp(): void {
+  selectedLocation = null;
   mountIfPresent('app-header', renderNavbar);
   mountIfPresent('hero', renderHero);
   mountIfPresent('planner-tabs-container', initPlannerTabs);
@@ -133,4 +134,12 @@ function init(): void {
   renderDisclaimer();
 }
 
-init();
+/** Auto-bootstraps when all required mount containers are present in the document. */
+if (
+  typeof document !== 'undefined' &&
+  document.getElementById('location-search') &&
+  document.getElementById('context-form') &&
+  document.getElementById('disclaimer')
+) {
+  initApp();
+}

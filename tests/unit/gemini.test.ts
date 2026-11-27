@@ -401,6 +401,43 @@ describe('personalizeAdvice', () => {
     expect(result.riskLevel).toBe('moderate');
   });
 
+  it('separates cache entries for distinct dominant pollutants at the same AQI/timestamp while ignoring healthConditions order', async () => {
+    mockGenerateContent.mockResolvedValue({
+      text: JSON.stringify({
+        riskLevel: 'moderate',
+        riskSummary: 'Tailored response',
+        actions: makeRulesOutput().actions,
+      }),
+    });
+
+    const baseAqi = makeAqiData();
+    await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: { ...baseAqi, dominantPollutant: 'pm2_5' },
+      context: { ...makeContext(), healthConditions: ['asthma', 'allergies'] },
+      apiKey: 'fake-key',
+      modelName: 'gemini-flash-lite-latest',
+    });
+
+    await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: { ...baseAqi, dominantPollutant: 'pm2_5' },
+      context: { ...makeContext(), healthConditions: ['allergies', 'asthma'] },
+      apiKey: 'fake-key',
+      modelName: 'gemini-flash-lite-latest',
+    });
+    expect(mockGenerateContent).toHaveBeenCalledTimes(1);
+
+    await personalizeAdvice({
+      rulesOutput: makeRulesOutput(),
+      aqiData: { ...baseAqi, dominantPollutant: 'ozone' },
+      context: { ...makeContext(), healthConditions: ['allergies', 'asthma'] },
+      apiKey: 'fake-key',
+      modelName: 'gemini-flash-lite-latest',
+    });
+    expect(mockGenerateContent).toHaveBeenCalledTimes(2);
+  });
+
   it('should fall back to basic mode when Gemini returns malformed response', async () => {
     mockGenerateContent.mockResolvedValueOnce({
       text: 'Not a valid JSON payload',

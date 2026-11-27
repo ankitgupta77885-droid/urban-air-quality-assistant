@@ -3,6 +3,7 @@ import type { UserContext } from '@shared/types.js';
 
 import { createElement, getElement, setText } from '../utils/dom.js';
 
+import { createButton, setButtonText } from './button.js';
 import { parseContextFormData, setupHealthConditionsExclusive } from './context-form-helpers.js';
 import {
   CHILD_AGE_OPTIONS,
@@ -67,11 +68,11 @@ export function setContextFormBusy(busy: boolean): void {
   if (busy) {
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
-    setText(button, SUBMIT_BUSY_LABEL);
+    setButtonText(button, SUBMIT_BUSY_LABEL);
     return;
   }
   button.removeAttribute('aria-busy');
-  setText(button, SUBMIT_LABEL);
+  setButtonText(button, SUBMIT_LABEL);
   if (formEl) {
     updateSubmitButtonState(formEl);
   }
@@ -147,12 +148,16 @@ function buildForm(): HTMLFormElement {
 /** Creates the submit button and disabled hint explanation. */
 function createSubmitSection(): HTMLElement {
   const wrapper = createElement('div', 'submit-section');
-  submitButtonEl = createElement('button', 'btn', 'btn-primary', 'btn-pill', 'submit-btn');
-  submitButtonEl.type = 'submit';
-  submitButtonEl.id = 'submit-advice-btn';
-  submitButtonEl.disabled = true;
+  submitButtonEl = createButton({
+    id: 'submit-advice-btn',
+    type: 'submit',
+    text: SUBMIT_LABEL,
+    variant: 'primary',
+    pill: true,
+    className: 'submit-btn',
+    disabled: true,
+  });
   submitButtonEl.setAttribute('aria-disabled', 'true');
-  setText(submitButtonEl, SUBMIT_LABEL);
 
   disabledHintEl = createElement('p', 'disabled-hint');
   disabledHintEl.id = 'advice-disabled-hint';

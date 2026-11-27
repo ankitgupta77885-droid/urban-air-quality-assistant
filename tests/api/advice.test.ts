@@ -85,6 +85,7 @@ describe('POST /api/advice', () => {
     const body = res.body as ApiResponse<PersonalizedAdvice>;
 
     expect(res.status).toBe(200);
+    expect(res.headers['cache-control']).toBe('no-store');
     expect(body.success).toBe(true);
     expect(body.data?.riskLevel).toBe('moderate');
     expect(body.data?.actions).toHaveLength(1);
@@ -155,6 +156,7 @@ describe('POST /api/advice', () => {
     const body = res.body as ApiResponse<PersonalizedAdvice>;
 
     expect(res.status).toBe(200);
+    expect(res.headers['cache-control']).toBe('no-store');
     expect(body.success).toBe(true);
     expect(body.data?.isBasicMode).toBe(true);
     expect(body.data?.personalization).toBe('basic');

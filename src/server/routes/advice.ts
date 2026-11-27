@@ -56,5 +56,6 @@ async function handleAdviceRequest(req: Request, res: Response, env: AdviceEnv):
     modelName: env.modelName,
   });
 
+  res.setHeader('Cache-Control', 'no-store');
   sendApiSuccess(res, personalizedAdvice);
 }

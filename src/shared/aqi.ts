@@ -74,7 +74,7 @@ export const AQI_BREAKPOINTS: readonly AqiBreakpoint[] = [
 ] as const;
 
 /** Highest possible composite risk score. */
-export const MAX_RISK_SCORE = 10 as const;
+export const MAX_RISK_SCORE = 10;
 
 /** Extra risk contributed by the child's age group. */
 export const AGE_RISK_MODIFIERS: Readonly<Record<UserContext['childAgeGroup'], number>> = {
@@ -108,4 +108,14 @@ export const ACTIVITY_RISK_MODIFIERS: Readonly<Record<UserContext['activityLevel
  */
 export function findAqiBreakpoint(aqi: number): AqiBreakpoint {
   return AQI_BREAKPOINTS.find((bp) => aqi <= bp.max) ?? HAZARDOUS_BREAKPOINT;
+}
+
+/**
+ * Formats coordinates into a shared 2-decimal cache key ("lat,lon") so
+ * server and client AQI caches use identical spatial bucketing.
+ * @param latitude - Latitude in decimal degrees.
+ * @param longitude - Longitude in decimal degrees.
+ */
+export function formatCoordinateCacheKey(latitude: number, longitude: number): string {
+  return `${latitude.toFixed(2)},${longitude.toFixed(2)}`;
 }

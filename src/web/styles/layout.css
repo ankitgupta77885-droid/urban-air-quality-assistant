@@ -7,12 +7,6 @@
   padding: 0 var(--space-md);
 }
 
-@media (min-width: 1024px) {
-  .container {
-    padding: 0 3rem;
-  }
-}
-
 /* ── Main Layout ── */
 
 main {
@@ -64,5 +58,11 @@ div[id='success-banner'] {
     display: flex;
     align-items: center;
     min-height: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 3rem;
   }
 }

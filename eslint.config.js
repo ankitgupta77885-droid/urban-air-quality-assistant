@@ -48,6 +48,10 @@ export default tseslint.config(
       'no-restricted-syntax': [
         'error',
         {
+          selector: 'MemberExpression[property.name=/^(innerHTML|outerHTML|insertAdjacentHTML)$/]',
+          message: 'Never use unsafe HTML injection APIs. Use textContent or safe DOM methods.',
+        },
+        {
           selector: 'Property[key.name="innerHTML"]',
           message: 'Never use innerHTML with dynamic data. Use textContent or safe DOM methods.',
         },
@@ -82,6 +86,7 @@ export default tseslint.config(
   {
     files: ['tests/**/*.ts', '*.config.ts'],
     rules: {
+      'no-restricted-syntax': 'off',
       'max-lines': ['error', { max: 600, skipBlankLines: true, skipComments: true }],
       'max-lines-per-function': 'off',
       'max-depth': 'off',

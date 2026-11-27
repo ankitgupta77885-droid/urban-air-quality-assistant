@@ -5,7 +5,7 @@
  * @vitest-environment jsdom
  */
 
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AqiData, PersonalizedAdvice } from '../../src/shared/types.js';
 import { renderAdvicePlan } from '../../src/web/components/advice-plan.js';
@@ -176,5 +176,57 @@ describe('Step 4: Advice Plan and Tab Filtering', () => {
     const notice = document.querySelector('.basic-mode-notice');
     expect(notice).not.toBeNull();
     expect(notice?.textContent).toBe('Showing standard advice (AI personalization unavailable)');
+  });
+
+  it('supports WAI-ARIA arrow key roving, click handling, and empty panel hints', () => {
+    const onTabChange = vi.fn();
+    const tabsContainer = document.getElementById('planner-tabs-container') as HTMLElement;
+    initPlannerTabs(tabsContainer, onTabChange);
+
+    renderAdvicePlan({ ...MOCK_ADVICE, actions: [] });
+    expect(document.querySelectorAll('.panel-empty-hint')).toHaveLength(3);
+
+    const tablist = tabsContainer.querySelector('[role="tablist"]') as HTMLElement;
+    const indoorTab = document.getElementById('tab-indoor-air') as HTMLButtonElement;
+    indoorTab.click();
+    expect(onTabChange).not.toHaveBeenCalled();
+
+    setPlannerTabsEnabled(true);
+    tablist.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    expect(document.getElementById('tab-indoor-air')?.getAttribute('aria-selected')).toBe('true');
+    expect(onTabChange).toHaveBeenLastCalledWith('indoor-air');
+
+    tablist.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    expect(document.getElementById('tab-clean-alternatives')?.getAttribute('aria-selected')).toBe(
+      'true',
+    );
+
+    tablist.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+    expect(document.getElementById('tab-daily-routines')?.getAttribute('aria-selected')).toBe(
+      'true',
+    );
+
+    tablist.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    expect(document.getElementById('tab-clean-alternatives')?.getAttribute('aria-selected')).toBe(
+      'true',
+    );
+
+    tablist.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    indoorTab.click();
+    expect(onTabChange).toHaveBeenLastCalledWith('indoor-air');
+  });
+
+  it('renders Elevated status badges and falls back safely for unknown pollutants', () => {
+    renderAqiDisplay({
+      ...MOCK_AQI_DATA,
+      pollutants: [
+        { name: 'pm2_5', displayName: 'PM2.5', value: 80, unit: 'µg/m³' },
+        { name: 'unknown_gas', displayName: 'Unknown', value: 60, unit: 'µg/m³' },
+      ],
+    });
+    const badges = Array.from(document.querySelectorAll('.pollutant-badge')).map(
+      (b) => b.textContent,
+    );
+    expect(badges).toEqual(['Elevated', 'Elevated']);
   });
 });

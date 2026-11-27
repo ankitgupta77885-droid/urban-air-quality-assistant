@@ -7,6 +7,7 @@
 
 import { clearChildren, createElement, getElement, setText } from '../utils/dom.js';
 
+import { createButton } from './button.js';
 import { createAqiStatusIcon, createCloseIcon } from './icons.js';
 
 /**
@@ -31,12 +32,14 @@ export function showError(message: string, onRetry?: () => void): void {
   wrapper.append(icon, text);
 
   if (onRetry) {
-    const retryBtn = createElement('button', 'btn', 'btn-outline', 'btn-sm', 'error-retry-btn');
-    retryBtn.type = 'button';
-    setText(retryBtn, 'Retry');
-    retryBtn.addEventListener('click', () => {
-      clearError();
-      onRetry();
+    const retryBtn = createButton({
+      text: 'Retry',
+      variant: 'outline',
+      className: 'btn-sm error-retry-btn',
+      onClick: () => {
+        clearError();
+        onRetry();
+      },
     });
     wrapper.appendChild(retryBtn);
   }

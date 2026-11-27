@@ -22,6 +22,8 @@ export interface ButtonOptions {
   readonly iconPosition?: 'left' | 'right';
   /** Accessible label attribute for screen readers. */
   readonly ariaLabel?: string;
+  /** Optional HTML element ID attribute. */
+  readonly id?: string;
   /** Additional CSS class names to append. */
   readonly className?: string;
   /** Whether the button is disabled. */
@@ -38,6 +40,9 @@ export interface ButtonOptions {
 export function createButton(options: ButtonOptions): HTMLButtonElement {
   const btn = createElement('button', 'btn');
   btn.type = options.type ?? 'button';
+  if (options.id) {
+    btn.id = options.id;
+  }
 
   applyButtonVariant(btn, options.variant, options.pill);
   addClasses(btn, options.className);
@@ -49,6 +54,16 @@ export function createButton(options: ButtonOptions): HTMLButtonElement {
   }
 
   return btn;
+}
+
+/**
+ * Safely updates the visible label inside a button created by {@link createButton}.
+ * @param btn - Target button element.
+ * @param text - Replacement label text.
+ */
+export function setButtonText(btn: HTMLButtonElement, text: string): void {
+  const textSpan = btn.querySelector<HTMLElement>('.btn-text');
+  setText(textSpan ?? btn, text);
 }
 
 /** Applies variant and pill classes to the button. */

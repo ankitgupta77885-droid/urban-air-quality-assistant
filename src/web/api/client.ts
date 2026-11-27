@@ -5,6 +5,7 @@
  * cancels superseded requests of the same type.
  */
 
+import { formatCoordinateCacheKey } from '@shared/aqi.js';
 import { TtlCache } from '@shared/cache.js';
 import { AQI_CACHE_TTL_MS, GEOCODING_CACHE_TTL_MS } from '@shared/constants.js';
 import { ApiClientError } from '@shared/errors.js';
@@ -104,7 +105,7 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
 
 /** Fetches current AQI data for the given coordinates, using client cache for repeats. */
 export async function fetchAqi(lat: number, lon: number): Promise<AqiData> {
-  return requestWithCache(aqiClientCache, `${lat.toFixed(2)},${lon.toFixed(2)}`, {
+  return requestWithCache(aqiClientCache, formatCoordinateCacheKey(lat, lon), {
     signalKey: 'aqi',
     url: `/api/aqi?lat=${lat}&lon=${lon}`,
     schema: aqiApiResponseSchema,

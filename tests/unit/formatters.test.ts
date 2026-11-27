@@ -4,7 +4,8 @@
  * Tests AQI label formatting, pollutant display names, and other formatters.
  */
 
-import { AQI_BREAKPOINTS, POLLUTANT_DISPLAY_NAMES } from '@shared/constants.js';
+import { formatCoordinateCacheKey } from '@shared/aqi.js';
+import { AQI_BREAKPOINTS, POLLUTANT_DISPLAY_NAMES, POLLUTANT_KEYS } from '@shared/constants.js';
 import { describe, it, expect } from 'vitest';
 
 import { categorizeAqi } from '../../src/server/services/aqi-categorizer.js';
@@ -56,17 +57,16 @@ describe('formatters', () => {
     });
 
     it('should have entries for all 6 tracked pollutants', () => {
-      const expected = [
-        'pm2_5',
-        'pm10',
-        'nitrogen_dioxide',
-        'ozone',
-        'sulphur_dioxide',
-        'carbon_monoxide',
-      ];
-      for (const key of expected) {
+      for (const key of POLLUTANT_KEYS) {
         expect(POLLUTANT_DISPLAY_NAMES[key]).toBeDefined();
       }
+    });
+  });
+
+  describe('formatCoordinateCacheKey', () => {
+    it('rounds latitude and longitude to two decimal places consistently', () => {
+      expect(formatCoordinateCacheKey(28.6139, 77.209)).toBe('28.61,77.21');
+      expect(formatCoordinateCacheKey(-33.8688, 151.2093)).toBe('-33.87,151.21');
     });
   });
 
