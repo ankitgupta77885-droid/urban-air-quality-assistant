@@ -2,7 +2,12 @@
  * Prompt builder for Gemini air quality advice personalization.
  */
 
+import { ACTION_ICON_KEYS, ADVICE_CATEGORIES } from '../../shared/schemas.js';
 import type { AqiData, RulesEngineOutput, UserContext } from '../../shared/types.js';
+
+const CATEGORY_SCHEMA_ENUM = ADVICE_CATEGORIES.join('|');
+const ICON_SCHEMA_ENUM = ACTION_ICON_KEYS.join('|');
+const ICON_RULE_LIST = ACTION_ICON_KEYS.join(', ');
 
 /**
  * Builds the Gemini prompt with system instructions and structured data.
@@ -53,14 +58,14 @@ function getPromptInstructions(): string {
     '- Do NOT provide medical advice or diagnoses.',
     '- Keep all qualitative benefit labels exactly as provided (Low, Moderate, High).',
     '- Use the same category values exactly as provided.',
-    '- Use the same icon values exactly as provided (sun, moon, home, car, walk, leaf, wind, shield, sparkle, alert). Never use emojis.',
+    `- Use the same icon values exactly as provided (${ICON_RULE_LIST}). Never use emojis.`,
     '- Respond ONLY with valid JSON matching the schema below.',
   ].join('\n');
 }
 
 /** Formats the output schema string for the prompt. */
 function formatOutputSchema(riskLevel: string): string {
-  return `{"riskLevel":"${riskLevel}","riskSummary":"personalized risk summary","actions":[{"category":"morning-routine|commute|outdoor-activity|evening-routine|indoor-air-hack|sustainable-alternative","title":"short title","description":"one short sentence","impact":"one short sentence","benefit":"Low|Moderate|High","icon":"sun|moon|home|car|walk|leaf|wind|shield|sparkle|alert"}]}`;
+  return `{"riskLevel":"${riskLevel}","riskSummary":"personalized risk summary","actions":[{"category":"${CATEGORY_SCHEMA_ENUM}","title":"short title","description":"one short sentence","impact":"one short sentence","benefit":"Low|Moderate|High","icon":"${ICON_SCHEMA_ENUM}"}]}`;
 }
 
 /** Formats user situation context block. */

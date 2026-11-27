@@ -8,6 +8,7 @@ import type { GeocodingResult } from '@shared/types.js';
 import { searchCities } from '../api/client.js';
 import { debounce } from '../utils/debounce.js';
 import { clearChildren, createElement, getElement, setText } from '../utils/dom.js';
+import { formatLocationLabel } from '../utils/formatters.js';
 
 import { handleGeolocation } from './geolocation.js';
 import { createLocationPinIcon } from './icons.js';
@@ -22,12 +23,13 @@ export function initLocationSearch(onSelect: LocationCallback): void {
   container.append(label, inputRow, hint, results);
 
   const debouncedSearch = debounce((query: string) => {
-    void handleSearch(query, results, onSelect);
+    void handleSearch(query, field, results, onSelect);
   }, SEARCH_DEBOUNCE_MS);
 
   field.addEventListener('input', () => {
     const query = field.value.trim();
     if (query.length < MIN_SEARCH_LENGTH) {
+      debouncedSearch.cancel();
       clearChildren(results);
       return;
     }
@@ -63,14 +65,13 @@ function createSearchControls(): {
 
   const geoBtn = createElement('button', 'geo-btn');
   geoBtn.type = 'button';
-  geoBtn.appendChild(createLocationPinIcon());
-  geoBtn.appendChild(document.createTextNode(' Use my location'));
+  geoBtn.append(createLocationPinIcon(), document.createTextNode(' Use my location'));
 
   inputRow.append(field, geoBtn);
 
   const hint = createElement('p', 'search-hint');
   hint.id = 'search-hint';
-  setText(hint, 'Type at least 2 characters to search');
+  setText(hint, `Type at least ${MIN_SEARCH_LENGTH} characters to search`);
 
   const results = createElement('ul', 'search-results');
   results.id = 'search-results';
@@ -83,6 +84,7 @@ function createSearchControls(): {
 /** Handles city search and renders result options. */
 async function handleSearch(
   query: string,
+  field: HTMLInputElement,
   listEl: HTMLElement,
   onSelect: LocationCallback,
 ): Promise<void> {
@@ -90,45 +92,53 @@ async function handleSearch(
     const cities = await searchCities(query);
     clearChildren(listEl);
     if (cities.length === 0) {
-      const li = createElement('li', 'search-no-results');
-      li.setAttribute('role', 'option');
-      setText(li, 'No cities found');
-      listEl.appendChild(li);
+      renderStatusItem(listEl, 'search-no-results', 'No cities found', true);
       return;
     }
     for (const city of cities) {
-      listEl.appendChild(createCityOption(city, listEl, onSelect));
+      listEl.appendChild(createCityOption(city, field, listEl, onSelect));
     }
   } catch (error: unknown) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       return;
     }
     clearChildren(listEl);
-    const li = createElement('li', 'search-error');
-    setText(li, 'Search failed. Please try again.');
-    listEl.appendChild(li);
+    renderStatusItem(listEl, 'search-error', 'Search failed. Please try again.', false);
   }
+}
+
+/** Appends a status list item (empty results or error message) into the results listbox. */
+function renderStatusItem(
+  listEl: HTMLElement,
+  className: string,
+  message: string,
+  asOption: boolean,
+): void {
+  const li = createElement('li', className);
+  if (asOption) {
+    li.setAttribute('role', 'option');
+  }
+  setText(li, message);
+  listEl.appendChild(li);
 }
 
 /** Creates a selectable city option element. */
 function createCityOption(
   city: GeocodingResult,
+  field: HTMLInputElement,
   listEl: HTMLElement,
   onSelect: LocationCallback,
 ): HTMLElement {
   const li = createElement('li', 'search-result-item');
   li.setAttribute('role', 'option');
   li.setAttribute('tabindex', '0');
-  const displayText = [city.name, city.admin1, city.country].filter(Boolean).join(', ');
+  const displayText = formatLocationLabel(city);
   setText(li, displayText);
 
   const select = (): void => {
     onSelect(city);
     clearChildren(listEl);
-    const input = document.getElementById('city-search');
-    if (input instanceof HTMLInputElement) {
-      input.value = displayText;
-    }
+    field.value = displayText;
   };
 
   li.addEventListener('click', select);

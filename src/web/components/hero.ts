@@ -5,7 +5,7 @@
  * and navigation actions. Shows zero mock stats or unverified numbers.
  */
 
-import { createElement, setText } from '../utils/dom.js';
+import { createElement, focusInput, setText } from '../utils/dom.js';
 
 /**
  * Renders the hero section into the target container.
@@ -45,22 +45,13 @@ function createHeroActions(): HTMLElement {
   primaryBtn.href = '#planner';
   setText(primaryBtn, "Get today's plan");
   primaryBtn.addEventListener('click', () => {
-    focusPlannerInput();
+    focusInput('city-search');
   });
 
   const secondaryBtn = createElement('a', 'btn', 'btn-outline', 'btn-pill', 'hero-btn');
   secondaryBtn.href = '#how-it-works';
   setText(secondaryBtn, 'See how it works');
 
-  actions.appendChild(primaryBtn);
-  actions.appendChild(secondaryBtn);
+  actions.append(primaryBtn, secondaryBtn);
   return actions;
-}
-
-/** Scrolls to the planner card and focuses the search input. */
-function focusPlannerInput(): void {
-  const searchInput = document.getElementById('city-search');
-  if (searchInput instanceof HTMLInputElement) {
-    searchInput.focus();
-  }
 }

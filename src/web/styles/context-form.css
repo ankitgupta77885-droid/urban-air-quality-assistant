@@ -61,7 +61,7 @@
 
 .more-details-section {
   padding: var(--space-md);
-  background: var(--color-canvas, #f9f9f7);
+  background: var(--color-canvas);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   margin: var(--space-md) 0;

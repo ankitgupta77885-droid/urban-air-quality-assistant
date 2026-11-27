@@ -1,138 +1,93 @@
 /**
  * Shared type definitions for BreatheWell.
  *
- * All domain types used across server and client live here to ensure
- * a single source of truth.
+ * Domain types are inferred from Zod validation schemas so compile-time
+ * types and runtime validators share a single source of truth.
  */
+
+import type { z } from 'zod';
+
+import type {
+  actionIconKeySchema,
+  activityLevelSchema,
+  adviceCategorySchema,
+  adviceRequestSchema,
+  childAgeGroupSchema,
+  commuteModeSchema,
+  healthConditionSchema,
+  heatingSourceSchema,
+  homeTypeSchema,
+  personalizedActionSchema,
+  riskLevelSchema,
+  userContextSchema,
+} from './request-schemas.js';
+import type {
+  aqiCategorySchema,
+  aqiDataSchema,
+  geocodingResultSchema,
+  personalizedAdviceSchema,
+  pollutantReadingSchema,
+} from './response-schemas.js';
 
 /* ── Location ── */
 
 /** A geocoded location result from the Open-Meteo Geocoding API. */
-export interface GeocodingResult {
-  /** Unique location identifier from the geocoding API. */
-  readonly id: number;
-  /** City or locality name. */
-  readonly name: string;
-  /** Administrative region (state, province, etc.). */
-  readonly admin1?: string;
-  /** Country name. */
-  readonly country: string;
-  /** Country code (ISO 3166-1 alpha-2). */
-  readonly countryCode: string;
-  /** Latitude in decimal degrees. */
-  readonly latitude: number;
-  /** Longitude in decimal degrees. */
-  readonly longitude: number;
-}
+export type GeocodingResult = Readonly<z.infer<typeof geocodingResultSchema>>;
 
 /* ── Air Quality ── */
 
 /** AQI category levels following US EPA breakpoints. */
-export type AqiCategory =
-  | 'Good'
-  | 'Moderate'
-  | 'Unhealthy for Sensitive Groups'
-  | 'Unhealthy'
-  | 'Very Unhealthy'
-  | 'Hazardous';
+export type AqiCategory = z.infer<typeof aqiCategorySchema>;
 
 /** Individual pollutant reading. */
-export interface PollutantReading {
-  /** Pollutant identifier (e.g., "pm2_5", "pm10", "no2"). */
-  readonly name: string;
-  /** Human-readable display name (e.g., "PM2.5"). */
-  readonly displayName: string;
-  /** Current concentration value. */
-  readonly value: number;
-  /** Measurement unit (e.g., "µg/m³"). */
-  readonly unit: string;
-}
+export type PollutantReading = Readonly<z.infer<typeof pollutantReadingSchema>>;
 
 /** Complete air quality data for a location. */
-export interface AqiData {
-  /** Overall US AQI value (0–500). */
-  readonly aqi: number;
-  /** Human-readable AQI category. */
-  readonly category: AqiCategory;
-  /** Individual pollutant readings. */
+export type AqiData = Omit<Readonly<z.infer<typeof aqiDataSchema>>, 'pollutants'> & {
   readonly pollutants: readonly PollutantReading[];
-  /** Dominant pollutant name. */
-  readonly dominantPollutant: string;
-  /** ISO 8601 timestamp of the reading. */
-  readonly timestamp: string;
-}
+};
 
 /* ── User Context (Young Families Persona) ── */
 
 /** Age group of the youngest child in the household. */
-export type ChildAgeGroup = 'infant' | 'toddler' | 'preschool' | 'school-age';
+export type ChildAgeGroup = z.infer<typeof childAgeGroupSchema>;
 
 /** Common health conditions relevant to air quality. */
-export type HealthCondition = 'asthma' | 'allergies' | 'respiratory' | 'cardiovascular' | 'none';
+export type HealthCondition = z.infer<typeof healthConditionSchema>;
 
 /** Type of home the family lives in. */
-export type HomeType = 'apartment' | 'house' | 'studio';
+export type HomeType = z.infer<typeof homeTypeSchema>;
 
 /** Primary commute mode. */
-export type CommuteMode = 'car' | 'public-transit' | 'bicycle' | 'walking' | 'work-from-home';
+export type CommuteMode = z.infer<typeof commuteModeSchema>;
 
 /** Family's typical outdoor activity level. */
-export type ActivityLevel = 'low' | 'moderate' | 'high';
+export type ActivityLevel = z.infer<typeof activityLevelSchema>;
 
 /** Primary heating source at home. */
-export type HeatingSource = 'gas' | 'electric' | 'wood' | 'oil' | 'heat-pump' | 'none';
+export type HeatingSource = z.infer<typeof heatingSourceSchema>;
 
 /** User context captured from the lifestyle form. */
-export interface UserContext {
-  /** Age group of the youngest child. */
-  readonly childAgeGroup: ChildAgeGroup;
-  /** Health conditions in the household. */
+export type UserContext = Omit<Readonly<z.infer<typeof userContextSchema>>, 'healthConditions'> & {
   readonly healthConditions: readonly HealthCondition[];
-  /** Type of home. */
-  readonly homeType: HomeType;
-  /** Primary commute mode. */
-  readonly commuteMode: CommuteMode;
-  /** Family's outdoor activity level. */
-  readonly activityLevel: ActivityLevel;
-  /** Primary heating source. */
-  readonly heatingSource: HeatingSource;
-}
+};
 
-/* ── Risk Assessment ── */
+/* ── Risk Assessment & Advice ── */
 
 /** Computed risk level based on AQI + user context. */
-export type RiskLevel = 'low' | 'moderate' | 'high' | 'very-high' | 'critical';
-
-/* ── Advice / Recommendations ── */
+export type RiskLevel = z.infer<typeof riskLevelSchema>;
 
 /** Category of a recommended action. */
-export type AdviceCategory =
-  | 'morning-routine'
-  | 'commute'
-  | 'outdoor-activity'
-  | 'evening-routine'
-  | 'indoor-air-hack'
-  | 'sustainable-alternative';
+export type AdviceCategory = z.infer<typeof adviceCategorySchema>;
 
 /** Allowed icon key for actions (maps to inline SVG icons). */
-export type ActionIconKey =
-  'sun' | 'moon' | 'home' | 'car' | 'walk' | 'leaf' | 'wind' | 'shield' | 'sparkle' | 'alert';
+export type ActionIconKey = z.infer<typeof actionIconKeySchema>;
 
 /** A single structured action from the rules engine. */
-export interface RecommendedAction {
-  /** Which advice category this belongs to. */
-  readonly category: AdviceCategory;
-  /** Short title for the action. */
-  readonly title: string;
-  /** Detailed explanation of the action. */
-  readonly description: string;
-  /** Why this action helps (plain-language impact explanation). */
-  readonly impact: string;
-  /** Qualitative/estimated benefit label (e.g., "High", "Moderate"). */
-  readonly benefit: string;
-  /** Icon identifier for the category. */
-  readonly icon: ActionIconKey;
-}
+export type RecommendedAction = Readonly<z.infer<typeof personalizedActionSchema>>;
+
+/** Alias for personalized advice items returned by Gemini or fallback. */
+export type PersonalizedAction = RecommendedAction;
 
 /** Output of the deterministic rules engine. */
 export interface RulesEngineOutput {
@@ -144,47 +99,18 @@ export interface RulesEngineOutput {
   readonly actions: readonly RecommendedAction[];
 }
 
-/** A personalized advice item from Gemini (or fallback). */
-export interface PersonalizedAction {
-  /** Which advice category this belongs to. */
-  readonly category: AdviceCategory;
-  /** Short title for the action. */
-  readonly title: string;
-  /** Personalized description. */
-  readonly description: string;
-  /** Why this helps — personalized impact explanation. */
-  readonly impact: string;
-  /** Qualitative/estimated benefit label. */
-  readonly benefit: string;
-  /** Icon identifier for the category. */
-  readonly icon: ActionIconKey;
-}
-
 /** Full personalized advice response. */
-export interface PersonalizedAdvice {
-  /** Computed risk level. */
-  readonly riskLevel: RiskLevel;
-  /** Personalized risk summary. */
-  readonly riskSummary: string;
-  /** Personalized actions grouped by category. */
+export type PersonalizedAdvice = Omit<
+  Readonly<z.infer<typeof personalizedAdviceSchema>>,
+  'actions'
+> & {
   readonly actions: readonly PersonalizedAction[];
-  /** Whether this is from Gemini or the rules-engine fallback. */
-  readonly isBasicMode: boolean;
-  /** Personalization source flag. */
-  readonly personalization: 'ai' | 'basic';
-}
+};
 
 /* ── API Request / Response ── */
 
 /** Request body for POST /api/advice. */
-export interface AdviceRequest {
-  /** Latitude of the user's location. */
-  readonly latitude: number;
-  /** Longitude of the user's location. */
-  readonly longitude: number;
-  /** User's lifestyle context. */
-  readonly context: UserContext;
-}
+export type AdviceRequest = Readonly<z.infer<typeof adviceRequestSchema>>;
 
 /** API response wrapper. */
 export interface ApiResponse<T> {

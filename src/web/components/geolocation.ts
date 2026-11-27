@@ -2,7 +2,11 @@
  * Browser geolocation helper for location search.
  */
 
-import { GEOLOCATION_MAX_AGE_MS, GEOLOCATION_TIMEOUT_MS } from '@shared/constants.js';
+import {
+  GEOLOCATION_MAX_AGE_MS,
+  GEOLOCATION_RESET_DELAY_MS,
+  GEOLOCATION_TIMEOUT_MS,
+} from '@shared/constants.js';
 import type { GeocodingResult } from '@shared/types.js';
 
 import { clearChildren, setText } from '../utils/dom.js';
@@ -11,6 +15,8 @@ import { createLocationPinIcon } from './icons.js';
 
 /** Callback when a location is selected. */
 type LocationCallback = (result: GeocodingResult) => void;
+
+let resetTimerId: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Handles browser geolocation request with UI feedback.
@@ -26,6 +32,7 @@ export async function handleGeolocation(
     return;
   }
 
+  cancelPendingReset();
   setText(btn, 'Getting location…');
   btn.disabled = true;
 
@@ -36,12 +43,25 @@ export async function handleGeolocation(
     setText(btn, 'Location access denied');
   } finally {
     btn.disabled = false;
-    setTimeout(() => {
-      clearChildren(btn);
-      btn.appendChild(createLocationPinIcon());
-      btn.appendChild(document.createTextNode(' Use my location'));
-    }, 3000);
+    scheduleButtonReset(btn);
   }
+}
+
+/** Cancels any pending geolocation button label reset timer. */
+function cancelPendingReset(): void {
+  if (resetTimerId !== null) {
+    clearTimeout(resetTimerId);
+    resetTimerId = null;
+  }
+}
+
+/** Schedules restoring the default geolocation button label and pin icon. */
+function scheduleButtonReset(btn: HTMLButtonElement): void {
+  resetTimerId = setTimeout(() => {
+    resetTimerId = null;
+    clearChildren(btn);
+    btn.append(createLocationPinIcon(), document.createTextNode(' Use my location'));
+  }, GEOLOCATION_RESET_DELAY_MS);
 }
 
 /** Wraps navigator.geolocation.getCurrentPosition in a Promise. */

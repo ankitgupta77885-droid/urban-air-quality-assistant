@@ -26,9 +26,14 @@ export function requestTimeout(_req: Request, res: Response, next: NextFunction)
     }
   }, REQUEST_TIMEOUT_MS);
 
-  res.on('finish', () => {
+  const cancelTimer = (): void => {
     clearTimeout(timer);
-  });
+    res.off('finish', cancelTimer);
+    res.off('close', cancelTimer);
+  };
+
+  res.on('finish', cancelTimer);
+  res.on('close', cancelTimer);
 
   next();
 }

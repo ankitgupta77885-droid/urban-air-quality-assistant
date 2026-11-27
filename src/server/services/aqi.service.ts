@@ -4,6 +4,7 @@
  * Fetches current AQI and pollutant data with in-memory TTL caching.
  */
 
+import { TtlCache } from '../../shared/cache.js';
 import {
   AIR_QUALITY_API_URL,
   AQI_CACHE_TTL_MS,
@@ -16,7 +17,6 @@ import type { AqiData, PollutantReading } from '../../shared/types.js';
 import { UpstreamApiError } from '../errors/app-errors.js';
 
 import { categorizeAqi } from './aqi-categorizer.js';
-import { TtlCache } from './cache.js';
 import { fetchValidatedJson } from './http-client.js';
 import { createLogger } from './logger.js';
 

@@ -39,7 +39,7 @@
 
 .pill-selected {
   background: var(--color-ink);
-  color: #ffffff;
+  color: var(--color-ink-inverse);
   border-color: var(--color-ink);
 }
 
@@ -54,7 +54,7 @@
   box-sizing: border-box;
   padding: 0 var(--space-md);
   border-radius: var(--radius-pill);
-  background: var(--color-canvas, #f9f9f7);
+  background: var(--color-canvas);
   border: 1px solid var(--color-border);
   font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
@@ -147,14 +147,14 @@
 }
 
 .chip-label:hover {
-  background: var(--color-canvas, #f9f9f7);
+  background: var(--color-canvas);
   border-color: var(--color-border-hover);
 }
 
 /* Visible Focus Indicator */
 .chip-input:focus-visible + .chip-label {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
 }
 
 /* Disabled state */
@@ -173,8 +173,8 @@
 }
 
 .chip-input:checked + .chip-label {
-  background: var(--color-secondary-container, #cde5dc);
-  border-color: var(--color-secondary, #4d635c);
+  background: var(--color-secondary-container);
+  border-color: var(--color-secondary);
   color: var(--color-ink);
   font-weight: var(--font-weight-semibold);
 }

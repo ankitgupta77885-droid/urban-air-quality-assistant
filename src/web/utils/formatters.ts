@@ -1,12 +1,12 @@
 /**
  * Formatting utilities for the frontend.
  *
- * Provides display-friendly labels for AQI, pollutants, and categories.
+ * Provides display-friendly labels for AQI, locations, timestamps, and categories.
  */
 
 import { findAqiBreakpoint } from '@shared/aqi.js';
 import { ADVICE_CATEGORY_LABELS } from '@shared/constants.js';
-import type { AqiCategory } from '@shared/types.js';
+import type { AqiCategory, GeocodingResult } from '@shared/types.js';
 
 /**
  * Returns the AQI category info for a given AQI value.
@@ -29,4 +29,26 @@ export function getAqiDisplay(aqi: number): {
  */
 export function getCategoryLabel(category: string): string {
   return ADVICE_CATEGORY_LABELS[category] ?? category;
+}
+
+/**
+ * Formats a geocoding result into a comma-separated display label.
+ * @param location - Location fields with name, optional admin region, and country.
+ */
+export function formatLocationLabel(
+  location: Pick<GeocodingResult, 'name' | 'admin1' | 'country'>,
+): string {
+  return [location.name, location.admin1, location.country].filter(Boolean).join(', ');
+}
+
+/**
+ * Formats an ISO timestamp string into local HH:MM time, falling back safely on invalid values.
+ * @param timestamp - Timestamp string to format.
+ */
+export function formatLocalTime(timestamp: string): string {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return timestamp;
+  }
+  return date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 }

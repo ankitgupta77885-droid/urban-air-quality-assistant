@@ -4,7 +4,7 @@
  * Enforces minimum 44px touch targets and token-driven styling.
  */
 
-import { createElement, setText } from '../utils/dom.js';
+import { addClasses, createElement, setText } from '../utils/dom.js';
 
 /** Configuration options for the Button primitive component. */
 export interface ButtonOptions {
@@ -40,7 +40,7 @@ export function createButton(options: ButtonOptions): HTMLButtonElement {
   btn.type = options.type ?? 'button';
 
   applyButtonVariant(btn, options.variant, options.pill);
-  applyButtonClasses(btn, options.className);
+  addClasses(btn, options.className);
   applyButtonAccessibility(btn, options.ariaLabel, options.disabled);
   renderButtonContent(btn, options);
 
@@ -60,17 +60,6 @@ function applyButtonVariant(
   btn.classList.add(`btn-${variant}`);
   if (pill) {
     btn.classList.add('btn-pill');
-  }
-}
-
-/** Applies custom class names safely. */
-function applyButtonClasses(btn: HTMLButtonElement, className?: string): void {
-  if (className) {
-    for (const cls of className.split(/\s+/)) {
-      if (cls) {
-        btn.classList.add(cls);
-      }
-    }
   }
 }
 

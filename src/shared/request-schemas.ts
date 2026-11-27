@@ -1,4 +1,4 @@
-/* v8 ignore start */
+/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Shared Zod request, context, and Gemini validation schemas.
  *
@@ -50,15 +50,18 @@ export const activityLevelSchema = z.enum(['low', 'moderate', 'high']);
 /** Valid heating source values. */
 export const heatingSourceSchema = z.enum(['gas', 'electric', 'wood', 'oil', 'heat-pump', 'none']);
 
-/** Valid advice category values. */
-export const adviceCategorySchema = z.enum([
+/** Ordered advice category keys. */
+export const ADVICE_CATEGORIES = [
   'morning-routine',
   'commute',
   'outdoor-activity',
   'evening-routine',
   'indoor-air-hack',
   'sustainable-alternative',
-]);
+] as const;
+
+/** Valid advice category values. */
+export const adviceCategorySchema = z.enum(ADVICE_CATEGORIES);
 
 /** Valid risk level values. */
 export const riskLevelSchema = z.enum(['low', 'moderate', 'high', 'very-high', 'critical']);
@@ -109,10 +112,14 @@ export const aqiQuerySchema = z.object({
   lon: longitudeSchema,
 });
 
-/** Schema for the POST /api/advice request body. */
-export const adviceRequestSchema = z.object({
+/** Shared geographic coordinate fields schema. */
+const coordinatesSchema = z.object({
   latitude: latitudeSchema,
   longitude: longitudeSchema,
+});
+
+/** Schema for the POST /api/advice request body. */
+export const adviceRequestSchema = coordinatesSchema.extend({
   context: userContextSchema,
 });
 

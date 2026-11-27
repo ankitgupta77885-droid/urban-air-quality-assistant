@@ -7,6 +7,7 @@
 import { APP_NAME } from '@shared/constants.js';
 
 import { createElement, setText } from '../utils/dom.js';
+import { formatLocalTime } from '../utils/formatters.js';
 
 import { renderDisclaimer } from './disclaimer.js';
 
@@ -49,15 +50,7 @@ export function updateTrustTimestamp(isoTimestamp?: string): void {
     setText(el, 'Data from Open-Meteo');
     return;
   }
-  try {
-    const date = new Date(isoTimestamp);
-    const timeStr = isNaN(date.getTime())
-      ? isoTimestamp
-      : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setText(el, `Data from Open-Meteo • Fetched at ${timeStr}`);
-  } catch {
-    setText(el, `Data from Open-Meteo • ${isoTimestamp}`);
-  }
+  setText(el, `Data from Open-Meteo • Fetched at ${formatLocalTime(isoTimestamp)}`);
 }
 
 /** Creates the trust strip element. */

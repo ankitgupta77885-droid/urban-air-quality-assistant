@@ -95,54 +95,54 @@ export function createChipItem(options: ChipItemOptions): HTMLElement {
   return wrapper;
 }
 
-/**
- * Builds an accessible pill-style checkbox group with fieldset/legend.
- */
+interface ChipGroupOptions {
+  readonly type: 'checkbox' | 'radio';
+  readonly name: string;
+  readonly legendText: string;
+  readonly options: readonly [string, string][];
+  readonly defaultSelected?: string;
+}
+
+/** Builds an accessible pill-style checkbox or radio chip group with fieldset/legend. */
+function buildChipGroup({
+  type,
+  name,
+  legendText,
+  options,
+  defaultSelected,
+}: ChipGroupOptions): HTMLElement {
+  const fieldset = createElement('fieldset', 'form-group', 'fieldset-group');
+  const legend = createElement('legend', 'form-legend');
+  setText(legend, legendText);
+  fieldset.appendChild(legend);
+
+  const container = createElement('div', 'chip-grid');
+  for (const [value, display] of options) {
+    const isChecked = Boolean(defaultSelected && value === defaultSelected);
+    container.appendChild(createChipItem({ type, name, value, display, checked: isChecked }));
+  }
+  fieldset.appendChild(container);
+  return fieldset;
+}
+
+/** Builds an accessible pill-style checkbox group with fieldset/legend. */
 export function buildCheckboxChipGroup(
   name: string,
   legendText: string,
   options: readonly [string, string][],
   defaultSelected?: string,
 ): HTMLElement {
-  const fieldset = createElement('fieldset', 'form-group', 'fieldset-group');
-  const legend = createElement('legend', 'form-legend');
-  setText(legend, legendText);
-  fieldset.appendChild(legend);
-
-  const container = createElement('div', 'chip-grid');
-  for (const [value, display] of options) {
-    const isChecked = Boolean(defaultSelected && value === defaultSelected);
-    container.appendChild(
-      createChipItem({ type: 'checkbox', name, value, display, checked: isChecked }),
-    );
-  }
-  fieldset.appendChild(container);
-  return fieldset;
+  return buildChipGroup({ type: 'checkbox', name, legendText, options, defaultSelected });
 }
 
-/**
- * Builds an accessible pill-style radio group with fieldset/legend.
- */
+/** Builds an accessible pill-style radio group with fieldset/legend. */
 export function buildRadioChipGroup(
   name: string,
   legendText: string,
   options: readonly [string, string][],
   defaultSelected?: string,
 ): HTMLElement {
-  const fieldset = createElement('fieldset', 'form-group', 'fieldset-group');
-  const legend = createElement('legend', 'form-legend');
-  setText(legend, legendText);
-  fieldset.appendChild(legend);
-
-  const container = createElement('div', 'chip-grid');
-  for (const [value, display] of options) {
-    const isChecked = Boolean(defaultSelected && value === defaultSelected);
-    container.appendChild(
-      createChipItem({ type: 'radio', name, value, display, checked: isChecked }),
-    );
-  }
-  fieldset.appendChild(container);
-  return fieldset;
+  return buildChipGroup({ type: 'radio', name, legendText, options, defaultSelected });
 }
 
 /** Creates the collapsible optional fields section with toggle button. */

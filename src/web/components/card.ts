@@ -4,7 +4,7 @@
  * Provides standard radius, hairline border, and ambient shadow.
  */
 
-import { createElement } from '../utils/dom.js';
+import { addClasses, createElement } from '../utils/dom.js';
 
 /** Configuration options for the Card primitive container. */
 export interface CardOptions {
@@ -32,7 +32,7 @@ export function createCard(options: CardOptions = {}): HTMLElement {
 
   applyCardVariant(card, options.variant);
   applyCardPadding(card, options.padding);
-  applyCardClasses(card, options.className);
+  addClasses(card, options.className);
   applyCardAccessibility(card, options);
 
   if (options.id) {
@@ -50,17 +50,6 @@ function applyCardVariant(card: HTMLElement, variant: CardOptions['variant'] = '
 /** Applies card padding scale. */
 function applyCardPadding(card: HTMLElement, padding: CardOptions['padding'] = 'lg'): void {
   card.classList.add(`card-pad-${padding}`);
-}
-
-/** Applies custom classes safely. */
-function applyCardClasses(card: HTMLElement, className?: string): void {
-  if (className) {
-    for (const cls of className.split(/\s+/)) {
-      if (cls) {
-        card.classList.add(cls);
-      }
-    }
-  }
 }
 
 /** Sets optional accessibility attributes. */

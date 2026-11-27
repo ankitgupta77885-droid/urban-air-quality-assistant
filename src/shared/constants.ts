@@ -1,4 +1,4 @@
-/* v8 ignore start */
+/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Shared constants for BreatheWell.
  *
@@ -141,3 +141,6 @@ export const GEOLOCATION_TIMEOUT_MS = 10_000 as const;
 
 /** Geolocation cached position maximum age in milliseconds (5 minutes). */
 export const GEOLOCATION_MAX_AGE_MS = 300_000 as const;
+
+/** Delay before resetting geolocation button feedback label (milliseconds). */
+export const GEOLOCATION_RESET_DELAY_MS = 3000 as const;

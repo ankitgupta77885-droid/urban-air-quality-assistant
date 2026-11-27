@@ -37,18 +37,18 @@
 }
 
 .benefit-high {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--color-benefit-high-bg);
+  color: var(--color-benefit-high-text);
 }
 
 .benefit-moderate {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-container);
+  color: var(--color-warning-text);
 }
 
 .benefit-low {
-  background: #e0f2fe;
-  color: #0369a1;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
 }
 
 .benefit-sustainable-choice {
@@ -93,7 +93,7 @@
   font-size: var(--font-size-body-md);
   line-height: var(--line-height-body-md);
   color: var(--color-ink-muted);
-  background: var(--color-canvas, #f9f9f7);
+  background: var(--color-canvas);
   border-radius: var(--radius-md);
   padding: var(--space-sm) var(--space-md);
 }
@@ -109,7 +109,7 @@
   display: flex;
   align-items: flex-start;
   gap: var(--space-md);
-  background: var(--color-canvas, #f9f9f7);
+  background: var(--color-canvas);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md) var(--space-lg);

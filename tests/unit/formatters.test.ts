@@ -8,6 +8,12 @@ import { AQI_BREAKPOINTS, POLLUTANT_DISPLAY_NAMES } from '@shared/constants.js';
 import { describe, it, expect } from 'vitest';
 
 import { categorizeAqi } from '../../src/server/services/aqi-categorizer.js';
+import {
+  formatLocalTime,
+  formatLocationLabel,
+  getAqiDisplay,
+  getCategoryLabel,
+} from '../../src/web/utils/formatters.js';
 
 describe('formatters', () => {
   describe('AQI_BREAKPOINTS consistency', () => {
@@ -71,6 +77,26 @@ describe('formatters', () => {
         const result = categorizeAqi(midpoint);
         expect(result.category).toBe(bp.category);
       }
+    });
+  });
+
+  describe('web display formatters', () => {
+    it('formats locations with and without admin region', () => {
+      expect(formatLocationLabel({ name: 'Delhi', admin1: 'Delhi', country: 'India' })).toBe(
+        'Delhi, Delhi, India',
+      );
+      expect(formatLocationLabel({ name: 'Tokyo', country: 'Japan' })).toBe('Tokyo, Japan');
+    });
+
+    it('formats valid ISO timestamps and preserves invalid timestamp strings safely', () => {
+      expect(formatLocalTime('2026-11-22T10:00:00Z')).not.toBe('Invalid Date');
+      expect(formatLocalTime('not-a-timestamp')).toBe('not-a-timestamp');
+    });
+
+    it('returns AQI display metadata and category labels with safe fallback', () => {
+      expect(getAqiDisplay(50.5).category).toBe('Moderate');
+      expect(getCategoryLabel('morning-routine')).toBe('Morning Routine');
+      expect(getCategoryLabel('custom-category')).toBe('custom-category');
     });
   });
 });

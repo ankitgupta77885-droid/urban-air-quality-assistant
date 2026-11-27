@@ -1,4 +1,4 @@
-/* v8 ignore start */
+/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Shared Zod schemas for Open-Meteo upstream payloads and API responses.
  *
@@ -29,15 +29,19 @@ export const openMeteoAqiResponseSchema = z.object({
   current: openMeteoAqiCurrentSchema.optional(),
 });
 
-/** Schema for a single Open-Meteo Geocoding result. */
-export const openMeteoGeoResultSchema = z.object({
+/** Shared geographic fields across upstream and internal geocoding payloads. */
+const geoLocationFieldsSchema = z.object({
   id: z.number(),
   name: z.string(),
   admin1: z.string().optional(),
   country: z.string(),
-  country_code: z.string(),
   latitude: z.number(),
   longitude: z.number(),
+});
+
+/** Schema for a single Open-Meteo Geocoding result. */
+export const openMeteoGeoResultSchema = geoLocationFieldsSchema.extend({
+  country_code: z.string(),
 });
 
 /** Schema for Open-Meteo Geocoding response. */
@@ -47,15 +51,18 @@ export const openMeteoGeoResponseSchema = z.object({
 
 /* ── Client API Response Schemas ── */
 
-/** AQI category levels following US EPA breakpoints. */
-export const aqiCategorySchema = z.enum([
+/** US EPA AQI category names. */
+export const AQI_CATEGORIES = [
   'Good',
   'Moderate',
   'Unhealthy for Sensitive Groups',
   'Unhealthy',
   'Very Unhealthy',
   'Hazardous',
-]);
+] as const;
+
+/** AQI category levels following US EPA breakpoints. */
+export const aqiCategorySchema = z.enum(AQI_CATEGORIES);
 
 /** Schema for individual pollutant reading. */
 export const pollutantReadingSchema = z.object({
@@ -75,14 +82,8 @@ export const aqiDataSchema = z.object({
 });
 
 /** Schema for geocoded location result. */
-export const geocodingResultSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  admin1: z.string().optional(),
-  country: z.string(),
+export const geocodingResultSchema = geoLocationFieldsSchema.extend({
   countryCode: z.string(),
-  latitude: z.number(),
-  longitude: z.number(),
 });
 
 /** Schema for full personalized advice response. */

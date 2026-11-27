@@ -84,7 +84,7 @@ select,
   left: -9999px;
   top: 0;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-ink-inverse);
   padding: 0.5rem 1rem;
   z-index: 1000;
   border-radius: 0 0 var(--radius) 0;
@@ -94,13 +94,6 @@ select,
 
 .skip-link:focus {
   left: 0;
-}
-
-/* ── Focus Styles ── */
-
-:focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
 }
 
 /* ── Shared Primitives: Button ── */
@@ -134,13 +127,13 @@ select,
 
 .btn-primary {
   background: var(--color-ink);
-  color: #ffffff;
+  color: var(--color-ink-inverse);
   border-color: var(--color-ink);
 }
 
 .btn-primary:hover {
-  background: #2a2a2a;
-  border-color: #2a2a2a;
+  background: var(--color-ink-hover);
+  border-color: var(--color-ink-hover);
 }
 
 .btn-secondary {

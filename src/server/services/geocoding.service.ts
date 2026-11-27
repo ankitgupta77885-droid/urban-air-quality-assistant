@@ -4,6 +4,7 @@
  * Provides city search with in-memory TTL caching.
  */
 
+import { TtlCache } from '../../shared/cache.js';
 import {
   GEOCODING_API_URL,
   GEOCODING_CACHE_TTL_MS,
@@ -12,7 +13,6 @@ import {
 import { openMeteoGeoResponseSchema, type OpenMeteoGeoResult } from '../../shared/schemas.js';
 import type { GeocodingResult } from '../../shared/types.js';
 
-import { TtlCache } from './cache.js';
 import { fetchValidatedJson } from './http-client.js';
 import { createLogger } from './logger.js';
 

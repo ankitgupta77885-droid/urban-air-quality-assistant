@@ -21,12 +21,14 @@ vi.mock('@google/genai', () => ({
   },
 }));
 
+import { buildPrompt } from '../../src/server/services/gemini-prompt.js';
 import {
   buildFallbackAdvice,
-  buildPrompt,
   cleanJsonResponse,
-  clearGeminiCache,
   parseGeminiResponse,
+} from '../../src/server/services/gemini-response.js';
+import {
+  clearGeminiCache,
   personalizeAdvice,
   rejectAfterTimeout,
 } from '../../src/server/services/gemini.service.js';

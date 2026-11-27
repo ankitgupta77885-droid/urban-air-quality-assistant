@@ -1,11 +1,12 @@
 /**
- * Frontend API client with AbortController support.
+ * Frontend API client with AbortController support and shared TTL caching.
  *
- * Provides typed fetch wrappers for all backend endpoints.
- * Cancels stale requests automatically.
+ * Provides typed fetch wrappers for all backend endpoints and automatically
+ * cancels superseded requests of the same type.
  */
 
-import { AQI_CACHE_TTL_MS, MAX_CACHE_ENTRIES } from '@shared/constants.js';
+import { TtlCache } from '@shared/cache.js';
+import { AQI_CACHE_TTL_MS, GEOCODING_CACHE_TTL_MS } from '@shared/constants.js';
 import { ApiClientError } from '@shared/errors.js';
 import {
   adviceApiResponseSchema,
@@ -21,16 +22,9 @@ import type {
 } from '@shared/types.js';
 import type { z } from 'zod';
 
-/** Active abort controllers keyed by request type. */
 const controllers = new Map<string, AbortController>();
-
-interface CacheEntry<T> {
-  readonly value: T;
-  readonly expiresAt: number;
-}
-
-const geocodingCache = new Map<string, CacheEntry<GeocodingResult[]>>();
-const aqiClientCache = new Map<string, CacheEntry<AqiData>>();
+const geocodingCache = new TtlCache<GeocodingResult[]>(GEOCODING_CACHE_TTL_MS);
+const aqiClientCache = new TtlCache<AqiData>(AQI_CACHE_TTL_MS);
 
 interface ApiRequestOptions<T> {
   readonly signalKey: string;
@@ -43,43 +37,17 @@ interface ApiRequestOptions<T> {
 
 /** Cancels any in-flight request of the given type and returns a new AbortSignal. */
 function getFreshSignal(key: string): AbortSignal {
-  const existing = controllers.get(key);
-  if (existing) {
-    existing.abort();
-  }
+  controllers.get(key)?.abort();
   const controller = new AbortController();
   controllers.set(key, controller);
   return controller.signal;
 }
 
-/** Reads a non-expired cached entry from an in-memory client map. */
-function getCachedEntry<T>(store: Map<string, CacheEntry<T>>, key: string): T | undefined {
-  const entry = store.get(key);
-  if (!entry) {
-    return undefined;
-  }
-  if (Date.now() > entry.expiresAt) {
-    store.delete(key);
-    return undefined;
-  }
-  return entry.value;
-}
-
-/** Writes an entry to an in-memory client map, evicting the oldest item if full. */
-function setCachedEntry<T>(store: Map<string, CacheEntry<T>>, key: string, value: T): void {
-  if (store.size >= MAX_CACHE_ENTRIES) {
-    const oldestKey = store.keys().next().value;
-    if (oldestKey !== undefined) {
-      store.delete(oldestKey);
-    }
-  }
-  store.set(key, { value, expiresAt: Date.now() + AQI_CACHE_TTL_MS });
-}
-
 /** Parses response body as JSON, wrapping malformed non-JSON server replies in ApiClientError. */
 async function parseResponseJson(res: Response): Promise<unknown> {
   try {
-    return (await res.json()) as unknown;
+    const raw: unknown = await res.json();
+    return raw;
   } catch {
     const status = typeof res.status === 'number' ? res.status : 500;
     throw new ApiClientError(`Server returned an invalid response (HTTP ${status})`, status);
@@ -109,17 +77,17 @@ async function requestApiData<T>(
 
 /** Requests data with client-side TTL caching while still cancelling superseded requests. */
 async function requestWithCache<T>(
-  store: Map<string, CacheEntry<T>>,
+  cache: TtlCache<T>,
   cacheKey: string,
   options: ApiRequestOptions<T>,
 ): Promise<T> {
   const signal = getFreshSignal(options.signalKey);
-  const cached = getCachedEntry(store, cacheKey);
-  if (cached) {
+  const cached = cache.get(cacheKey);
+  if (cached !== undefined) {
     return cached;
   }
   const data = await requestApiData(options, signal);
-  setCachedEntry(store, cacheKey, data);
+  cache.set(cacheKey, data);
   return data;
 }
 

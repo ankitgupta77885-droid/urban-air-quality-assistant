@@ -4,9 +4,8 @@
  * Tests caching, expiration, eviction, and edge cases.
  */
 
+import { TtlCache } from '@shared/cache.js';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-
-import { TtlCache } from '../../src/server/services/cache.js';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -131,6 +130,38 @@ describe('TtlCache', () => {
       cache.set('c', '3');
       cache.set('d', '4');
       expect(cache.size).toBe(3);
+    });
+
+    it('should refresh recency on get() and evict the least-recently-used key', () => {
+      const cache = new TtlCache<string>(60_000, 2);
+      cache.set('key1', 'value1');
+      cache.set('key2', 'value2');
+
+      expect(cache.get('key1')).toBe('value1');
+      cache.set('key3', 'value3');
+
+      expect(cache.get('key1')).toBe('value1');
+      expect(cache.get('key2')).toBeUndefined();
+      expect(cache.get('key3')).toBe('value3');
+    });
+
+    it('should overwrite an existing key at capacity without evicting other entries', () => {
+      const cache = new TtlCache<string>(60_000, 2);
+      cache.set('key1', 'value1');
+      cache.set('key2', 'value2');
+      cache.set('key1', 'updated');
+
+      expect(cache.size).toBe(2);
+      expect(cache.get('key1')).toBe('updated');
+      expect(cache.get('key2')).toBe('value2');
+    });
+
+    it('should handle zero-capacity safely without throwing during eviction', () => {
+      const cache = new TtlCache<string>(60_000, 0);
+      expect(() => {
+        cache.set('a', '1');
+      }).not.toThrow();
+      expect(cache.get('a')).toBe('1');
     });
   });
 

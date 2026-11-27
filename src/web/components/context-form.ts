@@ -22,6 +22,7 @@ type ContextCallback = (context: UserContext) => void;
 const SUBMIT_LABEL = 'Generate Personalized Advice';
 const SUBMIT_BUSY_LABEL = 'Generating your plan…';
 
+let formEl: HTMLFormElement | null = null;
 let submitButtonEl: HTMLButtonElement | null = null;
 let disabledHintEl: HTMLElement | null = null;
 let isLocationSelected = false;
@@ -33,6 +34,7 @@ export function initContextForm(onSubmit: ContextCallback): void {
   container.replaceChildren();
 
   const form = buildForm();
+  formEl = form;
   form.addEventListener('submit', (e: Event) => {
     e.preventDefault();
     if (submitButtonEl?.disabled) {
@@ -50,14 +52,6 @@ export function initContextForm(onSubmit: ContextCallback): void {
 
   container.appendChild(form);
   updateSubmitButtonState(form);
-}
-
-/** Retained for backwards compatibility in test runners. */
-export function showContextForm(): void {
-  const el = document.getElementById('context-section');
-  if (el) {
-    el.hidden = false;
-  }
 }
 
 /**
@@ -78,9 +72,8 @@ export function setContextFormBusy(busy: boolean): void {
   }
   button.removeAttribute('aria-busy');
   setText(button, SUBMIT_LABEL);
-  const form = document.querySelector<HTMLFormElement>('form.context-form');
-  if (form) {
-    updateSubmitButtonState(form);
+  if (formEl) {
+    updateSubmitButtonState(formEl);
   }
 }
 
@@ -88,9 +81,8 @@ export function setContextFormBusy(busy: boolean): void {
 export function setContextFormLocationSelected(selected: boolean, locationName?: string): void {
   isLocationSelected = selected;
   selectedLocationName = locationName ?? '';
-  const form = document.querySelector<HTMLFormElement>('form.context-form');
-  if (form) {
-    updateSubmitButtonState(form);
+  if (formEl) {
+    updateSubmitButtonState(formEl);
   }
 }
 

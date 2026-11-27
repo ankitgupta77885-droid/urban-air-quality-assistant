@@ -1,4 +1,4 @@
-/* v8 ignore start */
+/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Shared Zod schemas for input validation and response parsing.
  *

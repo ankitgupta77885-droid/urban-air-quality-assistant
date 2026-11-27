@@ -60,11 +60,19 @@ describe('Security Middleware - CORS allowlist', () => {
       allowedOrigins: ['https://breathewell.example.com'],
     });
 
-    const res = await request(customApp)
+    const customRes = await request(customApp)
       .get('/api/geocoding/search?q=London')
       .set('Origin', 'https://breathewell.example.com');
 
-    expect(res.headers['access-control-allow-origin']).toBe('https://breathewell.example.com');
+    expect(customRes.headers['access-control-allow-origin']).toBe(
+      'https://breathewell.example.com',
+    );
+
+    const originalAppRes = await request(app)
+      .get('/api/geocoding/search?q=London')
+      .set('Origin', 'https://breathewell.example.com');
+
+    expect(originalAppRes.headers['access-control-allow-origin']).toBeUndefined();
   });
 
   it('should enforce strict style-src without unsafe-inline in Content-Security-Policy', async () => {

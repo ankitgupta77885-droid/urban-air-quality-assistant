@@ -270,7 +270,7 @@ npm run check
 Or run individual gates:
 
 ```bash
-# Run all 339 unit, integration, web, and accessibility tests
+# Run all 351 unit, integration, web, and accessibility tests
 npm test
 
 # Run tests with strict V8 code coverage enforcement
@@ -290,34 +290,34 @@ npm run format:check
 
 The test suite runs with V8 coverage against strict configured thresholds in `vitest.config.ts`:
 
-| Area                                           | Statements | Branches   | Functions | Lines      | Threshold Status      |
-| ---------------------------------------------- | ---------- | ---------- | --------- | ---------- | --------------------- |
-| **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**  | **100%**   | Exceeds 90% threshold |
-| **Server Services (`src/server/services/**`)** | **98.34%** | **91.84%** | **100%**  | **98.34%** | Exceeds 90% threshold |
-| **Global Overall Codebase**                    | **94.63%** | **84.83%** | **95.9%** | **94.63%** | Exceeds 80% threshold |
+| Area                                           | Statements | Branches   | Functions  | Lines      | Threshold Status      |
+| ---------------------------------------------- | ---------- | ---------- | ---------- | ---------- | --------------------- |
+| **Shared (`src/shared/**`)**                   | **100%**   | **100%**   | **100%**   | **100%**   | Exceeds 90% threshold |
+| **Server Services (`src/server/services/**`)** | **98.18%** | **91.59%** | **100%**   | **98.18%** | Exceeds 90% threshold |
+| **Global Overall Codebase**                    | **96.54%** | **86.89%** | **96.59%** | **96.54%** | Exceeds 80% threshold |
 
-- **Total Test Suites**: 35 passed (100%)
-- **Total Tests**: 339 passed (0 failed)
+- **Total Test Suites**: 36 passed (100%)
+- **Total Tests**: 351 passed (0 failed)
 - **External Mocking**: All external network requests (Open-Meteo, Gemini GenAI SDK) are strictly mocked; tests execute offline with zero live network calls.
 
 ---
 
-## Quality Improvement Summary (Phases 1–9)
+## Quality Improvement Summary (Phases 1–10)
 
-| Metric / Dimension                    | Before Refactor                         | After Refactor                           | Improvement Impact                                            |
-| ------------------------------------- | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
-| **Test Count**                        | 211 tests                               | **339 tests**                            | +128 comprehensive tests across edge cases                    |
-| **Overall Line Coverage**             | Untracked (< 70%)                       | **94.63%**                               | Strict 80% CI threshold enforced                              |
-| **Server Services Coverage**          | Untracked (< 75%)                       | **98.34% Lines / 91.84% Branches**       | Strict 90% CI threshold enforced                              |
-| **Shared Module Coverage**            | Untracked                               | **100% (all metrics)**                   | 100% verification of constants & schemas                      |
-| **Max Cyclomatic Complexity**         | 27 (`getPollutantStatusBadge`)          | **<= 10**                                | Reduced to lookup tables; ESLint complexity: 10 enforced      |
-| **Files > 200 Lines (`src/`)**        | 6 files > 200 lines                     | **0 files**                              | Split into modular components; ESLint max-lines: 200 enforced |
-| **Untrusted `as` Casts**              | 6+ instances (`res.json() as X`)        | **0 instances**                          | Replaced with Zod schemas & type guards                       |
-| **Runtime Non-Null Assertions (`!`)** | Multiple (`document.getElementById()!`) | **0 instances**                          | Type-safe assertions and element guards                       |
-| **ESLint Tooling**                    | ESLint 8 (`.eslintrc.cjs`)              | **ESLint 9 Flat Config**                 | `strict-type-checked` TypeScript rules                        |
-| **Gemini SDK**                        | `@google/generative-ai` (legacy)        | **`@google/genai` (modern)**             | Migrated to official modern SDK                               |
-| **CI & Pre-Commit Gates**             | None                                    | **GitHub Actions + Husky + lint-staged** | Automated verification on push, PR, and commit                |
-| **Production Vulnerabilities**        | 0 vulnerabilities                       | **0 vulnerabilities**                    | `npm audit --omit=dev` 100% clean                             |
+| Metric / Dimension                     | Before Refactor                         | After Refactor                           | Improvement Impact                                            |
+| -------------------------------------- | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
+| **Test Count**                         | 211 tests                               | **351 tests**                            | +140 comprehensive tests across edge cases                    |
+| **Overall Line Coverage**              | Untracked (< 70%)                       | **96.54%**                               | Strict 80% CI threshold enforced                              |
+| **Server Services Coverage**           | Untracked (< 75%)                       | **98.18% Lines / 91.59% Branches**       | Strict 90% CI threshold enforced                              |
+| **Shared Module Coverage**             | Untracked                               | **100% (all metrics)**                   | 100% verification of constants, cache & schemas               |
+| **Max Cyclomatic Complexity**          | 27 (`getPollutantStatusBadge`)          | **<= 10**                                | Reduced to lookup tables; ESLint complexity: 10 enforced      |
+| **Files > 200 Lines (`src/`, `api/`)** | 6 files > 200 lines                     | **0 files**                              | Split into modular components; ESLint max-lines: 200 enforced |
+| **Untrusted `as` Casts**               | 6+ instances (`res.json() as X`)        | **0 instances**                          | Replaced with Zod schemas & type guards                       |
+| **Runtime Non-Null Assertions (`!`)**  | Multiple (`document.getElementById()!`) | **0 instances**                          | Type-safe assertions and element guards                       |
+| **ESLint Tooling**                     | ESLint 8 (`.eslintrc.cjs`)              | **ESLint 9 Flat Config**                 | `strict-type-checked` TypeScript rules                        |
+| **Gemini SDK**                         | `@google/generative-ai` (legacy)        | **`@google/genai` (modern)**             | Migrated to official modern SDK                               |
+| **CI & Pre-Commit Gates**              | None                                    | **GitHub Actions + Husky + lint-staged** | Automated verification on push, PR, and commit                |
+| **Production Vulnerabilities**         | 0 vulnerabilities                       | **0 vulnerabilities**                    | `npm audit --omit=dev` 100% clean                             |
 
 ---
 
@@ -329,7 +329,7 @@ The test suite runs with V8 coverage against strict configured thresholds in `vi
 - **Cross-Origin Resource Sharing (CORS)**: Restricted in production mode to prevent unauthorized cross-origin requests.
 - **Rate Limiting**: Enforced on all `/api/*` endpoints (60 requests per minute per IP) to prevent abuse and API exhaustion.
 - **Payload Limits**: Strict 10 KB request body size limit prevents oversized request attacks.
-- **Request Timeouts**: Built-in 15-second request timeout middleware returns HTTP 408 on hanging requests.
+- **Request Timeouts**: Built-in 25-second request timeout middleware returns HTTP 408 on hanging requests.
 - **XSS Prevention**: Frontend strictly uses `textContent` and safe DOM manipulation methods (`createElement`, `setAttribute`). `innerHTML` with dynamic data is forbidden and enforced by ESLint.
 - **Credential Hygiene**: Server secrets live solely in environment variables, referenced from `.env.example`, and never exposed to the client bundle.
 
@@ -387,8 +387,14 @@ breathewell/
 ├── index.html                              # HTML entry point with semantic markup
 ├── package.json                            # Scripts, dependencies, and engine requirements
 ├── tsconfig.json                           # TypeScript strict mode configuration
+├── vercel.json                             # Vercel build, rewrites, caching & CSP configuration
 ├── vite.config.ts                          # Vite frontend configuration and API proxy
 ├── vitest.config.ts                        # Vitest test runner configuration with coverage thresholds
+├── api/
+│   └── index.ts                            # Vercel serverless entry point wrapping Express app
+├── docs/
+│   └── DESIGN.md                           # Design system, token & accessibility specification
+├── public/                                 # Static fonts and icons served directly by CDN
 ├── src/
 │   ├── server/
 │   │   ├── app.ts                          # Express application factory
@@ -398,49 +404,57 @@ breathewell/
 │   │   ├── errors/
 │   │   │   └── app-errors.ts               # Custom application error classes
 │   │   ├── middleware/
-│   │   │   ├── error-handler.ts            # Global error handling middleware
+│   │   │   ├── error-handler.ts            # Global error handling middleware with headersSent guard
 │   │   │   ├── security.ts                 # Helmet, CORS, rate limiting, compression
-│   │   │   └── timeout.ts                  # Request timeout middleware
+│   │   │   └── timeout.ts                  # Request timeout middleware (25s)
 │   │   ├── routes/
 │   │   │   ├── advice.ts                   # POST /api/advice route handler
 │   │   │   ├── aqi.ts                      # GET /api/aqi route handler
-│   │   │   └── geocoding.ts                # GET /api/geocoding/search route handler
+│   │   │   ├── geocoding.ts                # GET /api/geocoding/search route handler
+│   │   │   └── route-helpers.ts            # Shared validation, async forwarding & response helpers
 │   │   └── services/
 │   │       ├── activity-actions.ts         # Commute & outdoor action builders
 │   │       ├── aqi-categorizer.ts          # Raw AQI to category & color mapping
 │   │       ├── aqi.service.ts              # Open-Meteo Air Quality API client
-│   │       ├── cache.ts                    # In-memory generic TTL cache with LRU eviction
 │   │       ├── gemini-prompt.ts            # Prompt construction & system instructions
-│   │       ├── gemini.service.ts           # Gemini API client (@google/genai), schema validation & fallback
+│   │       ├── gemini-response.ts          # Gemini JSON cleaning, Zod validation & fallback builder
+│   │       ├── gemini.service.ts           # Gemini API client (@google/genai), caching & retry/timeout
 │   │       ├── geocoding.service.ts        # Open-Meteo Geocoding API client
+│   │       ├── http-client.ts              # Shared Zod-validated upstream HTTP client
 │   │       ├── lifestyle-actions.ts        # Indoor hacks & sustainable action builders
 │   │       ├── logger.ts                   # Structured namespaced logger
 │   │       ├── risk-calculator.ts          # Weighted risk score calculation
 │   │       ├── routine-actions.ts          # Morning & evening routine action builders
-│   │       ├── rules-engine-helpers.ts     # Shared rules evaluation predicates
+│   │       ├── rules-engine-helpers.ts     # Shared rules predicates & action factory
 │   │       └── rules-engine.ts             # Deterministic advice orchestration
 │   ├── shared/
+│   │   ├── aqi.ts                          # Shared US EPA AQI breakpoints & risk modifier tables
+│   │   ├── cache.ts                        # Shared generic TTL cache with LRU eviction
 │   │   ├── constants.ts                    # Breakpoints, limits, URLs, and labels
 │   │   ├── errors.ts                       # Shared error definitions
-│   │   ├── schemas.ts                      # Shared Zod validation schemas
-│   │   └── types.ts                        # Shared TypeScript interfaces and domain types
+│   │   ├── request-schemas.ts              # Zod request, context & Gemini schemas
+│   │   ├── response-schemas.ts             # Zod upstream & API response schemas
+│   │   ├── schemas.ts                      # Unified schema barrel re-export
+│   │   └── types.ts                        # Schema-inferred TypeScript domain types
 │   └── web/
-│       ├── main.ts                         # Frontend application bootstrap
+│       ├── main.ts                         # Frontend application bootstrap & flow controller
 │       ├── style.css                       # Component stylesheet aggregator
+│       ├── tokens.css                      # Single source of truth CSS custom properties
 │       ├── api/
-│       │   └── client.ts                   # Typed API client with AbortController
+│       │   └── client.ts                   # Typed API client with AbortController & TTL cache
 │       ├── components/
 │       │   ├── advice-plan.ts              # Recommendation plan rendering
 │       │   ├── aqi-display.ts              # AQI badge & pollutant breakdown
 │       │   ├── button.ts                   # Reusable button component
 │       │   ├── card.ts                     # Reusable card container component
-│       │   ├── context-form-options.ts     # Dropdown & checkbox option constants
+│       │   ├── context-form-helpers.ts     # Form parsing & exclusive checkbox helpers
+│       │   ├── context-form-options.ts     # Dropdown & chip option constants
 │       │   ├── context-form.ts             # Household lifestyle context form
 │       │   ├── disclaimer.ts               # Medical disclaimer banner
 │       │   ├── empty-state.ts              # Accessible empty state display
 │       │   ├── error-banner.ts             # Accessible error notifications
 │       │   ├── footer.ts                   # Accessible footer component
-│       │   ├── form-fields.ts              # Accessible form controls
+│       │   ├── form-fields.ts              # Accessible form controls & shared chip groups
 │       │   ├── geolocation.ts              # Browser geolocation API handler
 │       │   ├── hero.ts                     # Hero section component
 │       │   ├── how-it-works.ts             # Educational feature section
@@ -453,42 +467,53 @@ breathewell/
 │       │   ├── navbar.ts                   # Responsive navigation bar
 │       │   ├── pill.ts                     # Reusable status pill component
 │       │   ├── planner-tabs.ts             # Accessible planner tab controller
-│       │   └── recommendation-card.ts      # Action card item
+│       │   ├── recommendation-card.ts      # Action card item
+│       │   └── success-banner.ts           # Accessible confirmation banner
 │       ├── styles/                         # Modular per-component CSS stylesheets (<= 200 lines each)
 │       └── utils/
-│           ├── debounce.ts                 # Input debounce utility
-│           ├── dom.ts                      # Safe DOM manipulation helpers
-│           └── formatters.ts               # Display formatting utilities
+│           ├── debounce.ts                 # Input debounce utility with cancellation
+│           ├── dom.ts                      # Safe DOM manipulation & mounting helpers
+│           ├── formatters.ts               # Display, location & time formatting utilities
+│           └── scroll.ts                   # Reduced-motion-aware scroll helper
 └── tests/
     ├── api/
     │   ├── advice.test.ts                  # Advice endpoint integration tests
     │   ├── aqi.test.ts                     # AQI endpoint integration tests
     │   ├── geocoding.test.ts               # Geocoding endpoint integration tests
     │   ├── health.test.ts                  # Health check endpoint integration tests
-    │   └── security.test.ts                # Helmet CSP, CORS, rate limiting integration tests
+    │   ├── security.test.ts                # Helmet CSP, CORS, rate limiting integration tests
+    │   └── vercel-entry.test.ts            # Vercel serverless entrypoint integration tests
     ├── unit/
+    │   ├── aqi-breakpoint.test.ts          # Shared AQI breakpoint & risk modifier table tests
     │   ├── aqi-categorization.test.ts      # AQI breakpoint & category tests
     │   ├── aqi-service.test.ts             # AQI service mock & mapping tests
-    │   ├── cache.test.ts                   # TTL cache functionality tests
+    │   ├── cache.test.ts                   # Shared TTL/LRU cache tests
+    │   ├── code-quality.test.ts            # Architectural <= 200 line source file invariant tests
     │   ├── env.test.ts                     # Environment validation tests
-    │   ├── formatters.test.ts              # Formatting helper tests
+    │   ├── error-handler.test.ts           # Error handler & headersSent guard tests
+    │   ├── formatters.test.ts              # Formatting, location & time helper tests
     │   ├── gemini.test.ts                  # Gemini parsing, validation & fallback tests
     │   ├── geocoding-service.test.ts       # Geocoding service mock & mapping tests
     │   ├── logger.test.ts                  # Namespaced logger tests
+    │   ├── risk-calculator.test.ts         # Weighted risk calculation tests
     │   ├── rules-engine.test.ts            # Rules engine decision tests
-    │   ├── timeout.test.ts                 # Request timeout middleware tests
-    │   └── validation.test.ts              # Zod validation schema tests
+    │   ├── timeout.test.ts                 # Request timeout & early-close cleanup tests
+    │   ├── validation.test.ts              # Zod validation schema tests
+    │   └── vercel-config.test.ts           # vercel.json invariant & header tests
     └── web/
         ├── accessibility.test.ts           # axe-core WCAG 2.1 AA accessibility audit
         ├── client.test.ts                  # Web API client tests
         ├── debounce.test.ts                # Web debounce utility tests
         ├── geolocation.test.ts             # Browser geolocation component tests
+        ├── loading-feedback.test.ts        # Busy submit state & aria-busy tests
         ├── location-search.test.ts         # Location search component tests
         ├── planner.test.ts                 # Planner form component tests
-        ├── primitives.test.ts              # UI primitives component tests
+        ├── primitives.test.ts              # UI primitives, DOM & navbar tests
         ├── responsive.test.ts              # Responsive layout tests
         ├── results.test.ts                 # Results & display component tests
+        ├── scroll-behavior.test.ts         # Reduced-motion scroll behavior tests
         ├── states.test.ts                  # Loading & error states tests
+        ├── success-banner.test.ts          # Accessible success banner tests
         └── tokens.test.ts                  # Design tokens tests
 ```
 

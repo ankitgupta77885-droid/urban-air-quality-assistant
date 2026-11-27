@@ -110,6 +110,22 @@ describe('initLocationSearch', () => {
     expect(mockSearchCities).not.toHaveBeenCalled();
   });
 
+  it('cancels a pending debounced search when input drops below minimum length', () => {
+    const onSelect = vi.fn();
+    initLocationSearch(onSelect);
+
+    const input = requireInput(container, '#city-search');
+    input.value = 'To';
+    input.dispatchEvent(new Event('input'));
+
+    vi.advanceTimersByTime(150);
+    input.value = 'T';
+    input.dispatchEvent(new Event('input'));
+
+    vi.advanceTimersByTime(500);
+    expect(mockSearchCities).not.toHaveBeenCalled();
+  });
+
   it('searches cities on debounced input and renders selectable results', async () => {
     const onSelect = vi.fn();
     mockSearchCities.mockResolvedValue(mockCities);

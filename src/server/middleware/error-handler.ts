@@ -12,14 +12,24 @@ import { createLogger } from '../services/logger.js';
 
 const logger = createLogger('error-handler');
 
+const SAFE_STATUS_MESSAGES: Readonly<Record<number, string>> = {
+  413: 'Request payload too large.',
+  400: 'Invalid request payload.',
+};
+
 /**
  * Express error-handling middleware. Must have 4 parameters.
  * @param err - The thrown error.
  * @param _req - Express request object.
  * @param res - Express response object.
- * @param _next - Next middleware function.
+ * @param next - Next middleware function.
  */
-export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
+export function errorHandler(err: Error, _req: Request, res: Response, next: NextFunction): void {
+  if (res.headersSent) {
+    next(err);
+    return;
+  }
+
   if (err instanceof AppError) {
     res.status(err.statusCode).json({
       success: false,
@@ -83,11 +93,5 @@ function handleExpressBuiltIn(err: Error, res: Response): boolean {
  * @returns Sanitized error message.
  */
 function getSafeErrorMessage(status: number): string {
-  if (status === 413) {
-    return 'Request payload too large.';
-  }
-  if (status === 400) {
-    return 'Invalid request payload.';
-  }
-  return 'Request error.';
+  return SAFE_STATUS_MESSAGES[status] ?? 'Request error.';
 }

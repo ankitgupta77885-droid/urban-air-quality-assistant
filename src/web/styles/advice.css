@@ -4,12 +4,12 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  background: var(--color-warning-container, #fef3c7);
-  border: 1px solid #f59e0b;
-  color: #92400e;
+  background: var(--color-warning-container);
+  border: 1px solid var(--color-warning-border);
+  color: var(--color-warning-text);
   padding: var(--space-md) var(--space-lg);
   border-radius: var(--radius-lg);
-  font-size: var(--font-size-body-sm, 0.875rem);
+  font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-lg);
 }
@@ -18,7 +18,7 @@
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  color: #92400e;
+  color: var(--color-warning-text);
 }
 
 .basic-mode-notice .notice-icon svg {

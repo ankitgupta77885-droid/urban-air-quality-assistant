@@ -97,7 +97,7 @@
 }
 
 .pollutant-item {
-  background: var(--color-canvas, #f9f9f7);
+  background: var(--color-canvas);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
@@ -127,18 +127,18 @@
 }
 
 .badge-optimal {
-  background: var(--color-secondary-container, #cde5dc);
-  color: var(--color-secondary, #4d635c);
+  background: var(--color-secondary-container);
+  color: var(--color-secondary);
 }
 
 .badge-moderate {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-container);
+  color: var(--color-warning-text);
 }
 
 .badge-elevated {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--color-alert-bg);
+  color: var(--color-alert-text);
 }
 
 .pollutant-value {

@@ -5,12 +5,46 @@
  * live timestamp, and 6-pollutant grid with explicit status badges.
  */
 
-import type { AqiData, PollutantReading } from '@shared/types.js';
+import type { AqiCategory, AqiData, PollutantReading } from '@shared/types.js';
 
 import { clearChildren, createElement, getElement, setText, showElement } from '../utils/dom.js';
-import { getAqiDisplay } from '../utils/formatters.js';
+import { formatLocalTime, getAqiDisplay } from '../utils/formatters.js';
 
 import { createAqiStatusIcon } from './icons.js';
+
+const AQI_DESCRIPTIONS: Readonly<Record<AqiCategory, string>> = {
+  Good: 'Air quality is satisfactory with little or no risk for children.',
+  Moderate:
+    'Air quality is acceptable; unusually sensitive children may experience minor symptoms.',
+  'Unhealthy for Sensitive Groups':
+    'Children with asthma or allergies should limit prolonged outdoor exertion.',
+  Unhealthy:
+    'All children should limit prolonged outdoor exertion; sensitive groups should stay indoors.',
+  'Very Unhealthy':
+    'Avoid outdoor activities for children. Keep indoor air filtered and windows sealed.',
+  Hazardous: 'Emergency conditions. Everyone should remain indoors with air filtration.',
+};
+
+interface PollutantThreshold {
+  readonly elevated: number;
+  readonly moderate: number;
+}
+
+const DEFAULT_THRESHOLD: PollutantThreshold = { elevated: 50, moderate: 25 };
+
+interface ThresholdRule {
+  readonly patterns: readonly string[];
+  readonly threshold: PollutantThreshold;
+}
+
+const POLLUTANT_THRESHOLDS: readonly ThresholdRule[] = [
+  { patterns: ['pm25', '25'], threshold: { elevated: 35, moderate: 12 } },
+  { patterns: ['pm10', '10'], threshold: { elevated: 150, moderate: 54 } },
+  { patterns: ['no2', 'nitrogen'], threshold: { elevated: 100, moderate: 53 } },
+  { patterns: ['o3', 'ozone'], threshold: { elevated: 70, moderate: 54 } },
+  { patterns: ['so2', 'sulphur'], threshold: { elevated: 75, moderate: 35 } },
+  { patterns: ['co', 'carbon'], threshold: { elevated: 9, moderate: 4.4 } },
+] as const;
 
 /** Renders the AQI summary card into the display section. */
 export function renderAqiDisplay(data: AqiData): void {
@@ -25,11 +59,11 @@ export function renderAqiDisplay(data: AqiData): void {
   card.appendChild(buildAqiHeader(data.aqi, category));
 
   const desc = createElement('p', 'aqi-description');
-  setText(desc, getAqiDescription(category));
+  setText(desc, AQI_DESCRIPTIONS[category]);
   card.appendChild(desc);
 
   const time = createElement('p', 'aqi-time');
-  setText(time, `Data from Open-Meteo • Updated at ${formatTimestamp(data.timestamp)}`);
+  setText(time, `Data from Open-Meteo • Updated at ${formatLocalTime(data.timestamp)}`);
   card.appendChild(time);
 
   card.appendChild(buildPollutantsSection(data.pollutants));
@@ -52,9 +86,7 @@ function buildAqiHeader(aqi: number, category: string): HTMLElement {
   const catEl = createElement('span', 'aqi-category');
   setText(catEl, category);
 
-  header.appendChild(iconEl);
-  header.appendChild(valueEl);
-  header.appendChild(catEl);
+  header.append(iconEl, valueEl, catEl);
   return header;
 }
 
@@ -68,7 +100,6 @@ function buildPollutantsSection(pollutants: readonly PollutantReading[]): HTMLEl
   const grid = createElement('div', 'pollutants-grid');
   for (const p of pollutants) {
     const item = createElement('div', 'pollutant-item');
-
     const topRow = createElement('div', 'pollutant-top');
     const name = createElement('span', 'pollutant-name');
     setText(name, p.displayName);
@@ -76,41 +107,17 @@ function buildPollutantsSection(pollutants: readonly PollutantReading[]): HTMLEl
     const badgeInfo = getPollutantStatusBadge(p.name, p.value);
     const badge = createElement('span', 'pollutant-badge', badgeInfo.className);
     setText(badge, badgeInfo.label);
-
-    topRow.appendChild(name);
-    topRow.appendChild(badge);
+    topRow.append(name, badge);
 
     const val = createElement('span', 'pollutant-value');
     setText(val, `${p.value} ${p.unit}`);
 
-    item.appendChild(topRow);
-    item.appendChild(val);
+    item.append(topRow, val);
     grid.appendChild(item);
   }
   wrapper.appendChild(grid);
   return wrapper;
 }
-
-interface PollutantThreshold {
-  readonly elevated: number;
-  readonly moderate: number;
-}
-
-const DEFAULT_THRESHOLD: PollutantThreshold = { elevated: 50, moderate: 25 };
-
-interface ThresholdRule {
-  readonly patterns: readonly string[];
-  readonly threshold: PollutantThreshold;
-}
-
-const POLLUTANT_THRESHOLDS: readonly ThresholdRule[] = [
-  { patterns: ['pm25', '25'], threshold: { elevated: 35, moderate: 12 } },
-  { patterns: ['pm10', '10'], threshold: { elevated: 150, moderate: 54 } },
-  { patterns: ['no2', 'nitrogen'], threshold: { elevated: 100, moderate: 53 } },
-  { patterns: ['o3', 'ozone'], threshold: { elevated: 70, moderate: 54 } },
-  { patterns: ['so2', 'sulphur'], threshold: { elevated: 75, moderate: 35 } },
-  { patterns: ['co', 'carbon'], threshold: { elevated: 9, moderate: 4.4 } },
-] as const;
 
 /** Looks up the relevant concentration threshold for a pollutant. */
 function lookupThreshold(normalizedName: string): PollutantThreshold {
@@ -134,37 +141,4 @@ function getPollutantStatusBadge(name: string, val: number): { label: string; cl
     return { label: 'Moderate', className: 'badge-moderate' };
   }
   return { label: 'Optimal', className: 'badge-optimal' };
-}
-
-/** Returns plain-language impact description for children based on AQI category. */
-function getAqiDescription(category: string): string {
-  const n = category.toLowerCase();
-  if (n.includes('good')) {
-    return 'Air quality is satisfactory with little or no risk for children.';
-  }
-  if (n.includes('moderate')) {
-    return 'Air quality is acceptable; unusually sensitive children may experience minor symptoms.';
-  }
-  if (n.includes('sensitive') || n.includes('usg')) {
-    return 'Children with asthma or allergies should limit prolonged outdoor exertion.';
-  }
-  if (n.includes('very unhealthy')) {
-    return 'Avoid outdoor activities for children. Keep indoor air filtered and windows sealed.';
-  }
-  if (n.includes('hazardous')) {
-    return 'Emergency conditions. Everyone should remain indoors with air filtration.';
-  }
-  return 'All children should limit prolonged outdoor exertion; sensitive groups should stay indoors.';
-}
-
-/** Formats an ISO timestamp into a readable local time string. */
-function formatTimestamp(timestamp: string): string {
-  try {
-    return new Date(timestamp).toLocaleTimeString(undefined, {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return timestamp;
-  }
 }

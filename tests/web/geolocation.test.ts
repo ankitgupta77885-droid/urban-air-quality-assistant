@@ -127,4 +127,28 @@ describe('handleGeolocation', () => {
     vi.advanceTimersByTime(3000);
     expect(btn.textContent).toContain('Use my location');
   });
+
+  it('cancels any pending reset timer when geolocation is triggered again quickly', async () => {
+    const onSelect = vi.fn();
+    const mockGeolocation = {
+      getCurrentPosition: vi.fn((_success: PositionCallback, error: PositionErrorCallback) => {
+        error({ code: 1 } as GeolocationPositionError);
+      }),
+    };
+    Object.defineProperty(window.navigator, 'geolocation', {
+      value: mockGeolocation,
+      configurable: true,
+      writable: true,
+    });
+
+    await handleGeolocation(onSelect, btn);
+    vi.advanceTimersByTime(1500);
+    await handleGeolocation(onSelect, btn);
+
+    vi.advanceTimersByTime(1600);
+    expect(btn.textContent).toBe('Location access denied');
+
+    vi.advanceTimersByTime(1500);
+    expect(btn.textContent).toContain('Use my location');
+  });
 });

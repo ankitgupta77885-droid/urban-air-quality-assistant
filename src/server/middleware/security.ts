@@ -30,33 +30,21 @@ export interface SecurityOptions {
   readonly allowedOrigins?: readonly string[];
 }
 
-/** Injected allowed origins from environment configuration. */
-let configuredOrigins: readonly string[] = [];
-
-/**
- * Sets the configured allowed origins.
- * @param origins - Array of allowed origin URLs.
- */
-export function setAllowedOrigins(origins: readonly string[]): void {
-  configuredOrigins = origins;
-}
-
 /**
  * Checks whether an origin is allowed by the CORS policy.
  * @param origin - Request origin header value or undefined.
- * @param customOrigins - Optional override for allowed origins.
+ * @param customOrigins - App-specific allowed origins.
  * @returns True if origin is allowed, false otherwise.
  */
 export function isAllowedOrigin(
   origin: string | undefined,
-  customOrigins: readonly string[] = configuredOrigins,
+  customOrigins: readonly string[] = [],
 ): boolean {
   if (!origin) {
     return true;
   }
 
-  const allowlist = [...DEFAULT_ALLOWED_ORIGINS, ...customOrigins];
-  return allowlist.includes(origin);
+  return DEFAULT_ALLOWED_ORIGINS.includes(origin) || customOrigins.includes(origin);
 }
 
 /**
@@ -65,11 +53,8 @@ export function isAllowedOrigin(
  * @param options - Optional security configuration options.
  */
 export function applySecurityMiddleware(app: Express, options: SecurityOptions = {}): void {
-  if (options.allowedOrigins) {
-    setAllowedOrigins(options.allowedOrigins);
-  }
   applyHelmet(app);
-  applyCors(app);
+  applyCors(app, options.allowedOrigins ?? []);
   applyRateLimit(app);
   applyBodyParsing(app);
   applyCompression(app);
@@ -104,11 +89,12 @@ function applyHelmet(app: Express): void {
 /**
  * Configures restrictive CORS with an explicit origin allowlist.
  * @param app - Express application instance.
+ * @param allowedOrigins - App-specific allowed origin URLs.
  */
-function applyCors(app: Express): void {
+function applyCors(app: Express, allowedOrigins: readonly string[]): void {
   const options: CorsOptions = {
     origin: (origin, callback) => {
-      if (isAllowedOrigin(origin)) {
+      if (isAllowedOrigin(origin, allowedOrigins)) {
         callback(null, true);
       } else {
         callback(null, false);

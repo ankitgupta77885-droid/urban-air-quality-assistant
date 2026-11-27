@@ -95,4 +95,16 @@ describe('requestTimeout middleware', () => {
     expect(statusSpy).not.toHaveBeenCalled();
     expect(jsonSpy).not.toHaveBeenCalled();
   });
+
+  it('clears timeout timer when connection closes early before finish', () => {
+    const req = createMockRequest();
+    const { res, statusSpy } = createMockResponse();
+    const next: NextFunction = vi.fn();
+
+    requestTimeout(req, res, next);
+    res.emit('close');
+
+    vi.advanceTimersByTime(REQUEST_TIMEOUT_MS + 100);
+    expect(statusSpy).not.toHaveBeenCalled();
+  });
 });

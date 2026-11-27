@@ -13,6 +13,7 @@ import { createAirIcon, createCheckIcon } from '../../src/web/components/icons.j
 import { createLogo } from '../../src/web/components/logo.js';
 import { renderNavbar } from '../../src/web/components/navbar.js';
 import { createPill } from '../../src/web/components/pill.js';
+import { addClasses, focusInput, mountIfPresent } from '../../src/web/utils/dom.js';
 
 describe('Shared Primitive: Button', () => {
   it('should create button with default primary variant and type button', () => {
@@ -162,5 +163,39 @@ describe('Layout Shell: Navbar and Footer', () => {
 
     updateTrustTimestamp('2026-11-22T12:00:00Z');
     expect(trustText?.textContent).toContain('Data from Open-Meteo • Fetched at');
+  });
+
+  it('mounts components only when container exists and handles custom classes/focus', () => {
+    document.body.innerHTML =
+      '<div id="mount-target"></div><input id="city-search" /><section id="aqi-section"></section>';
+    Object.defineProperty(window, 'matchMedia', {
+      value: vi.fn().mockReturnValue({ matches: true }),
+      writable: true,
+    });
+    const el = document.createElement('div');
+    addClasses(el, '  alpha   beta  ');
+    expect(el.classList.contains('alpha')).toBe(true);
+    expect(el.classList.contains('beta')).toBe(true);
+    addClasses(el);
+
+    const rendered = vi.fn();
+    mountIfPresent('mount-target', rendered);
+    mountIfPresent('missing-target', rendered);
+    expect(rendered).toHaveBeenCalledTimes(1);
+
+    const search = document.getElementById('city-search') as HTMLInputElement;
+    const focusSpy = vi.spyOn(search, 'focus');
+    focusInput('city-search');
+    expect(focusSpy).toHaveBeenCalledTimes(1);
+    focusInput('missing-input');
+
+    const header = document.createElement('header');
+    renderNavbar(header);
+    const aqiSection = document.getElementById('aqi-section') as HTMLElement;
+    const scrollSpy = vi.fn();
+    aqiSection.scrollIntoView = scrollSpy;
+    const airQualityLink = header.querySelector<HTMLAnchorElement>('a[href="#planner"]');
+    airQualityLink?.click();
+    expect(scrollSpy).toHaveBeenCalledTimes(1);
   });
 });

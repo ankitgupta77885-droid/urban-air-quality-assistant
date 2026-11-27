@@ -6,19 +6,21 @@
 
 import { APP_NAME } from '@shared/constants.js';
 
-import { createElement, setText } from '../utils/dom.js';
+import { createElement, focusInput, setText } from '../utils/dom.js';
+import { scrollToElementById } from '../utils/scroll.js';
 
 import { createLogo } from './logo.js';
 
 interface NavLinkItem {
   readonly label: string;
   readonly href: string;
+  readonly activeSectionId?: string;
 }
 
 const NAV_LINKS: readonly NavLinkItem[] = [
   { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Air Quality', href: '#planner' },
-  { label: 'Recommendations', href: '#results' },
+  { label: 'Air Quality', href: '#planner', activeSectionId: 'aqi-section' },
+  { label: 'Recommendations', href: '#results', activeSectionId: 'advice-section' },
 ] as const;
 
 /**
@@ -29,9 +31,7 @@ export function renderNavbar(container: HTMLElement): void {
   container.replaceChildren();
 
   const navWrapper = createElement('div', 'container', 'nav-container');
-  navWrapper.appendChild(createBrandElement());
-  navWrapper.appendChild(createNavLinksElement());
-  navWrapper.appendChild(createCtaElement());
+  navWrapper.append(createBrandElement(), createNavLinksElement(), createCtaElement());
 
   container.appendChild(navWrapper);
 }
@@ -57,47 +57,43 @@ function createNavLinksElement(): HTMLElement {
 
   const list = createElement('ul', 'nav-list');
   for (const item of NAV_LINKS) {
-    const li = createElement('li', 'nav-item');
-    const a = createElement('a', 'nav-link');
-    a.href = item.href;
-    setText(a, item.label);
-
-    a.addEventListener('click', (e) => {
-      if (item.href === '#planner') {
-        const aqiSection = document.getElementById('aqi-section');
-        if (aqiSection && !aqiSection.hidden) {
-          e.preventDefault();
-          aqiSection.scrollIntoView({ behavior: 'smooth' });
-          history.pushState(null, '', '#aqi-section');
-        }
-      } else if (item.href === '#results') {
-        const adviceSection = document.getElementById('advice-section');
-        if (adviceSection && !adviceSection.hidden) {
-          e.preventDefault();
-          adviceSection.scrollIntoView({ behavior: 'smooth' });
-          history.pushState(null, '', '#advice-section');
-        }
-      }
-    });
-
-    li.appendChild(a);
-    list.appendChild(li);
+    list.appendChild(createNavLink(item));
   }
 
   nav.appendChild(list);
   return nav;
 }
 
+/** Creates a single nav item, redirecting to dynamic result sections once populated. */
+function createNavLink(item: NavLinkItem): HTMLElement {
+  const li = createElement('li', 'nav-item');
+  const link = createElement('a', 'nav-link');
+  link.href = item.href;
+  setText(link, item.label);
+
+  if (item.activeSectionId) {
+    const targetId = item.activeSectionId;
+    link.addEventListener('click', (e) => {
+      const target = document.getElementById(targetId);
+      if (target && !target.hidden) {
+        e.preventDefault();
+        scrollToElementById(targetId);
+        history.pushState(null, '', `#${targetId}`);
+      }
+    });
+  }
+
+  li.appendChild(link);
+  return li;
+}
+
 /** Creates the primary CTA button linking to the planner and focusing search. */
 function createCtaElement(): HTMLElement {
-  const a = createElement('a', 'btn', 'btn-primary', 'btn-pill', 'nav-cta');
-  a.href = '#planner';
-  setText(a, 'Check Your Area');
-  a.addEventListener('click', () => {
-    const searchInput = document.getElementById('city-search');
-    if (searchInput instanceof HTMLInputElement) {
-      searchInput.focus();
-    }
+  const link = createElement('a', 'btn', 'btn-primary', 'btn-pill', 'nav-cta');
+  link.href = '#planner';
+  setText(link, 'Check Your Area');
+  link.addEventListener('click', () => {
+    focusInput('city-search');
   });
-  return a;
+  return link;
 }

@@ -15,7 +15,23 @@
   /* ── Typography Inks & Brand ── */
   --color-ink: #111111;
   --color-ink-muted: #4d635c;
+  --color-ink-inverse: #ffffff;
+  --color-ink-hover: #2a2a2a;
   --color-brand: #111111;
+  --color-secondary: var(--color-ink-muted);
+  --color-secondary-container: #cde5dc;
+  --color-search-highlight: #e8f0fe;
+
+  /* ── Semantic Feedback & Benefit Tokens ── */
+  --color-benefit-high-bg: #dcfce7;
+  --color-benefit-high-text: #166534;
+  --color-warning-container: #fef3c7;
+  --color-warning-border: #f59e0b;
+  --color-warning-text: #92400e;
+  --color-info-bg: #e0f2fe;
+  --color-info-text: #0369a1;
+  --color-alert-bg: #fee2e2;
+  --color-alert-text: #b91c1c;
 
   /* ── Status Tokens (Paired with Text & SVG Icon) ── */
   --color-status-good-bg: rgba(5, 150, 105, 0.1);
@@ -51,6 +67,7 @@
   --line-height-body-lg: 1.55; /* 28px */
   --font-size-body-md: 0.9375rem; /* 15px */
   --line-height-body-md: 1.6; /* 24px */
+  --font-size-body-sm: 0.875rem; /* 14px */
   --font-size-label-md: 0.8125rem; /* 13px - enforced minimum */
   --line-height-label-md: 1.38; /* 18px */
   --font-size-label-sm: 0.8125rem; /* 13px - enforced minimum */

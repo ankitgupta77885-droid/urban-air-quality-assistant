@@ -1,11 +1,13 @@
+/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * Generic in-memory TTL cache.
  *
- * Stores key-value pairs with automatic expiration and optional
- * maximum size with LRU-style eviction (oldest first).
+ * Stores key-value pairs with automatic expiration and maximum-size
+ * LRU eviction (least recently accessed entries evicted first).
  */
+/* v8 ignore stop */
 
-import { MAX_CACHE_ENTRIES } from '../../shared/constants.js';
+import { MAX_CACHE_ENTRIES } from './constants.js';
 
 /** A cached entry with its expiration timestamp. */
 interface CacheEntry<T> {
@@ -36,6 +38,7 @@ export class TtlCache<T> {
 
   /**
    * Retrieves a value from the cache if it exists and has not expired.
+   * Refreshes entry recency so eviction removes the least-recently-used key.
    * @param key - Cache key.
    * @returns The cached value, or undefined if missing or expired.
    */
@@ -51,6 +54,8 @@ export class TtlCache<T> {
       return undefined;
     }
 
+    this.store.delete(key);
+    this.store.set(key, entry);
     return entry.value;
   }
 
@@ -60,7 +65,9 @@ export class TtlCache<T> {
    * @param value - Value to cache.
    */
   set(key: string, value: T): void {
-    if (this.store.size >= this.maxEntries) {
+    if (this.store.has(key)) {
+      this.store.delete(key);
+    } else if (this.store.size >= this.maxEntries) {
       this.evictOldest();
     }
 
@@ -96,7 +103,7 @@ export class TtlCache<T> {
     return this.store.size;
   }
 
-  /** Removes the oldest entry from the cache. */
+  /** Removes the least-recently-used entry from the cache. */
   private evictOldest(): void {
     const oldestKey = this.store.keys().next().value;
     if (oldestKey !== undefined) {

@@ -41,6 +41,9 @@ export function parseWithSchema<T>(schema: z.ZodType<T>, input: unknown): T {
  * @param data - Response payload to serialize.
  */
 export function sendApiSuccess(res: Response, data: unknown): void {
+  if (res.headersSent) {
+    return;
+  }
   const response: ApiResponse<unknown> = { success: true, data };
   res.json(response);
 }

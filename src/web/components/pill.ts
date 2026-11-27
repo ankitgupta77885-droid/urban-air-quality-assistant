@@ -4,7 +4,7 @@
  * Used for status badges, filter chips, and category tags.
  */
 
-import { createElement, setText } from '../utils/dom.js';
+import { addClasses, createElement, setText } from '../utils/dom.js';
 
 /** Configuration options for the Pill / Chip component. */
 export interface PillOptions {
@@ -51,7 +51,7 @@ export function createPill(options: PillOptions): HTMLElement {
   }
 
   applyPillVariant(el, options.variant, options.selected);
-  applyPillClasses(el, options.className);
+  addClasses(el, options.className);
   renderPillContent(el, options);
 
   if (options.ariaLabel) {
@@ -74,17 +74,6 @@ function applyPillVariant(
   el.classList.add(`pill-${variant}`);
   if (selected) {
     el.classList.add('pill-selected');
-  }
-}
-
-/** Applies additional custom class names safely. */
-function applyPillClasses(el: HTMLElement, className?: string): void {
-  if (className) {
-    for (const cls of className.split(/\s+/)) {
-      if (cls) {
-        el.classList.add(cls);
-      }
-    }
   }
 }
 

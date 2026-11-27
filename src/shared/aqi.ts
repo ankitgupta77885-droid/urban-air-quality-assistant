@@ -1,4 +1,4 @@
-/* v8 ignore start */
+/* v8 ignore start -- top JSDoc anchors TypeScript ESM preamble sourcemaps */
 /**
  * AQI breakpoint lookup and risk-scoring tables shared across server and web.
  *
